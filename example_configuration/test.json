@@ -1,0 +1,10 @@
+[{
+    "name" : "IsSat",
+    "sat" : true,
+    "file" : ["test.lp"]
+},
+{
+    "name" : "True in all",
+    "trueinall" : ["test(1)","test(3)","test(2)","test(4)"],
+    "file" : ["test.lp"]
+}]
