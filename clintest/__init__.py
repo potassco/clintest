@@ -1,5 +1,5 @@
 from .modelregister import *
+from .utils import *
 from .testcaller import *
-from .clintestapp import *
 
-
+jsonTC = collectTestCallers([])

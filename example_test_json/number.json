@@ -1,0 +1,9 @@
+{
+    "testSectionName"   : "Test on encoding number.lp",
+    "encodingsFileList" : ["number.lp"],
+    "testList" : [{
+        "testName"      : "Must be SAT",
+        "functionName"  : "sat",
+        "arguments"     : true 
+    }]
+}

@@ -1,0 +1,14 @@
+{
+    "testSectionName"   : "Test on encoding color.lp",
+    "encodingsFileList" : ["color.lp"],
+    "testList" : [{
+        "testName"      : "Must be SAT",
+        "functionName"  : "sat",
+        "arguments"     : true 
+    },
+    {
+        "testName"      : "Should contain symbols 'blue'",
+        "functionName"  : "trueinall",
+        "arguments"     : ["blue"] 
+    }]
+}
