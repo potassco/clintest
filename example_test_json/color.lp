@@ -1,3 +1,0 @@
-green.
-yellow.
-blue.

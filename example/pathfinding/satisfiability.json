@@ -1,0 +1,9 @@
+{
+    "encodingsFileList" : [["pathfinding.lp","instances/instance01.lp", "optimization.lp"],["pathfinding.lp","instances/instance02.lp", "optimization.lp"]],
+    "controlParameters" : [["0"]],
+    "testDescription" : [{
+        "testName"      : "Must be SAT",
+        "functionName"  : "sat",
+        "arguments"     : true 
+    }]
+}

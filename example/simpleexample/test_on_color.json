@@ -1,7 +1,6 @@
 {
-    "testSectionName"   : "Test on encoding color.lp",
     "encodingsFileList" : ["color.lp"],
-    "testList" : [{
+    "testDescription" : [{
         "testName"      : "Must be SAT",
         "functionName"  : "sat",
         "arguments"     : true 

@@ -1,0 +1,9 @@
+{
+    "encodingsFileList" : [["number.lp"],["color.lp"]],
+    "controlParameters" : [["0"],["1"]],
+    "testDescription" : [{
+        "testName"      : "Must be SAT",
+        "functionName"  : "sat",
+        "arguments"     : true 
+    }]
+}
