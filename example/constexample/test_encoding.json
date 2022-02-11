@@ -7,14 +7,12 @@
     "controlParameters": [
         [
             "-c const=3"
+        ],
+        [
+            "-c const=2"
         ]
     ],
     "testDescription": [
-        {
-            "testName": "Must be SAT",
-            "functionName": "sat",
-            "arguments": true
-        },
         {
             "testName": "Model should be exact to number(1),number(2),number(3)",
             "functionName": "exactsetall",
