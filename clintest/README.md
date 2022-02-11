@@ -63,7 +63,7 @@ Unit test description required 3 parameters :
 |functionName|Function that will be executed on the models|Key string|
 |arguments|Arguments that will be gived to the function|Depending of the function (see function table)|
 
-### test function
+### Test functions
 A predefined set of test functions can be called with a unique identifier (string).
 
 |Key string|Argument|Description|
@@ -78,18 +78,18 @@ A predefined set of test functions can be called with a unique identifier (strin
 
 Custom functions can be created and used in tests.
 
-
 ## Usage : Python script
-### In a new script
+### Quick example
 Clintest is able to call (by default) Clingo before running test if no model register is given to the solving call of the tests.
 Usage :
+
 ```python
 # Example usage (root directory)
 >>> import clintest
 >>> ct = clintest.Clintest(['example/pathfinding/satisfiability.json', 'example/pathfinding/test_instance01.json'])
 >>> ct()
 ```
-Output (might be different from actual version, however at least same data are still available):
+Output (might be different from actual version, however at least same datas are still available):
 ```console
 Test #1.1  : Must be SAT
 Configuration : {'controlParameters': ['0'], 'encodingsFileList': ['pathfinding.lp', 'instances/instance01.lp', 'optimization.lp']}
@@ -126,4 +126,7 @@ Result on call : Success
 - - - - - - - - - - - -
 ```
 
+### Clintest Object - Python script
+The Clintest contructor require as parameters a test source (test description path or a dictionnary object that is similar to the JSON object).
+The object created by the constructor can be called with an optionnal Model Register (MR) that contains models. If a MR is given, keys **encodingFileList** and **controlParameters** will be ignorder, no additionnal solving call will be called.
 

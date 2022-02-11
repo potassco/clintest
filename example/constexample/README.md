@@ -1,7 +1,7 @@
-# Example with constant 
+# Example with constant
+## Description
 Parameterized can be performed by giving different set of encoding files. It can also be performed by adding different parameters to the Control object.
-It can be used with  "-c const=?" that will change the value of constant.
----
+It can be used with  "**c const=?**" that will change the value of constant.
 
 ```json
 {
@@ -27,9 +27,9 @@ It can be used with  "-c const=?" that will change the value of constant.
     ]
 }
 ```
----
+
 The file "encoding.lp" will be called 2 times ; firstly with the constant *const* equal to 3, and then equal to 2. The unit test is performing a "exactsetall" function that will return "fail" if models are not equal to number(1),number(2),number(3). The encoding will in this case return *[number(1),number(2),number(3)]* and *[number(1),number(2)]*, in the second case, test will fail.
----
+
 Call :
 
 ```python
