@@ -126,7 +126,7 @@ Result on call : Success
 - - - - - - - - - - - -
 ```
 
-**More "use case" on how to use it [here](https://github.com/krr-up/clintest/tree/clintest-ctl-approach/example/pathfinding]) or [here](https://github.com/krr-up/clintest/tree/clintest-ctl-approach/example/constexample)**
+**More "use case" on how to use it [here](https://github.com/krr-up/clintest/tree/clintest-ctl-approach/example/pathfinding) or [here](https://github.com/krr-up/clintest/tree/clintest-ctl-approach/example/constexample)**
 
 ### Clintest Object - Python script
 The Clintest contructor require as parameters a test source (test description path or a dictionnary object that is similar to the JSON object).
