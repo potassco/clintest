@@ -1,19 +1,14 @@
+## IMPORTS ##
 from .modelregister import *
-# from .utils import *
 from .testcaller import *
+
 import time
 import clingo
 import json
 
-# TODO:
-#   - Adding vocabulary clearness : In progress (better)
-#   - More configuration on the json file : In progress
-#   - More options functions (application callable directly) : In Progress
-#   - - - TODO next
-#   - Do actual parameters things for command line
-
-
-
+'''
+    CLass style, helper class for better console output
+'''
 class style():
     BLACK = '\033[30m'
     RED = '\033[31m'
@@ -26,13 +21,21 @@ class style():
     UNDERLINE = '\033[4m'
     RESET = '\033[0m'
 
-
+'''
+    Function that verify that every eleement of an array are the same ase given
+'''
 def verifyElements(array,typeCheck):
     for e,i in zip(array,range(len(array))):
         if type(e) != typeCheck:
             return False
     return True
 
+
+'''
+    Function that change an array [[a1,a2],[b1,b2]] in a set of configuration 
+        [[a1,b1],[a1,b2],[a2,b1],[a2,b2]]
+    Used for parameterised tests
+'''
 def euclidianConfiguration(array, init=[],index=0):
         if index >= len(array):
             return init
@@ -55,10 +58,16 @@ def euclidianConfiguration(array, init=[],index=0):
     
 
 class Clintest:
-    tests = []
-    testResult = None
+    '''
+        Class clintest
+        @description clintest object, manage unit test (by default) for clingo
+        @param source : source of anytype (path or disctionnary object) taht refer to a test flow description
+        @param ctlConstroctor : (optionnal) Default : solver control object
+    '''
 
     def __init__(self, source, ctlConstructor=clingo.Control):
+        self.tests = []
+        self.testResult = None
         conf = {
             "source" : source,
             "type"   : type(source)
@@ -68,9 +77,22 @@ class Clintest:
         self.collectTest(source)
         self.tcl = listTC
 
+
     def collectTest(self,source):
+        '''
+            function collectTest
+            @description From the source that have been passed to the constructor, 
+            load and preprocess the tests as a property of the CLintest Object
+            @param source : the source to retrive and treat the test from
+
+            source can be :
+                - a list of path
+                - a path (work in progress)
+                - a list of dictionnary object
+                - a dictionnary object
+        '''
         if type(source) == type({}):
-            source['folder']    = None
+            source['folder']   = None
             source['filename'] = None
             self.tests.append(source)
 
@@ -90,14 +112,14 @@ class Clintest:
         elif type(source) == type([]):
             if source:
                 # CASE : Is an array of dictionnary
-                if type(source[0]) == type({}):
+                if verifyElements(source, type({})):
                     for t in source:
-                        source['folder']   = None
-                        source['filename'] = None   
-                    self.tests += source
+                        t['folder']   = None
+                        t['filename'] = None   
+                    self.tests.append(t)
 
                 # CASE : Is an array of path 
-                elif type(source[0]) == type(""):
+                elif verifyElements(source, type('')):
                     for file in source:
                         with open(file) as j:
                             data = json.load(j)
@@ -115,7 +137,16 @@ class Clintest:
         else:
             raise Exception(f"Wrong input type : {type(source)}")
 
+
+    
     def createConfiguration(self,t):
+        '''
+        function createConfiguration
+        @description This function will create the set of different configuration that will be created and used
+        for the test process (@use euclidianConfiguration).
+        The different set of configuration are generated from the values identified by the keys controlParameters and encodingFileList
+        @param t : test description object
+        '''
         confs = []
 
         if 'controlParameters' in t :
@@ -131,12 +162,13 @@ class Clintest:
 
 
         if 'encodingsFileList' in t :
+            # print(t['encodingsFileList'])
             if verifyElements(t['encodingsFileList'], type([])):
                 confElement = []
                 for ctlarg in t['encodingsFileList']:
                     confElement.append({'encodingsFileList' : ctlarg})
                 confs.append(confElement)
-            else :
+            elif verifyElements(t['encodingsFileList'], type('')):
                 confs.append([{'encodingsFileList' : t['encodingsFileList']}])
 
         confs = euclidianConfiguration(confs)
@@ -145,11 +177,22 @@ class Clintest:
         
 
     def runTest(self,test,conf,mr):
+        '''
+        function runTest
+        @description This function will run a test that have been given to the ModelRegister object.
+        @param test : the test to run on the ModelRegister object mr
+        @param conf : the configuration that have been used to create the ModelRegister object
+        @param mr : ModelRegister object that contain the different model that tests will be proceed on
+        '''
         if not mr:
             mr = ModelRegister()
             ctl = self.ctlConstructor(conf['controlParameters'])
-            for f in conf['encodingsFileList']:
-                ctl.load(test['folder']+f)
+            if test['folder']:
+                for f in conf['encodingsFileList']:
+                    ctl.load(test['folder']+f)
+            else :
+                for f in conf['encodingsFileList']:
+                    ctl.load(f)
             ctl.ground([("base", [])])
             ctl.solve(on_model=mr,on_unsat=mr)
         for t in test['testDescription']:
@@ -171,6 +214,10 @@ class Clintest:
 
 
     def prettyPrint(self):
+        '''
+        function prettyPrint
+        @description This function takes the output of the test workflow and create a pretty output to show to the user. 
+        '''
         finalSuccess = True
         totaltime = 0
         globalsuccess = True
@@ -203,12 +250,24 @@ class Clintest:
         print('- - - - - - - - - - - -')
 
 
-    def __call__(self,mr=None):
+    def __call__(self,mr=None,display=True):
+        '''
+        function __call__
+        @description when called, this function will run the testworkflow
+        @param mr : (optionnal) Default:None. ModelRegister object that the test description will be ran onto.
+        @param display : (optionnal) Default:True. Call prettyPrint function at the en if True.
+
+        @behavior if no ModeLRegister given, tests will then be run after solving the encodings discribed by the test object,
+        that HAVE TO contain the property encodingFileList. Otherwise, all of the test will be run on the ModelRegister object,
+        properties encodingFileList and controlConfiguration will then be ignored.
+        '''
         for test in self.tests:
             confs = self.createConfiguration(test)
             for c in confs:
                 self.runTest(test,c,mr)
-        self.prettyPrint()
+        if display:
+            self.prettyPrint()
+
 
 
 

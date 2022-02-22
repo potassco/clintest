@@ -1,2 +1,0 @@
-{cloud}.
-{rain} :- cloud. 

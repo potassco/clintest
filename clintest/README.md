@@ -3,8 +3,8 @@
 ## How to use
 Clintest can be used in different ways :
 - **Python script**
-- **Command line** 
-- **Piped from a command line Clingo call**
+- **Command line** in progress
+- **Piped from a command line Clingo call** in progress
 
 ### Writing a test Description
 In order to perform test, Clintest require a description of the test that will be performed. The description of the unit-tests are made in json.
@@ -73,7 +73,7 @@ A predefined set of test functions can be called with a unique identifier (strin
 |trueinone|List of atoms|The list of atoms given have to be a subset of **at lest one** output model|
 |modelcost |Number| The last model should have a cost equal to the parameter given, ignored if no optimization|
 |exactsetall|List of atoms|The list of atoms have to be equal to  **every** output model|
-|exactsetall|List of atoms|The list of atoms have to be equal to  **at least one** output model|
+|exactsetone|List of atoms|The list of atoms have to be equal to  **at least one** output model|
 
 
 Custom functions can be created and used in tests.
@@ -84,7 +84,7 @@ Clintest is able to call (by default) Clingo before running test if no model reg
 Usage :
 
 ```python
-# Example usage (root directory)
+# Example usage (clintest repo root directory)
 >>> import clintest
 >>> ct = clintest.Clintest(['example/pathfinding/satisfiability.json', 'example/pathfinding/test_instance01.json'])
 >>> ct()
@@ -128,5 +128,33 @@ Result on call : Success
 
 ### Clintest Object - Python script
 The Clintest contructor require as parameters a test source (test description path or a dictionnary object that is similar to the JSON object).
-The object created by the constructor can be called with an optionnal Model Register (MR) that contains models. If a MR is given, keys **encodingFileList** and **controlParameters** will be ignorder, no additionnal solving call will be called.
+The object created by the constructor can be called with an optionnal Model Register (MR) that contains models. If a MR is given, keys **encodingFileList** and **controlParameters** will be ignore, no additionnal solving call will be called.
 
+
+
+### Plug Clintest to my script ?
+CLintest can be use in a "standalone" way, but also can be plug to custom script. In order to successfully plug clintest to your own custom script, additionnals step are required. given the following example :
+```python
+...
+ctl = clingo.Control('0')
+ctl.load('example/simpleexample/color.lp')
+ctl.solve(on_model=print)
+...
+```
+To simply add unit test to this little script you will need add thse lines :
+
+```python
+...
+ctl = clingo.Control('0')
+ctl.load('example/simpleexample/color.lp')
+mr = clintest.ModelRegister()
+ctl.solve(on_model=mr)
+ct = clintest.Clintest(testobj)
+ct(mr=mr)
+...
+```
+
+With thes lines added, when the line 6 will be executed, the tests described by the 'testobj' (path or dictionnary object) will be executed and give similar result to previous examples.
+
+### Custom functions
+In progress, but if needed, modify file 'testcaller.py' to add custom testing functions. 

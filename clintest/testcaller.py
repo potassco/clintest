@@ -25,7 +25,6 @@ def func_trueinall(mr,arg):
     if not isinstance(arg, set):
         atoms = set(arg)
 
-    # print(arg)
     ret = True
     info = ""
     models = mr.models
@@ -43,15 +42,24 @@ def func_trueinall(mr,arg):
     
 
 def func_modelcost(mr,arg):
-    cost = int(arg)
+
+
+    if type(arg) == type([]):
+        cost = arg
+    else :
+        cost = [arg]
+
+    if len(cost) != len(mr.cost):
+        return False,f'Cost informations differ in size : found {cost}, waited {mrcost}'
+
     ret = True 
     info = ""
     for c ,i in zip(mr.cost,range(len(mr.models))):
-        if c !=cost:
+        if c !=cost[i]:
             ret = False
-            info += f"\n\t-\tModel {i}, cost {c}, waiting for {arg} "
+            info += f"\n\t-\tModel cost priority {i}, found {c}, waited {cost[i]} "
     if not mr.cost:
-        info = "IGNORED"
+        info = "NO COST ; TEST IGNORED"
     
     return ret,info
             
@@ -61,7 +69,7 @@ def func_trueinone(mr,arg):
     if not isinstance(arg, set):
         atoms = set(arg)
 
-    ret = False
+    ret = False5
     models = mr.models
     for m,i in zip(models,range(len(models))):
         m = set(m)

@@ -18,7 +18,7 @@ def parse(output):
         if re.match(r'OPTIMUM FOUND', l) != None:
             sat=True
         if re.match(r'Optimization', l) != None:
-            modelCost= int(l.split(' ')[-1])
+            modelCost= int(l.split(' ')[-1]) # WARNING
     
 
     if n_models != len(models):
