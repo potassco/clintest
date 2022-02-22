@@ -1,5 +1,7 @@
 # Unit testing with clingo  :-1: :+1:
 
+## Documentation of the first approach/prototype [here](https://github.com/krr-up/clintest/tree/clintest-ctl-approach/clintest)
+
 ## Inspirations
 
 - **Euf propagator**: Uses pytest [here](https://github.com/krr-up/euf_theory/blob/master/tests/test.py)
