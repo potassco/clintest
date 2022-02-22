@@ -2,7 +2,6 @@
 
 ## Inspirations
 
-- **Shift planning project**: Uses pytest [here](https://github.com/PotasscoSolutions/shiftplanning-awfm/blob/main/tests/unit_test.py)
 - **Euf propagator**: Uses pytest [here](https://github.com/krr-up/euf_theory/blob/master/tests/test.py)
 - **Ansunit**: A declarative approach [here](https://github.com/rndmcnlly/ansunit)
 - **Product configuration**: Uses a self-made run file [here](https://github.com/krr-up/product-configuration/blob/tobias/language/tests/run.py)
