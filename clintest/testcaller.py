@@ -42,15 +42,13 @@ def func_trueinall(mr,arg):
     
 
 def func_modelcost(mr,arg):
-
-
     if type(arg) == type([]):
         cost = arg
     else :
         cost = [arg]
 
-    if len(cost) != len(mr.cost):
-        return False,f'Cost informations differ in size : found {cost}, waited {mrcost}'
+    if len(cost) != len(mr.cost) and len(mr.cost) > 0:
+        return False,f'Cost informations differ in size : found {cost}, waited {mr.cost}'
 
     ret = True 
     info = ""

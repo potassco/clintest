@@ -1,22 +1,22 @@
 {
-    "encodingsFileList": [
-        [
-            "encoding.lp"
-        ]
-    ],
-    "controlParameters": [
-        [
-            "-c const=3"
-        ],
-        [
+    "name": "Testing const testing",
+    "run": {
+        "function" : ["clingo"],
+        "argument": [
+            "-c const=3",
             "-c const=2"
-        ]
-    ],
-    "testDescription": [
+        ],
+        "encoding" : ["encoding.lp"]
+    },
+    "evaluate": [
         {
-            "testName": "Model should be exact to number(1),number(2),number(3)",
-            "functionName": "exactsetall",
-            "arguments" : ["number(1)","number(2)","number(3)"]
+            "name": "Model should be exact to number(1),number(2),number(3)",
+            "function": "exactsetall",
+            "argument": [
+                "number(1)",
+                "number(2)",
+                "number(3)"
+            ]
         }
     ]
 }

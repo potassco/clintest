@@ -1,13 +1,20 @@
 {
-    "encodingsFileList" : ["color.lp"],
-    "testDescription" : [{
-        "testName"      : "Must be SAT",
-        "functionName"  : "sat",
-        "arguments"     : true 
+    "name" : "Testing on encoding color.lp",
+    "run" : {
+        "function"      : ["clingo"],
+        "argument"      : ["0"],
+        "encoding"      : ["color.lp"]
     },
-    {
-        "testName"      : "Should contain symbols 'blue'",
-        "functionName"  : "trueinall",
-        "arguments"     : ["blue"] 
-    }]
+    "evaluate" : [
+        {
+            "name"  : "Must be SAT",
+            "function"  : "sat",
+            "argument"  : true 
+        },
+        {
+            "name"      : "Should contain symbols 'blue'",
+            "function"  : "trueinall",
+            "argument"  : ["blue"] 
+        }
+    ]
 }

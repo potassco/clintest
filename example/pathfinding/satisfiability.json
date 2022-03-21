@@ -1,9 +1,15 @@
 {
-    "encodingsFileList" : [["pathfinding.lp","instances/instance01.lp", "optimization.lp"],["pathfinding.lp","instances/instance02.lp", "optimization.lp"]],
-    "controlParameters" : [["0"]],
-    "testDescription" : [{
-        "testName"      : "Must be SAT",
-        "functionName"  : "sat",
-        "arguments"     : true 
+    "name" : "Satisfiability of pathfinding",
+    "run" :{
+        "function" : ["clingo"],
+        "argument" : ["0"],
+        "encoding" : ["pathfinding.lp", "optimization.lp"],
+        "instance"  : [["instances/instance01.lp"],["instances/instance02.lp"]]
+    },
+    "evaluate" : [{
+        "name"      : "Must be SAT",
+        "function"  : "sat",
+        "argument"     : true 
     }]
 }
+

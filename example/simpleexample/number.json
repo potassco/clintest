@@ -1,9 +1,13 @@
 {
-    "encodingsFileList" : [["number.lp"],["color.lp"]],
-    "controlParameters" : [["0"],["1"]],
-    "testDescription" : [{
-        "testName"      : "Must be SAT",
-        "functionName"  : "sat",
-        "arguments"     : true 
+    "name" : "Testing number .lp",
+    "run" : {
+        "function"  : ["clingo"],
+        "argument"  : ["0"],
+        "encoding"  : ["number.lp"]
+    },
+    "evaluate" : [{
+        "name"      : "Must be SAT",
+        "function"  : "sat",
+        "argument"  : true 
     }]
 }

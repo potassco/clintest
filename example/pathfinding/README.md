@@ -10,23 +10,32 @@ This example contain two instances :
 Here is the satisfiability file :
 ```json
 {
-    "encodingsFileList" : [["pathfinding.lp","instances/instance01.lp", "optimization.lp"],["pathfinding.lp","instances/instance02.lp", "optimization.lp"]],
-    "controlParameters" : [["0"]],
-    "testDescription" : [{
-        "testName"      : "Must be SAT",
-        "functionName"  : "sat",
-        "arguments"     : true 
+    "name" : "Satisfiability of pathfinding",
+    "run" :{
+        "function" : ["Clingo"],
+        "argument" : ["0"],
+        "encoding" : ["pathfinding.lp", "optimization.lp"],
+        "instance"  : [["instances/instance01.lp"],["instances/instance02.lp"]]
+    },
+    "evaluate" : [{
+        "name"      : "Must be SAT",
+        "function"  : "sat",
+        "argument"     : true 
     }]
 }
 ```
-Result of the call of satisfiability.json :
-```console
+SATISFIABILITY OF PATHFINDING
+
 Test #1.1  : Must be SAT
-Configuration : {'controlParameters': ['0'], 'encodingsFileList': ['pathfinding.lp', 'instance01.lp', 'optimization.lp']}
+Configuration : {'function': 'Clingo', 'argument': '0', 'encoding': ['pathfinding.lp', 'optimization.lp'], 'instance': ['instances/instance01.lp']}
         Result PASS
 Test #1.2  : Must be SAT
-Configuration : {'controlParameters': ['0'], 'encodingsFileList': ['pathfinding.lp', 'instance02.lp', 'optimization.lp']}
+Configuration : {'function': 'Clingo', 'argument': '0', 'encoding': ['pathfinding.lp', 'optimization.lp'], 'instance': ['instances/instance02.lp']}
         Result PASS
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Test executed in 8.344650268554688e-06 ms
+Result on call : Success
+- - - - - - - - - - - -
 ```
 
 ## test_instance01.json

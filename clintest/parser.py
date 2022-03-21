@@ -7,12 +7,18 @@ def parse(output):
     isSAT = False
     modelCost = None
 
+    # print(output)
+
     for l,index in zip(output,range(len(output))):
         if re.match(r'Answer: [0-9]+', l) != None:
 
             models.append(output[index+1])
         if re.match(r'Models', l) != None:
-            n_models = int(l.split(' ')[-1])
+            split =  l.split(' ')[-1]
+            if '+' in split :
+                n_models = split
+            else :
+                n_models = int(split)
         if re.match(r'SATISFIABLE', l) != None:
             isSAT=True
         if re.match(r'OPTIMUM FOUND', l) != None:
