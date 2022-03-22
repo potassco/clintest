@@ -98,6 +98,7 @@ class Clintest:
                 - a path (work in progress)
                 - a list of dictionnary object
                 - a dictionnary object
+
         '''
         if type(source) == type({}):
             source['folder']   = None
@@ -133,7 +134,6 @@ class Clintest:
                             data = json.load(j)
                         if type(data) == type([]):
                             for test in data :
-
                                 if '/' in file:    
                                     # print(file[:5])
                                     folder = file[:file.rindex('/')+1]  # Added for pretty print
@@ -194,7 +194,7 @@ class Clintest:
                     for arg in t[key]:
                         confElement.append({key : arg})
                     return confElement
-                print(type(t[key]) == type(""))
+
             else :
                 if key in default :
                     return [{key : default[key]}]
@@ -237,11 +237,10 @@ class Clintest:
         if test['folder']:
             for f in (conf['instance'] + conf['encoding']):
                 ctl.load(test['folder']+f)
-        else :
-            for f in conf['encodingsFileList']:
-                ctl.load(f)
+
         ctl.ground([("base", [])])
         ctl.solve(on_model=mr,on_unsat=mr)
+
         return mr
 
 
