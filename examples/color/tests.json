@@ -1,0 +1,13 @@
+[{
+    "name" : "Basic tests for color.lp",
+    "runner": {
+        "function": ["clingo"],
+        "argument": ["0"],
+        "encoding": ["color.lp"]
+    },
+    "evaluator": [{
+        "name": "color.lp is satisfiable",
+        "function": "is_satisfiable",
+        "argument": true
+    }]
+}]
