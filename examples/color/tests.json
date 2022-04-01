@@ -7,7 +7,11 @@
     },
     "evaluator": [{
         "name": "color.lp is satisfiable",
-        "function": "ct_issat",
-        "argument": false
+        "function": "is_sat",
+        "argument": true
+    },{
+        "name": "Testing true in all",
+        "function": "trueinall",
+        "argument": "blue"
     }]
 }]

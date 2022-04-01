@@ -13,5 +13,5 @@ color(red; green; blue).
 
 :- edge((N, M)), assign(N, C), assign(M, C).
 
-:- color(_).
+% :- color(_).
 #show assign/2.
