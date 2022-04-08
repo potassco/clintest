@@ -6,6 +6,8 @@ class Model:
         self.number = number
         self.optimality_proven = optimality_proven
         self.model_type = model_type
+        self.model = []
+
 
     
     def from_model(model):
@@ -17,4 +19,6 @@ class Model:
             model_type=model.type
         )
 
-        
+        m.model = model.symbols(atoms=True)
+
+        return m

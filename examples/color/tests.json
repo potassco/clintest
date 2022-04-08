@@ -12,6 +12,6 @@
     },{
         "name": "Testing true in all",
         "function": "trueinall",
-        "argument": "blue"
+        "argument": ["assign(1,red)"]
     }]
 }]
