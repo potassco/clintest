@@ -58,7 +58,7 @@ def euclidianConfiguration(array, init=[], index=0):
             return euclidianConfiguration(array, init=n_init, index=index+1)
 
 
-def createConfigurations(jsonrunner):
+def createConfigurations(jsonsolver):
     confs = []
 
     default = {
@@ -66,11 +66,11 @@ def createConfigurations(jsonrunner):
         'argument': ['0']
     }
 
-    confs.append(fetchconf('function', jsonrunner, default, required=True))
-    confs.append(fetchconf('argument', jsonrunner, default, required=True))
-    confs.append(fetchconf('encoding', jsonrunner, default,
+    confs.append(fetchconf('function', jsonsolver, default, required=True))
+    confs.append(fetchconf('argument', jsonsolver, default, required=True))
+    confs.append(fetchconf('encoding', jsonsolver, default,
                  flatten=False, required=True))
-    confs.append(fetchconf('instance', jsonrunner, default,
+    confs.append(fetchconf('instance', jsonsolver, default,
                  flatten=False, required=False))
 
     # function more configuration
@@ -87,7 +87,5 @@ def createConfigurations(jsonrunner):
 
 
 def getFolder(path):
-    
     ret = path[:path.rindex('/')+1]
-
     return ret

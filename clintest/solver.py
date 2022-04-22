@@ -1,7 +1,7 @@
 import clingo
 from .model import *
 
-class Runner:
+class Solver:
     ctls = {
         "clingo": clingo.Control
     }
@@ -18,12 +18,12 @@ class Runner:
             instance = []
         else:
             instance = json['instance']
-        runner = Runner(function=json['function'],
+        solver = Solver(function=json['function'],
                         argument=json['argument'],
                         encoding=json['encoding'],
                         instance=instance,
                         folder = json['folder'])
-        return runner
+        return solver
 
     def run(self, callbacks):
 
@@ -38,14 +38,14 @@ class Runner:
             ctl.load(self.folder + p)
 
         ctl.ground([("base", [])])
-        result_handle = []
         print('SOLVER CALL RESULT\n')
         with ctl.solve(yield_=True) as handle:
             for m in handle:
                 print("-", m)
-                model = Model.from_model(m)
+                model = Model(m)
                 for c in on_model_cb:
-                    c(model)
+                    if not c.done() : 
+                        c(model)
 
             
             sr = handle.get()
@@ -56,7 +56,7 @@ class Runner:
         print('\nCLINTEST RESULT\n')
         for rh in on_finish_cb + on_model_cb:
             result = rh.conclude()
-            result.addrunner(self)
+            result.add_solver(self)
             print(result)
 
     def __str__(self):

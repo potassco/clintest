@@ -1,7 +1,6 @@
 import json as JSON
-import clingo
 from .utils import *
-from .runner import *
+from .solver import *
 from .evaluator import *
 
 
@@ -29,29 +28,28 @@ class Test:
     def __init__(self, name, folder='./'):
         self.name = name
         self.folder = folder
-        self.runners = []
+        self.solvers = []
         self.evaluators = []
 
     def from_json(json,folder='./'):
         test = Test(json['name'],folder=folder)
 
-        confs = createConfigurations(json['runner'])
+        confs = createConfigurations(json['solver'])
         for c in confs:
             c['folder'] = folder
-            test.runners.append(Runner.from_json(c))
+            test.solvers.append(Solver.from_json(c))
         
-
         for e in json['evaluator']:
             test.add_evaluator(evaluator_dict[e["function"]].from_json(e))
 
         return test
 
-    def add_runner(self, runner):
-        self.runners.append(runner)
+    def add_solver(self, solver):
+        self.solvers.append(solver)
 
     def add_evaluator(self, evaluator):
         self.evaluators.append(evaluator)
 
     def run(self):
-        for r in self.runners:
+        for r in self.solvers:
             r.run(self.evaluators)

@@ -1,6 +1,6 @@
 [{
     "name" : "Basic tests for color.lp",
-    "runner": {
+    "solver": {
         "function": ["clingo"],
         "argument": ["0"],
         "encoding": ["color.lp"]
@@ -13,5 +13,9 @@
         "name": "Testing true in all",
         "function": "trueinall",
         "argument": ["assign(1,red)"]
+    },{
+        "name": "Testing true in one",
+        "function": "trueinone",
+        "argument": ["assign(5,blue)"]
     }]
 }]
