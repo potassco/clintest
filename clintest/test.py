@@ -4,7 +4,6 @@ from .solver import *
 from .evaluator import *
 
 
-
 class Worker:
     def __init__(self):
         self.tests = []
@@ -22,34 +21,30 @@ class Worker:
         for test in self.tests:
             test.run()
 
-
-
 class Test:
     def __init__(self, name, folder='./'):
         self.name = name
         self.folder = folder
         self.solvers = []
-        self.evaluators = []
 
     def from_json(json,folder='./'):
         test = Test(json['name'],folder=folder)
-
         confs = createConfigurations(json['solver'])
         for c in confs:
             c['folder'] = folder
-            test.solvers.append(Solver.from_json(c))
-        
-        for e in json['evaluator']:
-            test.add_evaluator(evaluator_dict[e["function"]].from_json(e))
+            s = Solver.from_json(c)
+            for e in json['evaluator']:
+                s.evaluators.append(evaluator_dict[e["function"]].from_json(e))
+            test.solvers.append(s)
+
 
         return test
 
     def add_solver(self, solver):
         self.solvers.append(solver)
 
-    def add_evaluator(self, evaluator):
-        self.evaluators.append(evaluator)
 
     def run(self):
         for r in self.solvers:
-            r.run(self.evaluators)
+            r.run()
+

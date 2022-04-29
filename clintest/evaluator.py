@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from threading import local
 
 
 class EvaluatorResult:
@@ -21,15 +20,9 @@ class EvaluatorResult:
 
         self.solver = None
 
-    def __bool__(self):
-        if self.result == ResultType.FAIL:
-            return False
-        else:
-            return True
 
-    def add_solver(self,solver):
-        self.solver = solver 
-
+    def add_solver(self, solver):
+        self.solver = solver
 
     def __str__(self):
         ret = f"Testing {self.evalutor.name}\n"
@@ -54,7 +47,7 @@ class EvaluatorResult:
                         mem += f"\t + {o}\n"
 
             if found:
-                ret += mem 
+                ret += mem
 
         if self.additional:
             ret += self.additional
@@ -69,24 +62,52 @@ class ResultType(enumerate):
     UNKNOWN = "UNKNOWN"
 
 
+
 class Evaluator(ABC):
     def __init__(self, name, function, argument):
         self.name = name
         self.function = function
         self.argument = argument
+
+        # result
         self.n_call = 0
+        self.result = ResultType.UNKNOWN
 
-    def get_type(self):
-        return self.type
+        # evaluatorresult variables
+        self.additional_info = None
+        self.missing = []
+        self.overload = []
 
-    @abstractmethod
-    def call(self, result):
-        pass
+        # on
+        self._on_model = None
+        self._on_finish = None
+
+    def on_model(self):
+        return self._on_model
+
+    def on_finish(self):
+        return self._on_finish
 
     def __call__(self, result):
         self.call(result)
         self.n_call += 1
         return self
+
+
+    def conclude(self) -> EvaluatorResult:
+        return EvaluatorResult(
+            self.result,
+            self,
+            self.missing,
+            self.overload,
+            self.additional_info
+        )
+
+
+    def done(self):
+        if self.result == ResultType.UNKNOWN : return False
+        else : return True
+
 
     @classmethod
     def from_json(cls, json):
@@ -97,11 +118,7 @@ class Evaluator(ABC):
         )
 
     @abstractmethod
-    def conclude(self):
-        pass
-
-    @abstractmethod
-    def done(self):
+    def call(self, result):
         pass
 
 
@@ -109,41 +126,23 @@ class Evaluator(ABC):
 class SAT(Evaluator):
     def __init__(self, name, function, argument):
         super().__init__(name, function, argument)
-        self.type = "on_finish"
-        self.result = None
+        self._on_finish = True
 
     def call(self, result):
-        self.result = not(self.argument ^ result.satisfiable)
-
-
-    def conclude(self):
-        return EvaluatorResult(self.result,self)
-
-    def done(self):
-        if isinstance(self.result,bool):
-            return True
+        if not(self.argument ^ result.satisfiable):
+            self.result = ResultType.PASS
         else :
-            return False
-
+            self.result = ResultType.FAIL 
 
 class TrueInAll(Evaluator):
     def __init__(self, name, function, argument):
         super().__init__(name, function, argument)
-        self.type="on_model"
-        self.local_result=True
-        self.end_result=None
-        self.missing = []
-        self.overload = []
+        self._on_model = True
 
-
-    def done(self):
-        if isinstance(self.end_result,bool):
-            return True
-        else :
-            return False
-
+        self.local_result = True
+        
     def call(self, result):
-        ret=True
+        ret = True
         missing = []
         self.overload.append(None)
 
@@ -151,34 +150,30 @@ class TrueInAll(Evaluator):
             a_found = False
             for m in result.symbols():
                 a_found = a_found or (a == m.__str__())
-            
-            if not a_found :
-                missing.append( a)
+
+            if not a_found:
+                missing.append(a)
             ret = ret and a_found
 
-        self.missing .append(missing)
-        self.local_result=self.local_result and ret
+        self.missing.append(missing)
+        self.local_result = self.local_result and ret
         if not self.local_result:
-            self.end_result = False
+            self.result = ResultType.FAIL
 
-    def conclude(self):
-        self.end_result = self.local_result
-        return EvaluatorResult(self.end_result, self, missing=self.missing, overload=self.overload)
+    def conclude(self) -> EvaluatorResult:
+        if self.local_result == True :
+            self.result = ResultType.PASS
+        else :
+            self.result = ResultType.FAIL
+        return super().conclude()
+
 
 
 
 class TrueInOne(Evaluator):
     def __init__(self, name, function, argument):
         super().__init__(name, function, argument)
-        self.type="on_model"
-        self.result=None
-
-
-    def done(self):
-        if isinstance(self.result,bool):
-            return True
-        else :
-            return False
+        self._on_model = True
 
     def call(self, result):
         nb_found = 0
@@ -188,15 +183,17 @@ class TrueInOne(Evaluator):
                     nb_found += 1
 
         if nb_found == len(self.argument):
-            self.result = True 
+            self.result = ResultType.PASS
 
-    def conclude(self):
-        if self.result == None : self.result = False
-        return EvaluatorResult(self.result, self)
+    def conclude(self) -> EvaluatorResult:
+        if self.result == ResultType.UNKNOWN:
+            self.result = ResultType.FAIL
+        return super().conclude()
 
 
 
-evaluator_dict={
+
+evaluator_dict = {
     'is_sat': SAT,
     'trueinall': TrueInAll,
     'trueinone': TrueInOne

@@ -1,20 +1,27 @@
 import clingo
 from .model import *
 
+
+
+
+
+
+
 class Solver:
     ctls = {
         "clingo": clingo.Control
     }
-
 
     def __init__(self, function, argument, encoding, instance, folder =""):
         self.function = function
         self.argument = argument
         self.encoding = encoding + instance
         self.folder = folder
+        self.persistant_model = []
+        self.evaluators = []
 
     def from_json(json):
-        if 'instance' in json:
+        if not 'instance' in json:
             instance = []
         else:
             instance = json['instance']
@@ -25,10 +32,10 @@ class Solver:
                         folder = json['folder'])
         return solver
 
-    def run(self, callbacks):
 
-        on_model_cb = [c for c in callbacks if c.type=="on_model"]
-        on_finish_cb = [c for c in callbacks if c.type=="on_finish"]
+    def run(self):
+        on_model_cb = [c for c in self.evaluators if c.on_model()]
+        on_finish_cb = [c for c in self.evaluators if c.on_finish()]
         try:
             ctl = self.ctls[self.function](self.argument)
         except:
@@ -38,22 +45,20 @@ class Solver:
             ctl.load(self.folder + p)
 
         ctl.ground([("base", [])])
-        print('SOLVER CALL RESULT\n')
         with ctl.solve(yield_=True) as handle:
             for m in handle:
-                print("-", m)
                 model = Model(m)
+                # self.persistant_model.append(m)
                 for c in on_model_cb:
                     if not c.done() : 
                         c(model)
-
-            
+           
             sr = handle.get()
             for c in on_finish_cb:
                 c(sr)
 
         result = []
-        print('\nCLINTEST RESULT\n')
+        print('CLINTEST RESULT\n')
         for rh in on_finish_cb + on_model_cb:
             result = rh.conclude()
             result.add_solver(self)

@@ -32,11 +32,12 @@ class Model:
         return self._model
 
     def persist(self):
-        if not self.persist:
+        if not self.persistant:
             if not self._model:
                 raise Exception("Out of scope persist, psersist method should be called in the scope of its creation")
             self._model = PersistantModel(self._model)
             self.persistant = True
+        return self
 
     def symbols(self):
         if self.persistant:
