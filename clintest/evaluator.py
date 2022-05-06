@@ -1,6 +1,15 @@
 from abc import ABC, abstractmethod
 
 
+class UnknownResult(Exception):
+    pass
+
+class ResultType(enumerate):
+    PASS = "PASS"
+    FAIL = "FAIL"
+    IGNORED = "IGNORED"
+    UNKNOWN = "UNKNOWN"
+
 class EvaluatorResult:
     def __init__(self, result, evaluator, missing=[], overload=[], additional=None):
 
@@ -12,6 +21,10 @@ class EvaluatorResult:
             self.result = ResultType.FAIL
         else:
             self.result = result
+
+        if result == ResultType.UNKNOWN :
+            raise UnknownResult
+
 
         self.missing = missing
         self.overload = overload
@@ -31,19 +44,21 @@ class EvaluatorResult:
         ret += f"Function \t: {self.evalutor.function}\n"
         ret += f"Arguments \t: {self.evalutor.argument}\n"
         ret += f"Result  \t: {self.result}\n"
-        if len(self.missing) > 0 and (len(self.missing) == len(self.overload)):
+        if len(self.missing.keys()) > 0 or len(self.overload.keys()) > 0 :
             mem = 'Missing (-) and overload (+) symbols\n'
             found = False
-            for i in range(len(self.missing)):
-                if self.missing[i] or self.overload[i]:
-                    mem += f"Model {i+1}:\n"
-                if self.missing[i]:
+            keys = (*self.missing.keys(),*self.overload.keys())
+            print(self.missing)
+            for k in keys:
+                if k in self.missing or k in self.overload:
+                    mem += f"Model {k}:\n"
+                if k in self.missing:
                     found = True
-                    for m in self.missing[i]:
+                    for m in self.missing[k]:
                         mem += f"\t - {m}\n"
-                if self.overload[i]:
+                if  k in self.overload:
                     found = True
-                    for o in self.overload[i]:
+                    for o in self.overload[k]:
                         mem += f"\t + {o}\n"
 
             if found:
@@ -55,11 +70,7 @@ class EvaluatorResult:
         return ret
 
 
-class ResultType(enumerate):
-    PASS = "PASS"
-    FAIL = "FAIL"
-    IGNORED = "IGNORED"
-    UNKNOWN = "UNKNOWN"
+
 
 
 
@@ -70,29 +81,19 @@ class Evaluator(ABC):
         self.argument = argument
 
         # result
-        self.n_call = 0
         self.result = ResultType.UNKNOWN
 
         # evaluatorresult variables
         self.additional_info = None
-        self.missing = []
-        self.overload = []
+        self.missing = {}
+        self.overload = {}
 
-        # on
-        self._on_model = None
-        self._on_finish = None
 
-    def on_model(self):
-        return self._on_model
+    def on_model(self,result):
+        pass
 
-    def on_finish(self):
-        return self._on_finish
-
-    def __call__(self, result):
-        self.call(result)
-        self.n_call += 1
-        return self
-
+    def on_finish(self,result):
+        pass
 
     def conclude(self) -> EvaluatorResult:
         return EvaluatorResult(
@@ -117,18 +118,14 @@ class Evaluator(ABC):
             argument=json['argument']
         )
 
-    @abstractmethod
-    def call(self, result):
-        pass
 
 
 
 class SAT(Evaluator):
     def __init__(self, name, function, argument):
         super().__init__(name, function, argument)
-        self._on_finish = True
 
-    def call(self, result):
+    def on_finish(self, result):
         if not(self.argument ^ result.satisfiable):
             self.result = ResultType.PASS
         else :
@@ -137,14 +134,11 @@ class SAT(Evaluator):
 class TrueInAll(Evaluator):
     def __init__(self, name, function, argument):
         super().__init__(name, function, argument)
-        self._on_model = True
-
         self.local_result = True
         
-    def call(self, result):
+    def on_model(self, result):
         ret = True
         missing = []
-        self.overload.append(None)
 
         for a in self.argument:
             a_found = False
@@ -153,9 +147,11 @@ class TrueInAll(Evaluator):
 
             if not a_found:
                 missing.append(a)
-            ret = ret and a_found
 
-        self.missing.append(missing)
+            ret = ret and a_found
+        if missing:
+            self.missing[result.number] = missing
+
         self.local_result = self.local_result and ret
         if not self.local_result:
             self.result = ResultType.FAIL
@@ -173,9 +169,8 @@ class TrueInAll(Evaluator):
 class TrueInOne(Evaluator):
     def __init__(self, name, function, argument):
         super().__init__(name, function, argument)
-        self._on_model = True
 
-    def call(self, result):
+    def on_model(self, result):
         nb_found = 0
         for a in self.argument:
             for m in result.symbols():

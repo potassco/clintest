@@ -4,7 +4,7 @@ direction(1,0).
 direction(-1,0).
 direction(0,0).
 
-time(1..11).
+time(1..9).
 
 position(X,Y,0) :- init(X,Y).
 

@@ -1,3 +1,5 @@
+import glob
+import os
 
 def fetchconf(key, t, default, flatten=True, required=True):
     if key in t:
@@ -89,3 +91,11 @@ def createConfigurations(jsonsolver):
 def getFolder(path):
     ret = path[:path.rindex('/')+1]
     return ret
+
+
+
+def verify_path(path):
+    if os.path.isdir(path):
+        if path[-1] == '/' : path += '**.json'
+        else : path += '/**.json'
+    return glob.glob(path)
