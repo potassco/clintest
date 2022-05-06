@@ -1,0 +1,5 @@
+Todo :
+    - testing with constant maxtim = 9,10,11
+    - testing with instance 1 and 2 never together 
+    - Checking that the computation time isn't > 1 seconde
+    
