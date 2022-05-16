@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 
-
 class UnknownResult(Exception):
     pass
 
@@ -24,15 +23,11 @@ class EvaluatorResult:
 
         if result == ResultType.UNKNOWN :
             raise UnknownResult
-
-
+        
         self.missing = missing
         self.overload = overload
-
         self.additional = additional
-
         self.solver = None
-
 
     def add_solver(self, solver):
         self.solver = solver
@@ -68,12 +63,8 @@ class EvaluatorResult:
 
         return ret
 
-
-
-
-
-
 class Evaluator(ABC):
+
     def __init__(self, name, function, argument):
         self.name = name
         self.function = function
@@ -86,7 +77,6 @@ class Evaluator(ABC):
         self.additional_info = None
         self.missing = {}
         self.overload = {}
-
 
     def on_model(self,result):
         pass
@@ -103,11 +93,9 @@ class Evaluator(ABC):
             self.additional_info
         )
 
-
     def done(self):
         if self.result == ResultType.UNKNOWN : return False
         else : return True
-
 
     @classmethod
     def from_json(cls, json):
@@ -116,9 +104,6 @@ class Evaluator(ABC):
             function=json['function'],
             argument=json['argument']
         )
-
-
-
 
 class SAT(Evaluator):
     def __init__(self, name, function, argument):
@@ -163,8 +148,6 @@ class TrueInAll(Evaluator):
         return super().conclude()
 
 
-
-
 class TrueInOne(Evaluator):
     def __init__(self, name, function, argument):
         super().__init__(name, function, argument)
@@ -183,8 +166,6 @@ class TrueInOne(Evaluator):
         if self.result == ResultType.UNKNOWN:
             self.result = ResultType.FAIL
         return super().conclude()
-
-
 
 
 evaluator_dict = {
