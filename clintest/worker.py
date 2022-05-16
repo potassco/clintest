@@ -12,13 +12,20 @@ class Worker:
         self.tests.append(test)
 
     def load(self, path):
+        
+        if isinstance(path,list):
+            if len(path) == 0 :
+                path.append('*.json')
+            for p in path:
+                pl = verify_path(p)
+                if len(pl) == 0 :
+                    print('No test json file found.')
+                    exit(0)
+                self.load(pl[0])
+
         if os.path.isdir(path):
             path = verify_path(path)
 
-        if isinstance(path,list):
-            for p in path:
-                pl = verify_path(p)
-                self.load(pl[0])
         else :
             with open(path) as file:
                 rawtests = JSON.load(file)

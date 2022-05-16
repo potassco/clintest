@@ -27,17 +27,9 @@ class Solver:
 
 
     def run(self):
-        ctl = self.prepare_ctl()      
-        with ctl.solve(yield_=True) as handle:
-            for m in handle:
-                model = Model(m)
-                for e in self.evaluators:
-                    if not e.done() : 
-                        e.on_model(model)
-           
-            sr = handle.get()
-            for e in self.evaluators:
-                e.on_finish(sr)
+        ctl = self.prepare_ctl() 
+        wrp = EvaluatorWrapper(self.evaluators) 
+        ctl.solve(on_model=wrp.on_model,on_finish=wrp.on_finish)
 
         for r in self.retrieve_result():
             print(r)
@@ -53,6 +45,7 @@ class Solver:
         ctl.ground([("base", [])])
         return ctl
 
+
     def retrieve_result(self):
         results = []
         for ev in self.evaluators:
@@ -65,6 +58,23 @@ class Solver:
     def __str__(self):
         ret = f"{self.function}, arguments : '{str(self.argument)}', encodings : {str(self.encoding)}\n"
         return ret
+
+
+class EvaluatorWrapper:
+    def __init__(self, evaluators):
+        self.evaluators = evaluators
+
+    def on_model(self,result):
+        for e in self.evaluators:
+            e.on_model(Model(result))
+
+    def on_finish(self, result):
+        for e in self.evaluators:
+            e.on_finish(result)
+
+    def retrieve_result(self):
+        return [e.conclude() for e in self.evaluators]  
+
         
 
             

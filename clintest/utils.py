@@ -99,3 +99,7 @@ def verify_path(path):
         if path[-1] == '/' : path += '**.json'
         else : path += '/**.json'
     return glob.glob(path)
+
+
+
+    

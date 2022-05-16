@@ -48,7 +48,6 @@ class EvaluatorResult:
             mem = 'Missing (-) and overload (+) symbols\n'
             found = False
             keys = (*self.missing.keys(),*self.overload.keys())
-            print(self.missing)
             for k in keys:
                 if k in self.missing or k in self.overload:
                     mem += f"Model {k}:\n"
@@ -144,7 +143,7 @@ class TrueInAll(Evaluator):
             a_found = False
             for m in result.symbols():
                 a_found = a_found or (a == m.__str__())
-
+            
             if not a_found:
                 missing.append(a)
 
