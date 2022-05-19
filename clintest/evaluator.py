@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from typing import List
+from .model import *
 
 class UnknownResult(Exception):
     pass
@@ -64,7 +66,9 @@ class EvaluatorResult:
         return ret
 
 class Evaluator(ABC):
+    evaluator_dict = {
 
+    }
     def __init__(self, name, function, argument):
         self.name = name
         self.function = function
@@ -97,9 +101,8 @@ class Evaluator(ABC):
         if self.result == ResultType.UNKNOWN : return False
         else : return True
 
-    @classmethod
-    def from_json(cls, json):
-        return cls(
+    def from_json(json):
+        return Evaluator.evaluator_dict[json['function']](
             name=json["name"],
             function=json['function'],
             argument=json['argument']
@@ -168,8 +171,25 @@ class TrueInOne(Evaluator):
         return super().conclude()
 
 
-evaluator_dict = {
+Evaluator.evaluator_dict = {
     'is_sat': SAT,
     'trueinall': TrueInAll,
     'trueinone': TrueInOne
 }
+
+
+class EvaluatorContainer:
+    def __init__(self, evaluators:List[Evaluator]=[]) -> None:
+        self.evaluators = evaluators
+        self._did_conclude = False
+
+    def on_model(self,result):
+        for e in self.evaluators:
+            e.on_model(Model(result))
+
+    def on_finish(self, result):
+        for e in self.evaluators:
+            e.on_finish(result)
+
+    def conclude(self):
+        return [e.conclude() for e in self.evaluators] 

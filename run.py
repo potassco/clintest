@@ -1,6 +1,6 @@
 from clintest import TrueInOne, TrueInAll
 import clingo
-from clintest import Evaluator, ResultType, EvaluatorWrapper, evaluator_dict
+from clintest import Evaluator, ResultType, evaluator_dict, EvaluatorContainer
 
 
 class SAT(Evaluator):
@@ -31,14 +31,14 @@ tests = [
     }
 ]
 
-evaluator_dict['is_sat'] = SAT
+evaluator_dict['is_sat'] = SAT # Considering th
 
-wrp = EvaluatorWrapper(
-    [evaluator_dict[e['function']].from_json(e) for e in tests])
+ec = EvaluatorContainer(
+    [Evaluator.from_json(e) for e in tests])
     
 # Or
 
-wrp = EvaluatorWrapper([
+ec = EvaluatorContainer([
     SAT("color.lp is satisfiable", 'is_sat', True),
     TrueInAll("Testing true in all", "trueinall", ["assign(1,red)"]),
     TrueInOne("Testing true in one", "trueinone", ["assign(5,blue)"])
@@ -48,7 +48,8 @@ wrp = EvaluatorWrapper([
 ctl = clingo.Control('0')
 ctl.load('./examples/color/color.lp')
 ctl.ground([("base", [])])
-ctl.solve(on_finish=wrp.on_finish, on_model=wrp.on_model)
+ctl.solve(on_finish=ec.on_finish, on_model=ec.on_model)
 
-for r in wrp.retrieve_result():
-    print(r)
+
+for result in ec.conclude():
+    print(result)

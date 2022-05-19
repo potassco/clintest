@@ -81,7 +81,7 @@ class CustomEvaluator(Evaluator):
         self.custom_variable = "something"
         
     def on_model(self, result):
-        # Some testing 
+        #... Do some fun testing
 
     def conclude(self) -> EvaluatorResult:
         # fixing result, if needed

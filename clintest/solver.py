@@ -1,17 +1,21 @@
 import clingo
+
+from typing import Any, List
+from .evaluator import EvaluatorContainer
 from .model import *
+
+
 
 class Solver:
     ctls = {
         "clingo": clingo.Control
     }
 
-    def __init__(self, function, argument, encoding, instance, folder =""):
+    def __init__(self, function: str, argument: Any, encoding: List[List[str]], instance: List[str], folder: str = ""):
         self.function = function
         self.argument = argument
         self.encoding = encoding + instance
         self.folder = folder
-        self.evaluators = []
 
     def from_json(json):
         if not 'instance' in json:
@@ -22,18 +26,9 @@ class Solver:
                         argument=json['argument'],
                         encoding=json['encoding'],
                         instance=instance,
-                        folder = json['folder'])
+                        folder=json['folder'])
         return solver
 
-
-    def run(self):
-        ctl = self.prepare_ctl() 
-        wrp = EvaluatorWrapper(self.evaluators) 
-        ctl.solve(on_model=wrp.on_model,on_finish=wrp.on_finish)
-
-        for r in self.retrieve_result():
-            print(r)
-        
     def prepare_ctl(self):
         try:
             ctl = self.ctls[self.function](self.argument)
@@ -45,39 +40,11 @@ class Solver:
         ctl.ground([("base", [])])
         return ctl
 
-
-    def retrieve_result(self):
-        results = []
-        for ev in self.evaluators:
-            result = ev.conclude()
-            result.add_solver(self)
-            results.append(result)
-        return results
-
+    def run(self, ec:EvaluatorContainer) -> EvaluatorContainer:
+        ctl = self.prepare_ctl()
+        ctl.solve(on_model=ec.on_model, on_finish=ec.on_finish)
+        return ec
 
     def __str__(self):
         ret = f"{self.function}, arguments : '{str(self.argument)}', encodings : {str(self.encoding)}\n"
         return ret
-
-
-class EvaluatorWrapper:
-    def __init__(self, evaluators):
-        self.evaluators = evaluators
-
-    def on_model(self,result):
-        for e in self.evaluators:
-            e.on_model(Model(result))
-
-    def on_finish(self, result):
-        for e in self.evaluators:
-            e.on_finish(result)
-
-    def retrieve_result(self):
-        return [e.conclude() for e in self.evaluators]  
-
-        
-
-            
-
-
-    

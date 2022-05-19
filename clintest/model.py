@@ -1,7 +1,4 @@
-
-
 class Model:
-
     def __init__(self, model, persistant=False):
         self.persistant = persistant
         if not persistant : self._model = model
