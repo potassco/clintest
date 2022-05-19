@@ -1,5 +1,0 @@
-Todo :
-    - Make a test that test if a model doesn't exist more that arg time in the all results
-
-
-    

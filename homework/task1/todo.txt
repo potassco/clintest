@@ -1,5 +1,0 @@
-Test todo :
-    - Checking that the last model cost is [=41,=4]
-    - Checking that the item 10 is is the last model
-
-    
