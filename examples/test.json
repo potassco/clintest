@@ -1,0 +1,139 @@
+
+[
+    {
+        "name": "Test color",
+        "files": ["color_v1.lp"],
+        "solver":{
+            "class": "Clingo",
+            "arguments": ["0","--opt-mode=enum"]
+        },
+        "evaluators":[
+            {
+                "class": "InOpt",
+                "description":"test that in optimal model is assigned to red",
+                "atom": "assign(1,red)"
+            }
+        ]
+
+    }
+    // Alternative with custom arguments separated
+    {
+        "name": "Test custom arguments",
+        "files": ["color_v1.lp"],
+        "solver":{
+            "class": "Clingo",
+            "args": 
+            {
+                "arguments" : ["0","--opt-mode=enum"]
+            }
+            
+        },
+        "evaluators":[
+            {
+                "class": "InOpt",
+                "description":"test that in optimal model is assigned to red",
+                "args": {"atom": "assign(1,red)"}
+            }
+        ]
+
+    }
+]
+
+// Save settings to reuse them
+[
+    {
+        "name": "Test base",
+        "files": ["color_v1.lp"],
+        "solver":{
+            "class": "Clingo",
+            "arguments": ["0"],
+        }
+    },
+    {
+        "name": "Test with constraint",
+        "extends": "Test base",
+        "program": ":-a(1).",
+        "evaluators":[
+            {
+                "class": "IsSat",
+                "description":"test if it sat with assumption"
+            },
+            {
+                "class": "InOpt",
+                "description":"test that in optimal model is assigned to red",
+                "atom": "assign(1,red)"
+            },
+            {
+                "class": "InSome",
+                "name" : "Red assigned in some",
+                "description":"test that in some model is assigned to red",
+                "atom": "assign(1,red)"
+            }
+
+        ]
+    },
+    {
+        "name": "Test without constraint",
+        "extends": "Test base",
+        "evaluators":[
+            {
+                "extends": "Red assigned in some"
+            }
+        ]
+    }
+
+]
+
+// Another solver option to accept also assumptions
+[
+    {
+        "name": "Test using assumptions basic",
+        "solver":{
+            "class": "ClingoAdvanced",
+            "name": "advanced",
+            "arguments": [["0"]],
+            "assumptions": ["a(1)."],
+            "program": [":-a(1)."]
+        },
+        "evaluators":[
+            {
+                "class": "IsUnsat",
+                "description":"test if it unsat with assumption",
+            }
+        ]
+    }
+]
+
+[
+    {
+        "name": "Test using assumptions basic",
+        "solver":{
+            "extends": "advanced",
+        },
+        "evaluators":[
+            {
+                "name": "is_unsat",
+                "description":"test if it unsat with assumption",
+            }
+        ]
+    }
+]
+
+// Another solver for a complex application
+[
+    {
+        "name": "Test using assumptions basic",
+        "solver":{
+            "class": "Plingo",
+            "command_line": "--exact", 
+            "program": ":-a(1).", 
+            "files": ["birds.lp"]
+        },
+        "evaluators":[
+            {
+                "class": "Prints",
+                "printed": "query: 9.99"
+            }
+        ]
+    }
+]
