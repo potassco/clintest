@@ -1,40 +1,29 @@
-from typing import Optional, List
+from typing import Optional
+
 import textwrap
+
 from .solver import Solver
-from .evaluator import Evaluator, Result
-from .model import Model
+from .check import Check
 from .utils import *
+
+NoneType = type(None)
 
 class Test:
     def __init__(self, 
                 solver: Solver, 
-                evaluators: List[Evaluator],
+                check: Check,
                 description: str = ""):
         self.solver = solver
-        self.evaluators = evaluators
-        self.results = [None] * len(evaluators)
+        self.check = check
         self.description= description
 
-    def on_model(self, model: Model):
-        for idx, e in enumerate(self.evaluators):
-            if self.results[idx] is None:
-                self.results[idx] = e.on_model(model)
-        if all(self.results):
-            return False
-            
+    def run(self) -> NoneType:
+        self.solver.run(self.check)
 
-    def on_finish(self, *args) -> None:
-        for idx, e in enumerate(self.evaluators):
-            if self.results[idx] is None:
-                self.results[idx] = e.on_finish(*args)
-
-    def run(self) -> None:
-        self.solver.run(self.on_model,
-                        self.on_finish)
-
-
-    def show_result(self, verbose_level:int) -> None:
-        print(BLUE + f"TEST: {self.description}" + END_COLOR)
-        for idx, r in enumerate(self.results):
-            print(textwrap.indent(str(self.evaluators[idx]), '\t'))
-            print(textwrap.indent(str(r), '\t\t'))
+    def __str__(self) -> str:
+        s = BLUE + "--"*20 + "\n"
+        s += self.description + "\n"
+        s += "--"*20 + "\n" + END_COLOR 
+        s += "SOLVER: " + str(self.solver) + "\n"
+        s += str(self.check)
+        return s

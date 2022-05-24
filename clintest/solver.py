@@ -2,12 +2,12 @@ from abc import ABC, abstractmethod
 from typing import Optional, Callable, List
 from clingo import SolveResult, StatisticsMap,Control
 
-from .model import Model
+from .check import Check
 
 class Solver(ABC):
     @abstractmethod
-    def run(self,
-            on_model:Callable[[Model],None], 
-            on_finish:Callable[[],None],
-            ):
+    def run(self,check:Check)->None:
         pass
+
+    def __str__(self)->str:
+        return self.__class__.__name__
