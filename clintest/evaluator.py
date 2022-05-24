@@ -2,13 +2,19 @@ from abc import ABC, abstractmethod
 from clingo.solving import SolveResult
 from clingo.statistics import StatisticsMap
 from enum import Enum
-from typing import Optional, Sequence
+from typing import Any, List, Optional, Sequence
 
 from .model import Model
 
-class Result(Enum):
-    SUCCESS = 0
-    FAILURE = 1
+class Result:
+    def __init__(self, errors: List[Any]):
+        self.errors = errors
+
+    def is_success(self) -> bool:
+        return bool(self.errors)
+
+    def is_failure(self) -> bool:
+        return not self.is_success()
 
 class Evaluator(ABC):
     def on_model(self, model: Model) -> bool:
