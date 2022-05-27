@@ -1,12 +1,29 @@
-# Clintest 
-*Helper program for unit test in ASP.*
-## Description
+# Clintest: *framework for unit test in ASP.* :+1: :-1:
+
+A framework for (unit)testing ASP programs. Clintest can be used as a standalone framework or as an API that contains multiple tools in order to performs tests.
+
+## Examples
+Given the following ecncoding *color.lp* :
+```ASP
+node(1..6).
+edge(
+    (1,2); (1,3); (1,4);
+    (2,4); (2,5); (2,6);
+    (3,4); (3,5);
+    (5,6)
+).
+
+color(red; green; blue).
+{ assign(N, C) : color(C) } = 1 :- node(N).
+:- edge((N, M)), assign(N, C), assign(M, C).
+
+#show assign/2.
+```
 
 
-## Writing a test Description
-In order to perform test, Clintest require a description of the test that will be performed. The description of the unit-tests are made in json.
+
+In order to perform a test, Clintest require a description of the test that will be performed. The description of tests are made in json.
 ```json
-// Example of test descriptions
 [{
     "name" : "Basic tests for color.lp",
     "solver": {
@@ -16,53 +33,71 @@ In order to perform test, Clintest require a description of the test that will b
     },
     "evaluator": [{
         "name": "color.lp is satisfiable",
-        "function": "is_sat",
+        "function": "SAT",
         "argument": true
-    },{
-        "name": "Testing true in all",
-        "function": "trueinall",
-        "argument": ["assign(1,red)"]
-    },{
-        "name": "Testing true in one",
-        "function": "trueinone",
-        "argument": ["assign(5,blue)"]
     }]
 }]
 
 ```
+In the little example above, on call, Clintest will create an instance of Clingo controller that will run the encodings *color.lp* with clingo with argument "0" for the controller. And then will check on the result of the execution, if the result is satisfiable or not.
+
+
+## Writing a test description
 
 The json test object is devided by 3 sections.
 
-|Key | Description| Parameters|
-|-------|---------|---|
-|**name** | Name of the test section | String |
-|**solver** | Describe the solver process | Json sub-object describing solving process| 
-|**evaluator** | Describe the set of unit-test described with the Evaluator class that will be executed.| List of evaluator|
+|Key | Description|
+|-------|---------|
+|**name** | Name of the test section |
+|**solver** | Describe the solver process |
+|**evaluator** | Describe the set of unit-test described with the Evaluator class that will be executed.|
+
+The **solver** and **evaluator** sections are sub-json object described in Solver and Evaluators section.
+
 ---
 
 
-## Unit test
-Unit test description required 3 parameters :
-|Key | Description | Parameters|
-|---|---|---|
-|name| Name of the test, only usefull for human reading|String|
-|function|Function that will be executed on the models|Key string|
-|argument|Arguments that will be gived to the function|Depending of the function (see function table)|
+### Solver
+Solver section required 3 (+1) parameters :
+|Key | Description |
+|---|---|
+| function | Solver that will be used to solve the encoding(s)|
+| argument | Argument(s) that will be passed to the solver controller|
+| encoding | Encoding(s) that the solver controller will solve|
+|(optional) instances | instance(s) that will added to solving process|
 
-## Evaluators (or unit-test functions)
+
+The argument, encoding and instance section can contain multiple values in order to perform the same test on different set of encodings, instances and arguments. For instance :
+```json
+
+"solver": {
+        "function": ["clingo"],
+        "argument": [["0 --const c=1"], ["0 --const c=2"]],
+        "encoding": [["e1.lp"],["e2.lp"]],
+        "instance": ["instance01.lp"]
+}
+```
+With this configuration we will obtain 4 different call :
+- clingo, arg(0 --const c=1), e1.lp, instance01.lp 
+- clingo, arg(0 --const c=2), e1.lp, instance01.lp 
+- clingo, arg(0 --const c=1), e2.lp, instance01.lp 
+- clingo, arg(0 --const c=2), e2.lp, instance01.lp 
+
+
+
+### Evaluators (or unit-test functions)
 A predefined set of evaluator (test functions) can be called with a unique identifier (string).
 
 |Key string|Argument|Description|
 |----------|---------|-----------|
-|is_sat       |true\|false| Argument : true => test succeed if encoding result is satifiable <br>Argument : false => test succed if encoding result is unsatisfiable|
-|trueinall|List of atoms|The list of atoms given have to be a subset of **every** output model|
-|trueinone|List of atoms|The list of atoms given have to be a subset of **at lest one** output model|
-|modelcost (not implemented yet) |Number| The last model should have a cost equal to the parameter given, ignored if no optimization|
-|exactsetall (not implemented yet)|List of atoms|The list of atoms have to be equal to  **every** output model|
-|exactsetone (not implemented yet)|List of atoms|The list of atoms have to be equal to  **at least one** output model|
+|SAT       |true\|false| Argument : true => test succeed if encoding result is satifiable <br>Argument : false => test succed if encoding result is unsatisfiable|
+|TrueInAll|List of atoms|The list of atoms given have to be a subset of **every** output model|
+|TrueInOne|List of atoms|The list of atoms given have to be a subset of **at lest one** output model|
+|ModelCost (not implemented yet) |Number| The last model should have a cost equal to the parameter given, ignored if no optimization|
 
 
-### Custom evaluator
+
+## Custom evaluator
 In order tu create your custom evaluators, you have to create object extending Evaluator abstract class.
 Evaluator class contain multiple function that can be overwritten :
  - conclude(self) -> EvaluatorResult : force the evaluator to return a result

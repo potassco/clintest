@@ -1,3 +1,4 @@
+from ast import Return
 import json as JSON
 from .utils import *
 from .solver import *
@@ -29,9 +30,11 @@ class Test:
         for solver,ec in zip(self.solvers,self.containers):
             solver.run(ec)
 
-    def show_result(self):
-        for ec in self.containers :
+    def get_result(self,outputlevel):
+        ret = ''
+        for solver,ec in zip(self.solvers,self.containers):
             for result in  ec.conclude():
-                print(result)
+                ret += result.to_str(outputlevel)
+        return ret
             
             

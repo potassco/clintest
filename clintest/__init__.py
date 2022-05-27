@@ -1,12 +1,39 @@
 from .solver import *
 from .evaluator import *
 from .test import *
-
+import os
+import sys
+import inspect
 
 class Clintest:
-    def __init__(self):
+    def __init__(self,evaluatorfile=None,verbosity=0, outputfile=None):
         self.tests:List[Test] = []
+        self.settings = {
+            'evaluatorfile' : evaluatorfile,
+            'verbosity' : verbosity,
+            'outputfile' : outputfile
+        }
 
+
+        if self.settings['evaluatorfile']:
+            if isinstance(self.settings['evaluatorfile'],str):
+                self.load_evaluators(self.settings['evaluatorfile'])
+
+
+    def load_evaluators(self,path):
+        if '/' in path:
+            path = os.path.abspath(path)
+            module = path[path.rindex('/')+1:]
+            path = path[:path.rindex('/')]
+            sys.path.append(path)
+        else : 
+            module = path   
+
+        for name, obj in inspect.getmembers(__import__(module)):
+            if inspect.isclass(obj):
+                if issubclass(obj,Evaluator):
+                    Evaluator.evaluator_dict[name] = obj
+    
     def add(self, test):
         self.tests.append(test)
 
@@ -35,7 +62,12 @@ class Clintest:
             test.run()
 
     def show_result(self):
+        ret = ''
         for test in self.tests:
-            test.show_result()
+            ret = test.get_result(self.settings['verbosity'])
 
-    
+        if self.settings['outputfile']:
+            with open(self.settings['outputfile'], 'w') as f:
+                f.write(ret)
+        else :
+            print(ret)

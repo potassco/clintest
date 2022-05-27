@@ -8,7 +8,7 @@
     },
     "evaluator": [{
         "name": "Test trueinone",
-        "function": "trueinone",
+        "function": "TrueInOne",
         "argument": ["wall(1,2,3,4)"]
     }]
 }]

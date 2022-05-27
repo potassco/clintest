@@ -69,7 +69,7 @@ def createConfigurations(jsonsolver):
     }
 
     confs.append(fetchconf('function', jsonsolver, default, required=True))
-    confs.append(fetchconf('argument', jsonsolver, default, required=True))
+    confs.append(fetchconf('argument', jsonsolver, default, required=True, flatten=False))
     confs.append(fetchconf('encoding', jsonsolver, default,
                  flatten=False, required=True))
     confs.append(fetchconf('instance', jsonsolver, default,

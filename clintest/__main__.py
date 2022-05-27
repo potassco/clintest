@@ -9,6 +9,14 @@ def init_argparse():
     parser = argparse.ArgumentParser(description='Path of test descriptions')
     parser.add_argument('paths', metavar='path', type=str, nargs='*',
                         help='string (path) list', default=glob.glob('**/*.json'))
+    parser.add_argument('--verbosity', metavar='verbosity', type=int,
+                        help='Detail level for the output 0 -> All, 1 -> Reduced ...', default=0)
+    parser.add_argument('--evaluator-file', metavar='evaluatorfile', type=str,
+                        help='Path to custom evaluator (withou .py)', default=None)
+
+    parser.add_argument('--output-file', metavar='outuputfilefile', type=str,
+                        help='path to output file', default=None)             
+                        
     args = parser.parse_args()
     return args
 
@@ -53,7 +61,7 @@ if __name__ == '__main__':
 
     else:
         args = init_argparse()
-        ct = Clintest()
+        ct = Clintest(verbosity=args.verbosity,evaluatorfile=args.evaluator_file, outputfile=args.output_file)
         ct.load(args.paths)
         ct.run()
         ct.show_result()

@@ -1,8 +1,9 @@
 import clingo
 
-from typing import Any, List
+from typing import Any, List, Sequence
 from .evaluator import EvaluatorContainer
 from .model import *
+
 
 
 
@@ -11,9 +12,12 @@ class Solver:
         "clingo": clingo.Control
     }
 
-    def __init__(self, function: str, argument: Any, encoding: List[List[str]], instance: List[str], folder: str = ""):
+    def __init__(self, function: str, argument: List[str], encoding: List[List[str]], instance: List[str], folder: str = ""):
         self.function = function
+        if not isinstance(argument,List) : argument = [argument]
+
         self.argument = argument
+        
         self.encoding = encoding + instance
         self.folder = folder
 
@@ -42,7 +46,10 @@ class Solver:
 
     def run(self, ec:EvaluatorContainer) -> EvaluatorContainer:
         ctl = self.prepare_ctl()
-        ctl.solve(on_model=ec.on_model, on_finish=ec.on_finish)
+        with ctl.solve(yield_=True) as hnd:
+            for m in hnd:
+                ec.on_model(m)
+            ec.on_finish(hnd.get())
         return ec
 
     def __str__(self):
