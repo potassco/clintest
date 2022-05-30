@@ -33,6 +33,7 @@ class Clintest:
             if inspect.isclass(obj):
                 if issubclass(obj,Evaluator):
                     Evaluator.evaluator_dict[name] = obj
+
     
     def add(self, test):
         self.tests.append(test)

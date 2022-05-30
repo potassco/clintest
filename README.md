@@ -1,6 +1,7 @@
 # Clintest: *framework for unit test in ASP.* :+1: :-1:
 
 A framework for (unit)testing ASP programs. Clintest can be used as a standalone framework or as an API that contains multiple tools in order to performs tests.
+This version is a prototype ; bugs and errors might still exist, do not hesitate creating issues on the github page.
 
 
 ## Examples
@@ -21,8 +22,6 @@ color(red; green; blue).
 
 #show assign/2.
 ```
-
-
 
 In order to perform a test, Clintest require a description of the test that will be performed. The description of tests are made in json.
 ```json
@@ -108,12 +107,13 @@ Evaluator class contain multiple function that can be overwritten :
  - **on_finish**(self,result) -> None : process method of a SolveResult
  - **\_\_init__**(self,name,function,argument) : can be overwritten in order to have custom variables/behavior/other
 
-Once the custom evaluator is set, it can now be added using the worker function add_evaluator(Evaluator,key).
+Once custom evaluators are defined in a file, you can use the option **--evaluator-file**=file to load the custom evaluators or by using the  parameters c = Clinest(**evaluator_file**=path) when creating a Clintest object.
 
 As instance:
 ```python
+from clintest import Evaluator, EvaluatorResult, ResultType
 class CustomEvaluator(Evaluator):
-    def __init__(self, name, function, argument):
+    def __init__(self, name:str, function:str, argument:Any):
         super().__init__(name, function, argument)
         self.custom_variable = "something"
         
@@ -124,21 +124,12 @@ class CustomEvaluator(Evaluator):
         # fixing result, if needed
         return super().conclude()
 
-existing_worker.add_evaluator(CustomEvaluator, "EvaluatorName") # loaded json test object can now use the "EvaluatorName" key to call the evaluator
-
-existing_worker.run() 
 ```
 
-On the on_model call, a Model object will be given as argument, this model object contain some predefined properties/method that are defined as defined for a clingo Model. If needed the Clingo Model object can be accessed using result._model. However, since Clingo Model can not be stored and exist only in the actual scope, if you want to store them, you can use the persist() method that allows you tu use the symbols() function at any time (symbols function do not require any parameters, will only provides same output as clingo (#show)).
+On the on_model call, a Model object will be given as argument, this model object contain some predefined properties/method that are defined as defined for a clingo Model. 
 
-The conclude method return an EvaluatorResult that need to use the property of the evaluator that are :
-- result -> ResultType (UNKNOWN, PASS, FAIL and IGNORED).
-- evaluator ->  the evaluator itself
-- missing (optional) -> a dictionnary that provid missing symbols for model (for output)
-- overload (optional) -> a dictionnary that provid overload symbols for model (for output)
-- additional (optional -> String that contain informations that will be displayed in the ouput
 
-By default, conclude method will directly return an EvaluatorResult based on the properties of the evaluator. However you can stil overwrite the method to "fix" the result of the evaluator (conclude is the last method that will be called in the process) ; having a result that is UNKNOWN will throw an error.
+By default, conclude method will directly return an EvaluatorResult based, result of the test and on the properties of the evaluator. However you can stil overwrite the method to ground the result the result of the evaluator (conclude is the last method that will be called in the process) ; having a result that is UNKNOWN will throw an error.
 
 
 Other examples are available in the clintest/evaluator.py file.
@@ -148,7 +139,8 @@ Other examples are available in the clintest/evaluator.py file.
 Clintest can be called in shell. Since packaging deployement is not implemented yet, usage can only be done from root directory of package
 
 ```commandline
-python -m clintest path [path*] 
+python --help
+python -m clintest path [path*]
 ```
 
 ## Usage : Python script
@@ -158,37 +150,46 @@ Usage :
 
 ```python
 # Example usage (clintest repo root directory)
->>> import clintest
->>> w = clintest.Worker()
->>> w.load('examples/color/')
->>> w.run()
-```
-Output (might vary from version to version):
-```console
-CLINTEST RESULT
-
-Testing color.lp is satisfiable
-solver : clingo, arguments : '0', encodings : ['color.lp']
-Function        : is_sat
-Arguments       : True
-Result          : PASS
-
-Testing Testing true in all
-solver : clingo, arguments : '0', encodings : ['color.lp']
-Function        : trueinall
-Arguments       : ['assign(1,red)']
-Result          : FAIL
-Missing (-) and overload (+) symbols
-Model 3:
-         - assign(1,red)
-
-Testing Testing true in one
-solver : clingo, arguments : '0', encodings : ['color.lp']
-Function        : trueinone
-Arguments       : ['assign(5,blue)']
-Result          : PASS
+ct = Clintest()
+ct.load('examples/color')
+ct.run()
+ct.show_result()
 ```
 
+## Usage : Plug it to your own script
+```python
+from clintest import Clintest, Evaluator, EvaluatorContainer, ResultType, TrueInAll, TrueInOne 
+import clingo 
+
+class CustomSAT(Evaluator):
+    def __init__(self, name, function, argument):
+        super().__init__(name, function, argument)
+
+    def on_finish(self, result):
+        print("I'm a different SAT than Evaluator.SAT")
+        if not(self.argument ^ result.satisfiable):
+            self.result = ResultType.SUCCESS
+        else:
+            self.result = ResultType.FAIL
+
+
+ec = EvaluatorContainer([
+    CustomSAT("color.lp is satisfiable", 'SAT', True),
+    TrueInAll("Testing true in all", "trueinall", ["assign(1,red)"]),
+    TrueInOne("Testing true in one", "trueinone", ["assign(5,blue)"])
+])
+
+
+ctl = clingo.Control('0')
+ctl.load('./examples/color/color.lp')
+ctl.ground([("base", [])])
+ctl.solve(on_finish=ec.on_finish, on_model=ec.on_model)
+
+
+for result in ec.conclude():
+    print(result)
+
+```
 
 
 

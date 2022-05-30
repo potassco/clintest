@@ -1,6 +1,6 @@
 from clintest import TrueInOne, TrueInAll
 import clingo
-from clintest import Evaluator, ResultType, evaluator_dict, EvaluatorContainer
+from clintest import Evaluator, ResultType, EvaluatorContainer
 
 
 class SAT(Evaluator):
@@ -9,37 +9,13 @@ class SAT(Evaluator):
 
     def on_finish(self, result):
         if not(self.argument ^ result.satisfiable):
-            self.result = ResultType.PASS
+            self.result = ResultType.SUCCESS
         else:
             self.result = ResultType.FAIL
 
-# Creating a json
-
-tests = [
-    {
-        "name": "color.lp is satisfiable",
-        "function": "is_sat",
-        "argument": True
-    }, {
-        "name": "Testing true in all",
-        "function": "trueinall",
-        "argument": ["assign(1,red)"]
-    }, {
-        "name": "Testing true in one",
-        "function": "trueinone",
-        "argument": ["assign(5,blue)"]
-    }
-]
-
-evaluator_dict['is_sat'] = SAT # Considering th
-
-ec = EvaluatorContainer(
-    [Evaluator.from_json(e) for e in tests])
-    
-# Or
 
 ec = EvaluatorContainer([
-    SAT("color.lp is satisfiable", 'is_sat', True),
+    SAT("color.lp is satisfiable", 'SAT', True),
     TrueInAll("Testing true in all", "trueinall", ["assign(1,red)"]),
     TrueInOne("Testing true in one", "trueinone", ["assign(5,blue)"])
 ])

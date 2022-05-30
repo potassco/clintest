@@ -170,12 +170,8 @@ class EvaluatorContainer:
             e.on_finish(result)
 
     def conclude(self):
+        
         return [e.conclude() for e in self.evaluators]
-
-
-
-
-
 
 
 
@@ -188,6 +184,28 @@ class SAT(Evaluator):
             self.result = ResultType.SUCCESS
         else:
             self.result = ResultType.FAIL
+
+
+class ModelCost(Evaluator):
+    def __init__(self, name, function, argument):
+        super().__init__(name, function, argument)
+        self.cost = None
+
+    def on_model(self, result):
+        self.cost = result.cost
+
+
+    def conclude(self) -> EvaluatorResult:
+        if not self.cost:
+            self.result = ResultType.IGNORED
+        else :
+            if self.cost == self.argument:
+                self.result = ResultType.SUCCESS
+            else :
+                self.result = ResultType.FAIL
+        
+        return  super().conclude() 
+        
 
 
 class TrueInAll(Evaluator):
