@@ -2,6 +2,7 @@
 
 A framework for (unit)testing ASP programs. Clintest can be used as a standalone framework or as an API that contains multiple tools in order to performs tests.
 
+
 ## Examples
 Given the following ecncoding *color.lp* :
 ```ASP
@@ -12,6 +13,7 @@ edge(
     (3,4); (3,5);
     (5,6)
 ).
+
 
 color(red; green; blue).
 { assign(N, C) : color(C) } = 1 :- node(N).
