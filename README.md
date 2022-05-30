@@ -79,10 +79,10 @@ The argument, encoding and instance section can contain multiple values in order
 }
 ```
 With this configuration we will obtain 4 different call :
-- clingo, arg(0 --const c=1), e1.lp, instance01.lp 
-- clingo, arg(0 --const c=2), e1.lp, instance01.lp 
-- clingo, arg(0 --const c=1), e2.lp, instance01.lp 
-- clingo, arg(0 --const c=2), e2.lp, instance01.lp 
+- clingo 0 --const c=1 e1.lp instance01.lp 
+- clingo 0 --const c=2 e1.lp instance01.lp 
+- clingo 0 --const c=1 e2.lp instance01.lp 
+- clingo 0 --const c=2 e2.lp instance01.lp 
 
 
 
@@ -101,11 +101,11 @@ A predefined set of evaluator (test functions) can be called with a unique ident
 ## Custom evaluator
 In order tu create your custom evaluators, you have to create object extending Evaluator abstract class.
 Evaluator class contain multiple function that can be overwritten :
- - conclude(self) -> EvaluatorResult : force the evaluator to return a result
- - done(self) -> Boolean : return true if the evaluator is done evaluating (UNKNOWN -> False | FAIL, IGNORED and PASS -> True)
- - **on_model**(self,result) -> None : process method of a Model object (called * time)
- - **on_finish**(self,result) -> None : process method of a SolveResult
- - **\_\_init__**(self,name,function,argument) : can be overwritten in order to have custom variables/behavior/other
+ - conclude() -> Must return an EvaluatorResult object : ground the evaluator's result
+ - done() -> must return a  Boolean : return true if the evaluator is done evaluating (UNKNOWN -> False | FAIL, IGNORED and PASS -> True)
+ - **on_model**(Model) -> None : process method of a Model object (called * time)
+ - **on_finish**(SolveResult) -> None : process method of a SolveResult
+ - **\_\_init__**(name,function,argument) : can be overwritten in order to have custom variables/behavior/other
 
 Once custom evaluators are defined in a file, you can use the option **--evaluator-file**=file to load the custom evaluators or by using the  parameters c = Clinest(**evaluator_file**=path) when creating a Clintest object.
 
@@ -175,8 +175,8 @@ class CustomSAT(Evaluator):
 
 ec = EvaluatorContainer([
     CustomSAT("color.lp is satisfiable", 'SAT', True),
-    TrueInAll("Testing true in all", "trueinall", ["assign(1,red)"]),
-    TrueInOne("Testing true in one", "trueinone", ["assign(5,blue)"])
+    TrueInAll("Testing true in all", "TrueInAll", ["assign(1,red)"]),
+    TrueInOne("Testing true in one", "TrueinOne", ["assign(5,blue)"])
 ])
 
 
