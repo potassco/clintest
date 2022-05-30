@@ -21,7 +21,7 @@ class Solver:
         self.encoding = encoding + instance
         self.folder = folder
 
-    def from_json(json):
+    def from_json(json:dict):
         if not 'instance' in json:
             instance = []
         else:

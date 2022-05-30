@@ -1,13 +1,16 @@
 from abc import ABC
-from typing import List
+from typing import Any, List
 from .model import *
 import inspect
 import sys
+import clingo
 
 class UnknownResult(Exception):
     pass
 
 
+class Evaluator:
+    pass
 
 
 class style():
@@ -32,7 +35,7 @@ class ResultType(enumerate):
 
 
 class EvaluatorResult:
-    def __init__(self, result, evaluator):
+    def __init__(self, result:ResultType, evaluator : Evaluator):
         self.evaluator = evaluator
         self.solver = None
 
@@ -48,18 +51,18 @@ class EvaluatorResult:
 
         self.ret = dict()
 
-    def add_header(self, priority=1):
+    def add_header(self, priority:int=1):
         self.ret[priority] = [f"--- Testing {self.evaluator.name} : {self.result}\n"]
         return self
 
-    def add_evaluator_info(self,priority=2):
+    def add_evaluator_info(self,priority:int =2 ):
         if not priority in self.ret:
             self.ret[priority] = []
         self.ret[priority].append(f"Function \t: {self.evaluator.function}\n")
         self.ret[priority].append(f"Arguments \t: {self.evaluator.argument}\n")
         return self
 
-    def add_missing_overload(self, missing=None, overload=None, priority=3):
+    def add_missing_overload(self, missing:dict=None, overload:dict=None, priority:int=3):
         if (missing is None) and (overload is None):
             return self
         elif not (missing is None) and (overload is None):
@@ -90,7 +93,7 @@ class EvaluatorResult:
 
         return self
 
-    def add_info(self, info, priority=4):
+    def add_info(self, info:str, priority:int=4):
         if info:
             if priority in self.ret:
                 self.ret[priority].append(info)
@@ -98,7 +101,7 @@ class EvaluatorResult:
                 self.ret[priority] = [info]
             return self
 
-    def add_custom(self, custom, priority):
+    def add_custom(self, custom:Any, priority:int):
         if priority in self.ret:
             self.ret[priority].append(custom)
         else:
@@ -106,7 +109,7 @@ class EvaluatorResult:
 
         return self
 
-    def to_str(self,priority=0):
+    def to_str(self,priority:int=0):
         ret = ""
         keys = sorted(list(self.ret.keys()))
         for k in keys:
@@ -119,7 +122,7 @@ class EvaluatorResult:
 class Evaluator(ABC):
     evaluator_dict = {}
 
-    def __init__(self, name, function, argument) -> None:
+    def __init__(self, name:str, function:str, argument:Any) -> None:
         self.name = name
         self.function = function
         self.argument = argument
@@ -127,10 +130,10 @@ class Evaluator(ABC):
         # result
         self.result = ResultType.UNKNOWN
 
-    def on_model(self, result) -> None:
+    def on_model(self, result:Model) -> None:
         pass
 
-    def on_finish(self, result) -> None:
+    def on_finish(self, result:clingo.SolveResult) -> None:
         pass
 
     def conclude(self) -> EvaluatorResult:
@@ -145,7 +148,7 @@ class Evaluator(ABC):
         else:
             return True
 
-    def from_json(json):
+    def from_json(json:dict):
         return Evaluator.evaluator_dict[json['function']](
             name=json["name"],
             function=json['function'],
@@ -158,11 +161,11 @@ class EvaluatorContainer:
         self.evaluators = evaluators
         self._did_conclude = False
 
-    def on_model(self, result):
+    def on_model(self, result:Model):
         for e in self.evaluators:
             e.on_model(Model(result))
 
-    def on_finish(self, result):
+    def on_finish(self, result:clingo.SolveResult):
         for e in self.evaluators:
             e.on_finish(result)
 
