@@ -1,0 +1,14 @@
+[{
+    "name" : "Basic tests for color.lp",
+    "solver": {
+        "function": ["clingo"],
+        "argument": ["0"],
+        "encoding": ["encoding.lp"],
+        "instance": [["instance/instance01.lp"]]
+    },
+    "evaluator": [{
+        "name": "Test trueinone",
+        "function": "TrueInOne",
+        "argument": ["wall(1,2,3,4)"]
+    }]
+}]

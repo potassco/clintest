@@ -1,0 +1,21 @@
+[{
+    "name" : "Basic tests for color.lp",
+    "solver": {
+        "function": ["clingo"],
+        "argument": [["0","--const","c=1"],["0","--const","c=2"]],
+        "encoding": [["color.lp"], ["color2.lp"]]
+    },
+    "evaluator": [{
+        "name": "color.lp is satisfiable",
+        "function": "SAT",
+        "argument": true
+    },{
+        "name": "Testing true in all",
+        "function": "TrueInAll",
+        "argument": ["assign(1,red)"]
+    },{
+        "name": "Testing true in one",
+        "function": "TrueInOne",
+        "argument": ["assign(5,blue)"]
+    }]
+}]
