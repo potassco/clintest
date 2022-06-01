@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from clingo.solving import Model, SolveResult
 from clingo.statistics import StatisticsMap
+from colorama import Fore, Style
 from typing import List, Optional
 
 class Assessment(ABC):
@@ -10,9 +11,13 @@ class Assessment(ABC):
 
     def __str__(self, number: List[int] = [], identation: int = 4) -> str:
         result  = " " * identation * len(number)
-        result += ".".join((str(i) for i in number)) + ". " * bool(number)
+        result += Style.DIM + ".".join((str(i) for i in number)) + ". " * bool(number) + Style.RESET_ALL
         result += self._description + " "
-        result += { True: "Yes", False: "No", None: "Unknown" }[self.conclusion]
+        result += {
+            True: Fore.GREEN + "Yes" + Fore.RESET,
+            False: Fore.RED + "No" + Fore.RESET,
+            None: Fore.YELLOW + "Unknown" + Fore.RESET
+        }[self.conclusion]
         return result
 
     @property
