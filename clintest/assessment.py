@@ -1,35 +1,27 @@
 from abc import ABC, abstractmethod
 from clingo.solving import Model, SolveResult
 from clingo.statistics import StatisticsMap
-from typing import List
+from typing import List, Optional
 
 class Assessment(ABC):
     def __init__(self, description: str):
-        self.__description = description
-        self.__conclusion = None
+        self._description: str =  description
+        self._conclusion: Optional[bool] = None
 
-    def __str__(self, number: List[int] = []) -> str:
-        number = ".".join((str(i) for i in number)) + " " * bool(number)
-        conclusion = { True: "Yes", False: "No", None: "Unknown" }[self.conclusion]
-        return f"{number}{self.description} {conclusion}"
-
-    @property
-    def description(self):
-        return self.__description
+    def __str__(self, number: List[int] = [], identation: int = 4) -> str:
+        result  = " " * identation * len(number)
+        result += ".".join((str(i) for i in number)) + ". " * bool(number)
+        result += self._description + " "
+        result += { True: "Yes", False: "No", None: "Unknown" }[self.conclusion]
+        return result
 
     @property
-    def conclusion(self):
-        return self.__conclusion
+    def description(self) -> str:
+        return self._description
 
-    @conclusion.setter
-    def conclusion(self, value: bool):
-        if not isinstance(value, bool):
-            raise ValueError("conclusion must be True or False")
-
-        if self.__conclusion is None:
-            self.__conclusion = value
-        else:
-            raise Exception("conclusion may not be set twice")
+    @property
+    def conclusion(self) -> Optional[bool]:
+        return self._conclusion
 
     def assess_model(self, model: Model) -> bool:
         return True
@@ -37,25 +29,104 @@ class Assessment(ABC):
     def assess_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
         pass
 
+    @abstractmethod
     def assess_result(self, result: SolveResult) -> None:
         pass
 
-    @abstractmethod
-    def conclude(self) -> None:
-        pass
+class Basic(Assessment):
+    pass
 
-class Sat(Assessment):
-    def __init__(self, description: str = "Is there any model?"):
+class Sat(Basic):
+    def __init__(self, description: str = "Is there a model?"):
         super().__init__(description)
 
     def assess_model(self, model: Model) -> bool:
-        if self.conclusion is None:
-            self.conclusion = True
+        if self._conclusion is None:
+            self._conclusion = True
         return False
 
     def assess_result(self, result: SolveResult) -> None:
-        self.conclude()
+        if self._conclusion is None:
+            self._conclusion is False
 
-    def conclude(self) -> None:
-        if self.conclusion is None:
-             self.conclusion = False
+class Composite(Assessment):
+    def __init__(self, components: List[Assessment], description: str):
+        super().__init__(description)
+        self._components = components
+        self._ongoing = components
+
+    def __str__(self, number: List[int] = [], identation: int = 4) -> str:
+        result = super().__str__(number, identation)
+        for i, component in enumerate(self._components):
+            result += "\n" + component.__str__(number + [i + 1], identation)
+        return result
+
+    @property
+    def components(self) -> List[Assessment]:
+        return self._components
+
+    @property
+    def ongoing(self) -> List[Assessment]:
+        return self._ongoing
+
+class Any(Composite):
+    def __init__(
+        self,
+        components: List[Assessment],
+        description: str = "Is any of the following assessments true?"
+    ):
+        super().__init__(components, description)
+
+    def assess_model(self, model: Model) -> bool:
+        if self._conclusion is not None:
+            return False
+
+        still_ongoing = []
+        for component in self._ongoing:
+            component.assess_model(model)
+            if   component.conclusion is None:
+                still_ongoing.append(component)
+            elif component.conclusion is True:
+                self._conclusion = True
+                self._ongoing = []
+                return False
+
+        self._ongoing = still_ongoing
+
+        if still_ongoing:
+            return True
+        else:
+            self._conclusion = False
+            return False
+
+    def assess_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
+        if self._conclusion is not None:
+            return
+
+        still_ongoing = []
+        for component in self._ongoing:
+            component.assess_statistics(step, accumulated)
+            if   component.conclusion is None:
+                still_ongoing.append(component)
+            elif component.conclusion is True:
+                self._conclusion = True
+                self._ongoing = []
+                return
+
+        self._ongoing = still_ongoing
+
+        if not still_ongoing:
+            self._conclusion = False
+
+    def assess_result(self, result: SolveResult) -> None:
+        if self._conclusion is not None:
+            return
+
+        for component in self._ongoing:
+            component.assess_result(result)
+            if component.conclusion:
+                self._conclusion = True
+                self._ongoing = []
+                return
+        self._conclusion = False
+        self._ongoing = []
