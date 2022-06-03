@@ -39,10 +39,8 @@ class Assessment(ABC):
     def conclusion(self) -> Optional[bool]:
         return self._conclusion
 
-    # pylint: disable=no-self-use
     def assess_model(self, _model: Model) -> bool:
         return True
-    # pylint: enable=no-self-use
 
     def assess_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
         pass
