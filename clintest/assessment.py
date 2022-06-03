@@ -6,19 +6,25 @@ from typing import List, Optional
 
 from .assertion import Assertion, True_, False_
 
+
 class Assessment(ABC):
     def __init__(self, description: str):
-        self._description: str =  description
+        self._description: str = description
         self._conclusion: Optional[bool] = None
 
     def __str__(self, number: List[int] = [], identation: int = 4) -> str:
-        result  = " " * identation * len(number)
-        result += Style.DIM + ".".join((str(i) for i in number)) + ". " * bool(number) + Style.RESET_ALL
+        result = " " * identation * len(number)
+        result += (
+            Style.DIM
+            + ".".join((str(i) for i in number))
+            + ". " * bool(number)
+            + Style.RESET_ALL
+        )
         result += self._description + " "
         result += {
             True: Fore.GREEN + "Yes" + Fore.RESET,
             False: Fore.RED + "No" + Fore.RESET,
-            None: Fore.YELLOW + "Unknown" + Fore.RESET
+            None: Fore.YELLOW + "Unknown" + Fore.RESET,
         }[self.conclusion]
         return result
 
@@ -40,6 +46,7 @@ class Assessment(ABC):
     def assess_result(self, result: SolveResult) -> None:
         pass
 
+
 class Quantifier(Assessment):
     def __init__(self, assertion: Assertion, description: str):
         super().__init__(description)
@@ -48,6 +55,7 @@ class Quantifier(Assessment):
     @property
     def assertion(self) -> Assertion:
         return self._assertion
+
 
 class ForAny(Quantifier):
     def __init__(self, assertion: Assertion, description: Optional[str] = None):
@@ -69,6 +77,7 @@ class ForAny(Quantifier):
         if self._conclusion is None:
             self._conclusion = False
 
+
 class ForAll(Quantifier):
     def __init__(self, assertion: Assertion, description: Optional[str] = None):
         if description is None:
@@ -88,6 +97,7 @@ class ForAll(Quantifier):
     def assess_result(self, result: SolveResult) -> None:
         if self._conclusion is None:
             self._conclusion = True
+
 
 class Combinator(Assessment):
     def __init__(self, components: List[Assessment], description: str):
@@ -109,11 +119,12 @@ class Combinator(Assessment):
     def ongoing(self) -> List[Assessment]:
         return self._ongoing
 
+
 class Any(Combinator):
     def __init__(
         self,
         components: List[Assessment],
-        description: str = "Is any of the following assessments true?"
+        description: str = "Is any of the following assessments true?",
     ):
         super().__init__(components, description)
 
@@ -124,7 +135,7 @@ class Any(Combinator):
         still_ongoing = []
         for component in self._ongoing:
             component.assess_model(model)
-            if   component.conclusion is None:
+            if component.conclusion is None:
                 still_ongoing.append(component)
             elif component.conclusion is True:
                 self._conclusion = True
@@ -146,7 +157,7 @@ class Any(Combinator):
         still_ongoing = []
         for component in self._ongoing:
             component.assess_statistics(step, accumulated)
-            if   component.conclusion is None:
+            if component.conclusion is None:
                 still_ongoing.append(component)
             elif component.conclusion is True:
                 self._conclusion = True
@@ -171,11 +182,12 @@ class Any(Combinator):
         self._conclusion = False
         self._ongoing = []
 
+
 class All(Combinator):
     def __init__(
         self,
         components: List[Assessment],
-        description: str = "Are all of the following assessments true?"
+        description: str = "Are all of the following assessments true?",
     ):
         super().__init__(components, description)
 
@@ -186,7 +198,7 @@ class All(Combinator):
         still_ongoing = []
         for component in self._ongoing:
             component.assess_model(model)
-            if   component.conclusion is None:
+            if component.conclusion is None:
                 still_ongoing.append(component)
             elif component.conclusion is False:
                 self._conclusion = False
@@ -208,7 +220,7 @@ class All(Combinator):
         still_ongoing = []
         for component in self._ongoing:
             component.assess_statistics(step, accumulated)
-            if   component.conclusion is None:
+            if component.conclusion is None:
                 still_ongoing.append(component)
             elif component is False:
                 self._conclusion = False
@@ -234,13 +246,14 @@ class All(Combinator):
         self._conclusion = True
         self._ongoing = []
 
+
 class Modifier(Assessment):
     def __init__(self, underlying: Assessment, description: str):
         super().__init__(description)
         self._underlying = underlying
 
     def __str__(self, number: List[int] = [], identation: int = 4) -> str:
-        result  = super().__str__(number, identation)
+        result = super().__str__(number, identation)
         result += "\n" + self._underlying.__str__(number + [1], identation)
         return result
 
@@ -248,11 +261,12 @@ class Modifier(Assessment):
     def underlying(self) -> Assessment:
         return self._underlying
 
+
 class Not(Modifier):
     def __init__(
         self,
         underlying: Assessment,
-        description: str = "Is the following assessments false?"
+        description: str = "Is the following assessments false?",
     ):
         super().__init__(underlying, description)
 
@@ -283,8 +297,10 @@ class Not(Modifier):
         self._underlying.assess_result(result)
         self._conclusion = not self._underlying.conclusion
 
+
 def Sat() -> Assessment:
     return ForAny(True_(), description="Is the program satisfiable?")
+
 
 def Unsat() -> Assessment:
     return ForAll(False_(), description="Is the program unsatisfiable?")

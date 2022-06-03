@@ -1,8 +1,8 @@
 if __name__ == "__main__":
+    # TODO
+
     import colorama
     colorama.init()
-
-    # TODO
 
     from .assessment import Any, All, Not, Sat, Unsat
     from .solver import Clingo
