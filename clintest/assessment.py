@@ -4,6 +4,8 @@ from clingo.statistics import StatisticsMap
 from colorama import Fore, Style
 from typing import List, Optional
 
+from .assertion import Assertion, True_, False_
+
 class Assessment(ABC):
     def __init__(self, description: str):
         self._description: str =  description
@@ -38,23 +40,56 @@ class Assessment(ABC):
     def assess_result(self, result: SolveResult) -> None:
         pass
 
-class Basic(Assessment):
-    pass
-
-class Sat(Basic):
-    def __init__(self, description: str = "Is there a model?"):
+class Quantifier(Assessment):
+    def __init__(self, assertion: Assertion, description: str):
         super().__init__(description)
+        self._assertion = assertion
+
+    @property
+    def assertion(self) -> Assertion:
+        return self._assertion
+
+class ForAny(Quantifier):
+    def __init__(self, assertion: Assertion, description: Optional[str] = None):
+        if description is None:
+            description = f"Does the following hold for any model: {str(assertion)}?"
+        super().__init__(assertion, description)
 
     def assess_model(self, model: Model) -> bool:
-        if self._conclusion is None:
+        if self._conclusion is not None:
+            return False
+
+        if self._assertion.holds_for(model):
             self._conclusion = True
-        return False
+            return False
+        else:
+            return True
 
     def assess_result(self, result: SolveResult) -> None:
         if self._conclusion is None:
-            self._conclusion is False
+            self._conclusion = False
 
-class Composite(Assessment):
+class ForAll(Quantifier):
+    def __init__(self, assertion: Assertion, description: Optional[str] = None):
+        if description is None:
+            description = f"Does the following hold for all models: {str(assertion)}?"
+        super().__init__(assertion, description)
+
+    def assess_model(self, model: Model) -> bool:
+        if self._conclusion is not None:
+            return False
+
+        if self._assertion.holds_for(model):
+            return True
+        else:
+            self._conclusion = False
+            return False
+
+    def assess_result(self, result: SolveResult) -> None:
+        if self._conclusion is None:
+            self._conclusion = True
+
+class Combinator(Assessment):
     def __init__(self, components: List[Assessment], description: str):
         super().__init__(description)
         self._components = components
@@ -74,7 +109,7 @@ class Composite(Assessment):
     def ongoing(self) -> List[Assessment]:
         return self._ongoing
 
-class Any(Composite):
+class Any(Combinator):
     def __init__(
         self,
         components: List[Assessment],
@@ -135,3 +170,9 @@ class Any(Composite):
                 return
         self._conclusion = False
         self._ongoing = []
+
+def Sat() -> Assessment:
+    return ForAny(True_(), description="Is the program satisfiable?")
+
+def Unsat() -> Assessment:
+    return ForAll(False_(), description="Is the program unsatisfiable?")
