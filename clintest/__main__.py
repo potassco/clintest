@@ -1,4 +1,5 @@
 if __name__ == "__main__":
+    # pylint: disable=fixme
     # TODO
 
     import colorama
@@ -15,3 +16,5 @@ if __name__ == "__main__":
     print(solver)
     print()
     print(assessment)
+
+    # pylint: enable=fixme
