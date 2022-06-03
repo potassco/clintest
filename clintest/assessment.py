@@ -39,8 +39,10 @@ class Assessment(ABC):
     def conclusion(self) -> Optional[bool]:
         return self._conclusion
 
+    # pylint: disable=no-self-use
     def assess_model(self, _model: Model) -> bool:
         return True
+    # pylint: enable=no-self-use
 
     def assess_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
         pass
@@ -304,10 +306,11 @@ class Not(Modifier):
         self._underlying.assess_result(result)
         self._conclusion = not self._underlying.conclusion
 
-
+# pylint: disable=invalid-name
 def Sat() -> Assessment:
     return ForAny(True_(), description="Is the program satisfiable?")
 
 
 def Unsat() -> Assessment:
     return ForAll(False_(), description="Is the program unsatisfiable?")
+# pylint: enable=invalid-name
