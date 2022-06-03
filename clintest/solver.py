@@ -24,7 +24,12 @@ class Clingo(Solver):
         self.__program = program
 
     def __str__(self) -> str:
-        pass # TODO
+        parts = self.__arguments + self.__files + ["-"] * bool(self.__program)
+        result = "clingo"
+        result += " " * bool(parts) + " ".join(parts)
+        if self.__program:
+            result += "\n" + self.__program
+        return result
 
     def solve(self, assessment: Assessment) -> None:
         ctl = Control(self.__arguments)

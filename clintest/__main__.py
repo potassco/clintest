@@ -12,4 +12,6 @@ if __name__ == "__main__":
     solver = Clingo(arguments=["0"], program=":-.")
     solver.solve(assessment)
 
+    print(solver)
+    print()
     print(assessment)
