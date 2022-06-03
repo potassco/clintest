@@ -171,6 +171,69 @@ class Any(Combinator):
         self._conclusion = False
         self._ongoing = []
 
+class All(Combinator):
+    def __init__(
+        self,
+        components: List[Assessment],
+        description: str = "Are all of the following assessments true?"
+    ):
+        super().__init__(components, description)
+
+    def assess_model(self, model: Model) -> bool:
+        if self._conclusion is not None:
+            return False
+
+        still_ongoing = []
+        for component in self._ongoing:
+            component.assess_model(model)
+            if   component.conclusion is None:
+                still_ongoing.append(component)
+            elif component.conclusion is False:
+                self._conclusion = False
+                self._ongoing = []
+                return False
+
+        self._ongoing = still_ongoing
+
+        if still_ongoing:
+            return True
+        else:
+            self._conclusion = True
+            return False
+
+    def assess_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
+        if self._conclusion is not None:
+            return
+
+        still_ongoing = []
+        for component in self._ongoing:
+            component.assess_statistics(step, accumulated)
+            if   component.conclusion is None:
+                still_ongoing.append(component)
+            elif component is False:
+                self._conclusion = False
+                self._ongoing = []
+                return
+
+        self._ongoing = still_ongoing
+
+        if not still_ongoing:
+            self._conclusion = True
+
+    def assess_result(self, result: SolveResult) -> None:
+        if self._conclusion is not None:
+            return
+
+        for component in self._ongoing:
+            component.assess_result(result)
+            if not component.conclusion:
+                self._conclusion = False
+                self._ongoing = []
+                return
+
+        self._conclusion = True
+        self._ongoing = []
+
 def Sat() -> Assessment:
     return ForAny(True_(), description="Is the program satisfiable?")
 
