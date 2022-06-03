@@ -4,10 +4,10 @@ if __name__ == "__main__":
 
     # TODO
 
-    from .assessment import Any, All, Sat, Unsat
+    from .assessment import Any, All, Not, Sat, Unsat
     from .solver import Clingo
 
-    assessment = All([Any([Sat(), Unsat()])])
+    assessment = Not(All([Any([Sat(), Unsat()])]))
 
     solver = Clingo(arguments=["0"], program=":-.")
     solver.solve(assessment)

@@ -234,6 +234,55 @@ class All(Combinator):
         self._conclusion = True
         self._ongoing = []
 
+class Modifier(Assessment):
+    def __init__(self, underlying: Assessment, description: str):
+        super().__init__(description)
+        self._underlying = underlying
+
+    def __str__(self, number: List[int] = [], identation: int = 4) -> str:
+        result  = super().__str__(number, identation)
+        result += "\n" + self._underlying.__str__(number + [1], identation)
+        return result
+
+    @property
+    def underlying(self) -> Assessment:
+        return self._underlying
+
+class Not(Modifier):
+    def __init__(
+        self,
+        underlying: Assessment,
+        description: str = "Is the following assessments false?"
+    ):
+        super().__init__(underlying, description)
+
+    def assess_model(self, model: Model) -> bool:
+        if self._conclusion is not None:
+            return False
+
+        self._underlying.assess_model(model)
+
+        if self._underlying.conclusion is not None:
+            self._conclusion = not self._underlying.conclusion
+
+        return self._conclusion is None
+
+    def assess_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
+        if self._conclusion is not None:
+            return
+
+        self._underlying.assess_statistics(step, accumulated)
+
+        if self._underlying.conclusion is not None:
+            self._conclusion = not self._underlying.conclusion
+
+    def assess_result(self, result: SolveResult) -> None:
+        if self._conclusion is not None:
+            return
+
+        self._underlying.assess_result(result)
+        self._conclusion = not self._underlying.conclusion
+
 def Sat() -> Assessment:
     return ForAny(True_(), description="Is the program satisfiable?")
 
