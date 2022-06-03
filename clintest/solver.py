@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Sequence
+
 from clingo.control import Control
 
 from .assessment import Assessment
@@ -14,12 +15,12 @@ class Solver(ABC):
 class Clingo(Solver):
     def __init__(
         self,
-        arguments: Sequence[str] = [],
-        files: Sequence[str] = [],
+        arguments: Sequence[str] = None,
+        files: Sequence[str] = None,
         program: str = "",
     ):
-        self.__arguments = arguments
-        self.__files = files
+        self.__arguments = [] if arguments is None else arguments
+        self.__files = [] if files is None else files
         self.__program = program
 
     def __str__(self) -> str:

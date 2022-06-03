@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
+from typing import List, Optional
+
 from clingo.solving import Model, SolveResult
 from clingo.statistics import StatisticsMap
 from colorama import Fore, Style
-from typing import List, Optional
 
 from .assertion import Assertion, True_, False_
 
@@ -12,7 +13,9 @@ class Assessment(ABC):
         self._description: str = description
         self._conclusion: Optional[bool] = None
 
-    def __str__(self, number: List[int] = [], identation: int = 4) -> str:
+    def __str__(self, number: List[int] = None, identation: int = 4) -> str:
+        if number is None:
+            number = []
         result = " " * identation * len(number)
         result += (
             Style.DIM
@@ -36,7 +39,7 @@ class Assessment(ABC):
     def conclusion(self) -> Optional[bool]:
         return self._conclusion
 
-    def assess_model(self, model: Model) -> bool:
+    def assess_model(self, _model: Model) -> bool:
         return True
 
     def assess_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
@@ -70,8 +73,8 @@ class ForAny(Quantifier):
         if self._assertion.holds_for(model):
             self._conclusion = True
             return False
-        else:
-            return True
+
+        return True
 
     def assess_result(self, result: SolveResult) -> None:
         if self._conclusion is None:
@@ -90,9 +93,9 @@ class ForAll(Quantifier):
 
         if self._assertion.holds_for(model):
             return True
-        else:
-            self._conclusion = False
-            return False
+
+        self._conclusion = False
+        return False
 
     def assess_result(self, result: SolveResult) -> None:
         if self._conclusion is None:
@@ -105,7 +108,9 @@ class Combinator(Assessment):
         self._components = components
         self._ongoing = components
 
-    def __str__(self, number: List[int] = [], identation: int = 4) -> str:
+    def __str__(self, number: List[int] = None, identation: int = 4) -> str:
+        if number is None:
+            number = []
         result = super().__str__(number, identation)
         for i, component in enumerate(self._components):
             result += "\n" + component.__str__(number + [i + 1], identation)
@@ -146,9 +151,9 @@ class Any(Combinator):
 
         if still_ongoing:
             return True
-        else:
-            self._conclusion = False
-            return False
+
+        self._conclusion = False
+        return False
 
     def assess_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
         if self._conclusion is not None:
@@ -209,9 +214,9 @@ class All(Combinator):
 
         if still_ongoing:
             return True
-        else:
-            self._conclusion = True
-            return False
+
+        self._conclusion = True
+        return False
 
     def assess_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
         if self._conclusion is not None:
@@ -252,7 +257,9 @@ class Modifier(Assessment):
         super().__init__(description)
         self._underlying = underlying
 
-    def __str__(self, number: List[int] = [], identation: int = 4) -> str:
+    def __str__(self, number: List[int] = None, identation: int = 4) -> str:
+        if number is None:
+            number = []
         result = super().__str__(number, identation)
         result += "\n" + self._underlying.__str__(number + [1], identation)
         return result

@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from clingo.solving import Model
-from clingo.symbol import Symbol
 
 
 class Assertion(ABC):
