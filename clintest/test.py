@@ -24,3 +24,45 @@ class Test(ABC):
     @abstractmethod
     def outcome(self) -> Optional[bool]:
         pass
+
+
+class Inspector(Test):
+    def __init__(self):
+        self.artifacts = []
+        self.__outcome = None
+
+    def on_model(self, model: Model) -> bool:
+        self.artifacts.append({
+            "__f": "on_model",
+            "str(model)": str(model),
+        })
+        return True
+
+    def on_unsat(self, lower_bound: Sequence[int]) -> None:
+        self.artifacts.append({
+            "__f": "on_unsat",
+            "lower_bound": lower_bound,
+        })
+
+    def on_core(self, core: Sequence[int]) -> None:
+        self.artifacts.append({
+            "__f": "on_core",
+            "core": core,
+        })
+
+    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
+        self.artifacts.append({
+            "__f": "on_statistics",
+            "step": step,
+            "accumulated": accumulated,
+        })
+
+    def on_finish(self, result: SolveResult) -> None:
+        self.artifacts.append({
+            "__f": "on_finish",
+            "result": result,
+        })
+        self.__outcome = True
+
+    def outcome(self) -> Optional[bool]:
+        return self.__outcome
