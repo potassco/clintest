@@ -32,8 +32,8 @@ class Any(Quantifier):
 
 
 class Exact(Quantifier):
-    def __init__(self, n: int) -> None:
-        self.__target = n
+    def __init__(self, target: int) -> None:
+        self.__target = target
         self.__state = 0
 
     def consume(self, value: bool) -> Tuple[bool, bool]:

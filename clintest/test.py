@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Sequence, Tuple
+from typing import Sequence, Tuple
 
 from clingo.solving import Model, SolveResult
 from clingo.statistics import StatisticsMap
