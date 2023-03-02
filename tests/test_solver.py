@@ -1,9 +1,9 @@
 from clintest.solver import Clingo
-from clintest.test import Inspector
+from clintest.test import Inspect
 
 def test_clingo():
     solver = Clingo("0", "a.")
-    test = Inspector()
+    test = Inspect()
 
     solver.solve(test)
 

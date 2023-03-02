@@ -26,7 +26,7 @@ class Test(ABC):
         pass
 
 
-class Inspector(Test):
+class Inspect(Test):
     def __init__(self):
         self.artifacts = []
         self.__outcome = None
