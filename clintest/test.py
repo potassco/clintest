@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Sequence
+from typing import Optional, Sequence, Tuple
 
 from clingo.solving import Model, SolveResult
 from clingo.statistics import StatisticsMap
@@ -22,14 +22,14 @@ class Test(ABC):
         pass
 
     @abstractmethod
-    def outcome(self) -> Optional[bool]:
+    def outcome(self) -> Tuple[bool, bool]:
         pass
 
 
 class Inspect(Test):
     def __init__(self):
         self.artifacts = []
-        self.__outcome = None
+        self.__outcome = True, True
 
     def on_model(self, model: Model) -> bool:
         self.artifacts.append({
@@ -62,7 +62,7 @@ class Inspect(Test):
             "__f": "on_finish",
             "result": result,
         })
-        self.__outcome = True
+        self.__outcome = True, False
 
-    def outcome(self) -> Optional[bool]:
+    def outcome(self) -> Tuple[bool, bool]:
         return self.__outcome
