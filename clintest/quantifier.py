@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Iterable, Tuple
 
-from clintest.outcome import Outcome
+from .outcome import Outcome
 
 
 class Quantifier(ABC):
