@@ -6,6 +6,10 @@ from clintest.outcome import Outcome
 
 class Quantifier(ABC):
     @abstractmethod
+    def outcome(self) -> Outcome:
+        pass
+
+    @abstractmethod
     def consume(self, value: bool) -> Outcome:
         pass
 
@@ -13,6 +17,9 @@ class Quantifier(ABC):
 class All(Quantifier):
     def __init__(self) -> None:
         self.__state = Outcome(True, True)
+
+    def outcome(self) -> Outcome:
+        return self.__state
 
     def consume(self, value: bool) -> Outcome:
         if not value:
@@ -23,6 +30,9 @@ class All(Quantifier):
 class Any(Quantifier):
     def __init__(self) -> None:
         self.__state = Outcome(False, True)
+
+    def outcome(self) -> Outcome:
+        return self.__state
 
     def consume(self, value: bool) -> Outcome:
         if value:
@@ -35,6 +45,9 @@ class Exact(Quantifier):
         self.__target = target
         self.__state = 0
 
+    def outcome(self) -> Outcome:
+        return Outcome(self.__state == self.__target, self.__state <= self.__target)
+
     def consume(self, value: bool) -> Outcome:
         self.__state += value
-        return Outcome(self.__state == self.__target, self.__state <= self.__target)
+        return self.outcome()

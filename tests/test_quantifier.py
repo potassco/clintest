@@ -6,6 +6,8 @@ def test_all():
     from clintest.quantifier import All
     quantifier = All()
 
+    assert quantifier.outcome().as_tuple() == (True, True)
+
     input = 2 * [True, False]
     output = [quantifier.consume(value).as_tuple() for value in input]
 
@@ -21,6 +23,8 @@ def test_any():
     from clintest.quantifier import Any
     quantifier = Any()
 
+    assert quantifier.outcome().as_tuple() == (False, True)
+
     input = 2 * [False, True]
     output = [quantifier.consume(value).as_tuple() for value in input]
 
@@ -34,6 +38,8 @@ def test_any():
 def test_exact():
     from clintest.quantifier import Exact
     quantifier = Exact(2)
+
+    assert quantifier.outcome().as_tuple() == (False, True)
 
     input = 4 * [False, True]
     output = [quantifier.consume(value).as_tuple() for value in input]
