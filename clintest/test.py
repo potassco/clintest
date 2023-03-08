@@ -4,6 +4,9 @@ from typing import Sequence, Tuple
 from clingo.solving import Model, SolveResult
 from clingo.statistics import StatisticsMap
 
+from .outcome import Outcome
+
+
 class Test(ABC):
     def on_model(self, _model: Model) -> bool:
         return True
@@ -22,7 +25,7 @@ class Test(ABC):
         pass
 
     @abstractmethod
-    def outcome(self) -> Tuple[bool, bool]:
+    def outcome(self) -> Outcome:
         pass
 
 
@@ -62,7 +65,7 @@ class Inspect(Test):
             "__f": "on_finish",
             "result": result,
         })
-        self.__outcome = True, False
+        self.__outcome = Outcome(True, False)
 
-    def outcome(self) -> Tuple[bool, bool]:
+    def outcome(self) -> Outcome:
         return self.__outcome
