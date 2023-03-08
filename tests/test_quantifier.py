@@ -7,7 +7,7 @@ def test_all():
     quantifier = All()
 
     input = 2 * [True, False]
-    output = list(quantifier.consume_all(input))
+    output = [quantifier.consume(value).as_tuple() for value in input]
 
     assert output == [
         (True, True),
@@ -22,7 +22,7 @@ def test_any():
     quantifier = Any()
 
     input = 2 * [False, True]
-    output = list(quantifier.consume_all(input))
+    output = [quantifier.consume(value).as_tuple() for value in input]
 
     assert output == [
         (False, True),
@@ -36,7 +36,7 @@ def test_exact():
     quantifier = Exact(2)
 
     input = 4 * [False, True]
-    output = list(quantifier.consume_all(input))
+    output = [quantifier.consume(value).as_tuple() for value in input]
 
     assert output == [
         (False, True),
