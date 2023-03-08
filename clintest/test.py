@@ -1,10 +1,12 @@
 from abc import ABC, abstractmethod
-from typing import Sequence, Tuple
+from typing import Sequence
 
 from clingo.solving import Model, SolveResult
 from clingo.statistics import StatisticsMap
 
 from .outcome import Outcome
+from .quantifier import Quantifier, Immutable
+from .assertion import Assertion
 
 
 class Test(ABC):
@@ -69,3 +71,21 @@ class Inspect(Test):
 
     def outcome(self) -> Outcome:
         return self.__outcome
+
+
+class Assert(Test):
+    def __init__(self, quantifier: Quantifier, assertion: Assertion) -> None:
+        self.__quantifier = quantifier
+        self.__assertion = assertion
+
+    def on_model(self, model: Model) -> bool:
+        if self.__quantifier.outcome().is_mutable():
+            self.__quantifier.consume(self.__assertion.holds_for(model))
+
+        return self.__quantifier.outcome().is_mutable()
+
+    def on_finish(self, result: SolveResult) -> None:
+        self.__quantifier = Immutable(self.__quantifier)
+
+    def outcome(self) -> Outcome:
+        return self.__quantifier.outcome()

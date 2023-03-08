@@ -13,6 +13,17 @@ class Quantifier(ABC):
         pass
 
 
+class Immutable(Quantifier):
+    def __init__(self, inner: Quantifier) -> None:
+        self.__state = Outcome(inner.outcome().current_value(), False)
+
+    def outcome(self) -> Outcome:
+        return self.__state
+
+    def consume(self, value: bool) -> Outcome:
+        return self.__state
+
+
 class All(Quantifier):
     def __init__(self) -> None:
         self.__state = Outcome(True, True)
