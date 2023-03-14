@@ -1,7 +1,10 @@
-from clintest.solver import Clingo
-from clintest.test import Inspect
+# pylint: disable=import-outside-toplevel
+
 
 def test_clingo():
+    from clintest.solver import Clingo
+    from clintest.test import Inspect
+
     solver = Clingo("0", "a.")
     test = Inspect()
 

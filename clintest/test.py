@@ -5,7 +5,7 @@ from clingo.solving import Model, SolveResult
 from clingo.statistics import StatisticsMap
 
 from .outcome import Outcome
-from .quantifier import Quantifier, Immutable
+from .quantifier import Quantifier, Finished
 from .assertion import Assertion
 
 
@@ -79,13 +79,13 @@ class Assert(Test):
         self.__assertion = assertion
 
     def on_model(self, model: Model) -> bool:
-        if self.__quantifier.outcome().is_mutable():
+        if not self.__quantifier.outcome().is_certain():
             self.__quantifier.consume(self.__assertion.holds_for(model))
 
-        return self.__quantifier.outcome().is_mutable()
+        return not self.__quantifier.outcome().is_certain()
 
     def on_finish(self, result: SolveResult) -> None:
-        self.__quantifier = Immutable(self.__quantifier)
+        self.__quantifier = Finished(self.__quantifier)
 
     def outcome(self) -> Outcome:
         return self.__quantifier.outcome()

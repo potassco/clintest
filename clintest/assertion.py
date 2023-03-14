@@ -5,26 +5,16 @@ from clingo.solving import Model
 from clingo.symbol import Symbol, parse_term
 
 
-class Assertion(ABC):
-    @abstractmethod
-    def holds_for(self, model: Model) -> bool:
-        pass
-
-
-class True_(Assertion):
-    def holds_for(self, model: Model) -> bool:
-        return True
-
-
-class False_(Assertion):
-    def holds_for(self, model: Model) -> bool:
-        return False
-
-
 def _into_symbol(symbol: Union[Symbol, str]) -> Symbol:
     if isinstance(symbol, Symbol):
         return symbol
     return parse_term(symbol)
+
+
+class Assertion(ABC):
+    @abstractmethod
+    def holds_for(self, model: Model) -> bool:
+        pass
 
 
 class Contains(Assertion):
@@ -57,3 +47,13 @@ class SupersetOf(Assertion):
 
     def holds_for(self, model: Model) -> bool:
         return set(model.symbols(shown=True)).issuperset(self.__symbols)
+
+
+class True_(Assertion):
+    def holds_for(self, model: Model) -> bool:
+        return True
+
+
+class False_(Assertion):
+    def holds_for(self, model: Model) -> bool:
+        return False

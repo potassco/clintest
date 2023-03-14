@@ -13,40 +13,29 @@ class Quantifier(ABC):
         pass
 
 
-class Immutable(Quantifier):
-    def __init__(self, inner: Quantifier) -> None:
-        self.__state = Outcome(inner.outcome().current_value(), False)
-
-    def outcome(self) -> Outcome:
-        return self.__state
-
-    def consume(self, value: bool) -> Outcome:
-        return self.__state
-
-
 class All(Quantifier):
     def __init__(self) -> None:
-        self.__state = Outcome(True, True)
+        self.__state = Outcome(True, False)
 
     def outcome(self) -> Outcome:
         return self.__state
 
     def consume(self, value: bool) -> Outcome:
         if not value:
-            self.__state = Outcome(False, False)
+            self.__state = Outcome(False, True)
         return self.__state
 
 
 class Any(Quantifier):
     def __init__(self) -> None:
-        self.__state = Outcome(False, True)
+        self.__state = Outcome(False, False)
 
     def outcome(self) -> Outcome:
         return self.__state
 
     def consume(self, value: bool) -> Outcome:
         if value:
-            self.__state = Outcome(True, False)
+            self.__state = Outcome(True, True)
         return self.__state
 
 
@@ -56,8 +45,19 @@ class Exact(Quantifier):
         self.__state = 0
 
     def outcome(self) -> Outcome:
-        return Outcome(self.__state == self.__target, self.__state <= self.__target)
+        return Outcome(self.__state == self.__target, self.__state > self.__target)
 
     def consume(self, value: bool) -> Outcome:
         self.__state += value
         return self.outcome()
+
+
+class Finished(Quantifier):
+    def __init__(self, inner: Quantifier) -> None:
+        self.__state = Outcome(inner.outcome().current_value(), True)
+
+    def outcome(self) -> Outcome:
+        return self.__state
+
+    def consume(self, value: bool) -> Outcome:
+        return self.__state

@@ -22,16 +22,6 @@ def frame():
     return test
 
 
-def test_true(frame):
-    from clintest.assertion import True_
-    frame([True_()], [])
-
-
-def test_false(frame):
-    from clintest.assertion import False_
-    frame([], [False_()])
-
-
 def test_contains(frame):
     from clintest.assertion import Contains
     frame([
@@ -62,7 +52,7 @@ def test_subsetof(frame):
     })
 
 
-def test_superset(frame):
+def test_supersetof(frame):
     from clintest.assertion import SupersetOf
     frame([
         SupersetOf({"a"}),
@@ -70,3 +60,13 @@ def test_superset(frame):
     ], {
         SupersetOf({"a", "b", "c"}),
     })
+
+
+def test_true(frame):
+    from clintest.assertion import True_
+    frame([True_()], [])
+
+
+def test_false(frame):
+    from clintest.assertion import False_
+    frame([], [False_()])

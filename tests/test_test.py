@@ -15,8 +15,8 @@ def test_assert_all():
     solver.solve(positive)
     solver.solve(negative)
 
-    assert positive.outcome().is_immutably_true()
-    assert negative.outcome().is_immutably_false()
+    assert positive.outcome().is_certainly_true()
+    assert negative.outcome().is_certainly_false()
 
 
 def test_assert_any():
@@ -33,8 +33,8 @@ def test_assert_any():
     solver.solve(positive)
     solver.solve(negative)
 
-    assert positive.outcome().is_immutably_true()
-    assert negative.outcome().is_immutably_false()
+    assert positive.outcome().is_certainly_true()
+    assert negative.outcome().is_certainly_false()
 
 
 def test_assert_exact():
@@ -51,5 +51,5 @@ def test_assert_exact():
     solver.solve(positive)
     solver.solve(negative)
 
-    assert positive.outcome().is_immutably_true()
-    assert negative.outcome().is_immutably_false()
+    assert positive.outcome().is_certainly_true()
+    assert negative.outcome().is_certainly_false()
