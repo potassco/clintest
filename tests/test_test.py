@@ -1,6 +1,24 @@
 # pylint: disable=import-outside-toplevel
 
 
+def assert_execution_3(test):
+    assert len(test.artifacts) == 3
+    assert test.artifacts[0]["__f"] == "on_model"
+    assert test.artifacts[0]["str(model)"] == "a"
+    assert test.artifacts[1]["__f"] == "on_statistics"
+    assert test.artifacts[2]["__f"] == "on_finish"
+
+
+def assert_execution_4(test):
+    assert len(test.artifacts) == 4
+    assert test.artifacts[0]["__f"] == "on_model"
+    assert test.artifacts[0]["str(model)"] == "a"
+    assert test.artifacts[1]["__f"] == "on_model"
+    assert test.artifacts[1]["str(model)"] == "b a"
+    assert test.artifacts[2]["__f"] == "on_statistics"
+    assert test.artifacts[3]["__f"] == "on_finish"
+
+
 def test_assert_all():
     from clintest.solver import Clingo
     from clintest.test import Assert, Inspect
@@ -13,25 +31,13 @@ def test_assert_all():
     solver.solve(test)
 
     assert test.outcome().is_certainly_true()
-
-    assert len(test.artifacts) == 4
-    assert test.artifacts[0]["__f"] == "on_model"
-    assert test.artifacts[0]["str(model)"] == "a"
-    assert test.artifacts[1]["__f"] == "on_model"
-    assert test.artifacts[1]["str(model)"] == "b a"
-    assert test.artifacts[2]["__f"] == "on_statistics"
-    assert test.artifacts[3]["__f"] == "on_finish"
+    assert_execution_4(test)
 
     test = Inspect(Assert(All(), Contains("b")))
     solver.solve(test)
 
     assert test.outcome().is_certainly_false()
-
-    assert len(test.artifacts) == 3
-    assert test.artifacts[0]["__f"] == "on_model"
-    assert test.artifacts[0]["str(model)"] == "a"
-    assert test.artifacts[1]["__f"] == "on_statistics"
-    assert test.artifacts[2]["__f"] == "on_finish"
+    assert_execution_3(test)
 
 
 def test_assert_any():
@@ -46,38 +52,19 @@ def test_assert_any():
     solver.solve(test)
 
     assert test.outcome().is_certainly_true()
-
-    assert len(test.artifacts) == 3
-    assert test.artifacts[0]["__f"] == "on_model"
-    assert test.artifacts[0]["str(model)"] == "a"
-    assert test.artifacts[1]["__f"] == "on_statistics"
-    assert test.artifacts[2]["__f"] == "on_finish"
+    assert_execution_3(test)
 
     test = Inspect(Assert(Any(), Contains("b")))
     solver.solve(test)
 
     assert test.outcome().is_certainly_true()
-
-    assert len(test.artifacts) == 4
-    assert test.artifacts[0]["__f"] == "on_model"
-    assert test.artifacts[0]["str(model)"] == "a"
-    assert test.artifacts[1]["__f"] == "on_model"
-    assert test.artifacts[1]["str(model)"] == "b a"
-    assert test.artifacts[2]["__f"] == "on_statistics"
-    assert test.artifacts[3]["__f"] == "on_finish"
+    assert_execution_4(test)
 
     test = Inspect(Assert(Any(), Contains("c")))
     solver.solve(test)
 
     assert test.outcome().is_certainly_false()
-
-    assert len(test.artifacts) == 4
-    assert test.artifacts[0]["__f"] == "on_model"
-    assert test.artifacts[0]["str(model)"] == "a"
-    assert test.artifacts[1]["__f"] == "on_model"
-    assert test.artifacts[1]["str(model)"] == "b a"
-    assert test.artifacts[2]["__f"] == "on_statistics"
-    assert test.artifacts[3]["__f"] == "on_finish"
+    assert_execution_4(test)
 
 
 def test_assert_exact():
@@ -92,130 +79,72 @@ def test_assert_exact():
     solver.solve(test)
 
     assert test.outcome().is_certainly_false()
-
-    assert len(test.artifacts) == 3
-    assert test.artifacts[0]["__f"] == "on_model"
-    assert test.artifacts[0]["str(model)"] == "a"
-    assert test.artifacts[1]["__f"] == "on_statistics"
-    assert test.artifacts[2]["__f"] == "on_finish"
+    assert_execution_3(test)
 
     test = Inspect(Assert(Exact(1), Contains("a")))
     solver.solve(test)
 
     assert test.outcome().is_certainly_false()
-
-    assert len(test.artifacts) == 4
-    assert test.artifacts[0]["__f"] == "on_model"
-    assert test.artifacts[0]["str(model)"] == "a"
-    assert test.artifacts[1]["__f"] == "on_model"
-    assert test.artifacts[1]["str(model)"] == "b a"
-    assert test.artifacts[2]["__f"] == "on_statistics"
-    assert test.artifacts[3]["__f"] == "on_finish"
+    assert_execution_4(test)
 
     test = Inspect(Assert(Exact(2), Contains("a")))
     solver.solve(test)
 
     assert test.outcome().is_certainly_true()
-
-    assert len(test.artifacts) == 4
-    assert test.artifacts[0]["__f"] == "on_model"
-    assert test.artifacts[0]["str(model)"] == "a"
-    assert test.artifacts[1]["__f"] == "on_model"
-    assert test.artifacts[1]["str(model)"] == "b a"
-    assert test.artifacts[2]["__f"] == "on_statistics"
-    assert test.artifacts[3]["__f"] == "on_finish"
+    assert_execution_4(test)
 
     test = Inspect(Assert(Exact(0), Contains("b")))
     solver.solve(test)
 
     assert test.outcome().is_certainly_false()
-
-    assert len(test.artifacts) == 4
-    assert test.artifacts[0]["__f"] == "on_model"
-    assert test.artifacts[0]["str(model)"] == "a"
-    assert test.artifacts[1]["__f"] == "on_model"
-    assert test.artifacts[1]["str(model)"] == "b a"
-    assert test.artifacts[2]["__f"] == "on_statistics"
-    assert test.artifacts[3]["__f"] == "on_finish"
+    assert_execution_4(test)
 
     test = Inspect(Assert(Exact(1), Contains("b")))
     solver.solve(test)
 
     assert test.outcome().is_certainly_true()
-
-    assert len(test.artifacts) == 4
-    assert test.artifacts[0]["__f"] == "on_model"
-    assert test.artifacts[0]["str(model)"] == "a"
-    assert test.artifacts[1]["__f"] == "on_model"
-    assert test.artifacts[1]["str(model)"] == "b a"
-    assert test.artifacts[2]["__f"] == "on_statistics"
-    assert test.artifacts[3]["__f"] == "on_finish"
+    assert_execution_4(test)
 
     test = Inspect(Assert(Exact(2), Contains("b")))
     solver.solve(test)
 
     assert test.outcome().is_certainly_false()
-
-    assert len(test.artifacts) == 4
-    assert test.artifacts[0]["__f"] == "on_model"
-    assert test.artifacts[0]["str(model)"] == "a"
-    assert test.artifacts[1]["__f"] == "on_model"
-    assert test.artifacts[1]["str(model)"] == "b a"
-    assert test.artifacts[2]["__f"] == "on_statistics"
-    assert test.artifacts[3]["__f"] == "on_finish"
+    assert_execution_4(test)
 
 
 def test_true():
     from clintest.solver import Clingo
     from clintest.test import True_, Inspect
 
-    solver = Clingo("0", "{a}.")
+    solver = Clingo("0", "a. {b}.")
 
     test = Inspect(True_())
     solver.solve(test)
 
     assert test.outcome().is_certainly_true()
-
-    assert len(test.artifacts) == 3
-    assert test.artifacts[0]["__f"] == "on_model"
-    assert test.artifacts[1]["__f"] == "on_statistics"
-    assert test.artifacts[2]["__f"] == "on_finish"
+    assert_execution_3(test)
 
     test = Inspect(True_(lazy_evaluation = False))
     solver.solve(test)
 
     assert test.outcome().is_certainly_true()
-
-    assert len(test.artifacts) == 4
-    assert test.artifacts[0]["__f"] == "on_model"
-    assert test.artifacts[1]["__f"] == "on_model"
-    assert test.artifacts[2]["__f"] == "on_statistics"
-    assert test.artifacts[3]["__f"] == "on_finish"
+    assert_execution_4(test)
 
 
 def test_false():
     from clintest.solver import Clingo
     from clintest.test import False_, Inspect
 
-    solver = Clingo("0", "{a}.")
+    solver = Clingo("0", "a. {b}.")
 
     test = Inspect(False_())
     solver.solve(test)
 
     assert test.outcome().is_certainly_false()
-
-    assert len(test.artifacts) == 3
-    assert test.artifacts[0]["__f"] == "on_model"
-    assert test.artifacts[1]["__f"] == "on_statistics"
-    assert test.artifacts[2]["__f"] == "on_finish"
+    assert_execution_3(test)
 
     test = Inspect(False_(lazy_evaluation = False))
     solver.solve(test)
 
     assert test.outcome().is_certainly_false()
-
-    assert len(test.artifacts) == 4
-    assert test.artifacts[0]["__f"] == "on_model"
-    assert test.artifacts[1]["__f"] == "on_model"
-    assert test.artifacts[2]["__f"] == "on_statistics"
-    assert test.artifacts[3]["__f"] == "on_finish"
+    assert_execution_4(test)

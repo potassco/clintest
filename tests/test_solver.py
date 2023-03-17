@@ -1,4 +1,5 @@
 # pylint: disable=import-outside-toplevel
+# pylint: disable=duplicate-code
 
 
 def test_clingo():
