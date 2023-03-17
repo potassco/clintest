@@ -124,7 +124,7 @@ def test_true():
     assert test.outcome().is_certainly_true()
     assert_execution_3(test)
 
-    test = Inspect(True_(lazy_evaluation = False))
+    test = Inspect(True_(lazy = False))
     solver.solve(test)
 
     assert test.outcome().is_certainly_true()
@@ -143,7 +143,7 @@ def test_false():
     assert test.outcome().is_certainly_false()
     assert_execution_3(test)
 
-    test = Inspect(False_(lazy_evaluation = False))
+    test = Inspect(False_(lazy = False))
     solver.solve(test)
 
     assert test.outcome().is_certainly_false()
@@ -164,7 +164,7 @@ def test_not():
     assert_execution_3(inner)
     assert_execution_3(outer)
 
-    inner = Inspect(False_(lazy_evaluation = False))
+    inner = Inspect(False_(lazy = False))
     outer = Inspect(Not(inner))
     solver.solve(outer)
 
@@ -180,7 +180,7 @@ def test_not():
     assert_execution_3(inner)
     assert_execution_3(outer)
 
-    inner = Inspect(True_(lazy_evaluation = False))
+    inner = Inspect(True_(lazy = False))
     outer = Inspect(Not(inner))
     solver.solve(outer)
 

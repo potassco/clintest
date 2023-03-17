@@ -32,8 +32,8 @@ class Test(ABC):
 
 
 class True_(Test):
-    def __init__(self, lazy_evaluation: bool = True) -> None:
-        self.__outcome = Outcome(True, lazy_evaluation)
+    def __init__(self, lazy: bool = True) -> None:
+        self.__outcome = Outcome(True, lazy)
 
     def on_model(self, _model: Model) -> bool:
         return not self.__outcome.is_certain()
@@ -46,8 +46,8 @@ class True_(Test):
 
 
 class False_(Test):
-    def __init__(self, lazy_evaluation: bool = True) -> None:
-        self.__outcome = Outcome(False, lazy_evaluation)
+    def __init__(self, lazy: bool = True) -> None:
+        self.__outcome = Outcome(False, lazy)
 
     def on_model(self, _model: Model) -> bool:
         return not self.__outcome.is_certain()
@@ -60,7 +60,7 @@ class False_(Test):
 
 
 class Inspect(Test):
-    def __init__(self, test: Test = True_(lazy_evaluation = False)):
+    def __init__(self, test: Test = True_(lazy = False)):
         self.artifacts: List[Dict[str, Any]] = []
         self.test: Test = test
 
