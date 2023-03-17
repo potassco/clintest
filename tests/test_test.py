@@ -53,3 +53,25 @@ def test_assert_exact():
 
     assert positive.outcome().is_certainly_true()
     assert negative.outcome().is_certainly_false()
+
+
+def test_true():
+    from clintest.solver import Clingo
+    from clintest.test import True_
+
+    solver = Clingo("0", "")
+    test = True_()
+
+    solver.solve(test)
+    assert test.outcome().is_certainly_true()
+
+
+def test_false():
+    from clintest.solver import Clingo
+    from clintest.test import False_
+
+    solver = Clingo("0", "")
+    test = False_()
+
+    solver.solve(test)
+    assert test.outcome().is_certainly_false()

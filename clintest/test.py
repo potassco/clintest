@@ -89,3 +89,31 @@ class Assert(Test):
 
     def outcome(self) -> Outcome:
         return self.__quantifier.outcome()
+
+
+class True_(Test):
+    def __init__(self, lazy_evaluation: bool = True) -> None:
+        self.__outcome = Outcome(True, lazy_evaluation)
+
+    def on_model(self, _model: Model) -> bool:
+        return not self.__outcome.is_certain()
+
+    def on_finish(self, result: SolveResult) -> None:
+        self.__outcome = Outcome(True, True)
+
+    def outcome(self) -> Outcome:
+        return self.__outcome
+
+
+class False_(Test):
+    def __init__(self, lazy_evaluation: bool = True) -> None:
+        self.__outcome = Outcome(False, lazy_evaluation)
+
+    def on_model(self, _model: Model) -> bool:
+        return not self.__outcome.is_certain()
+
+    def on_finish(self, result: SolveResult) -> None:
+        self.__outcome = Outcome(False, True)
+
+    def outcome(self) -> Outcome:
+        return self.__outcome
