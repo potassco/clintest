@@ -6,6 +6,7 @@ disable=
     missing-class-docstring,
     missing-function-docstring,
     too-few-public-methods,
+    no-else-return,
 
 
 [BASIC]

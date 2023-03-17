@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Sequence
+from typing import Any, Callable, Dict, List, Sequence
 
 from clingo.solving import Model, SolveResult
 from clingo.statistics import StatisticsMap
@@ -144,3 +144,151 @@ class Not(Test):
     def outcome(self) -> Outcome:
         outcome = self.__operand.outcome()
         return Outcome(not outcome.current_value(), outcome.is_certain())
+
+
+class And(Test):
+    def __init__(
+        self,
+        *args: Test,
+        short_circuit: bool = True,
+        ignore_certain: bool = True
+    ) -> None:
+        # self.__operands = list(args)
+        self.__ongoing = list(args)
+        self.__short_circuit = short_circuit
+        self.__ignore_certain = ignore_certain
+        self.__outcome = Outcome(True, False)
+
+    def __on_whatever(self, call_operand: Callable[[Test], None]) -> bool:
+        still_ongoing = []
+
+        for operand in self.__ongoing:
+            call_operand(operand)
+
+            if operand.outcome().is_certainly_false():
+                if self.__short_circuit:
+                    self.__ongoing = []
+                    self.__outcome = Outcome(False, True)
+                    return False
+                else:
+                    self.__outcome = Outcome(False, False)
+
+            if not (self.__ignore_certain and operand.outcome().is_certain()):
+                still_ongoing.append(operand)
+
+        self.__ongoing = still_ongoing
+        self.__outcome = Outcome(self.__outcome.current_value(), bool(still_ongoing))
+
+        return not self.__outcome.is_certain()
+
+
+    def on_model(self, model: Model) -> bool:
+        def call_operand(operand: Test) -> None:
+            operand.on_model(model)
+
+        return self.__on_whatever(call_operand)
+
+
+    def on_unsat(self, lower_bound: Sequence[int]) -> None:
+        def call_operand(operand: Test) -> None:
+            operand.on_unsat(lower_bound)
+
+        self.__on_whatever(call_operand)
+
+    def on_core(self, core: Sequence[int]) -> None:
+        def call_operand(operand: Test) -> None:
+            operand.on_core(core)
+
+        self.__on_whatever(call_operand)
+
+    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
+        def call_operand(operand: Test) -> None:
+            operand.on_statistics(step, accumulated)
+
+        self.__on_whatever(call_operand)
+
+    def on_finish(self, result: SolveResult) -> None:
+        def call_operand(operand: Test) -> None:
+            operand.on_finish(result)
+
+        self.__on_whatever(call_operand)
+
+        assert not self.__ongoing
+        assert self.__outcome.is_certain()
+
+    def outcome(self) -> Outcome:
+        return self.__outcome
+
+
+class Or(Test):
+    def __init__(
+        self,
+        *args: Test,
+        short_circuit: bool = True,
+        ignore_certain: bool = True
+    ) -> None:
+        # self.__operands = list(args)
+        self.__ongoing = list(args)
+        self.__short_circuit = short_circuit
+        self.__ignore_certain = ignore_certain
+        self.__outcome = Outcome(False, False)
+
+    def __on_whatever(self, call_operand: Callable[[Test], None]) -> bool:
+        still_ongoing = []
+
+        for operand in self.__ongoing:
+            call_operand(operand)
+
+            if operand.outcome().is_certainly_true():
+                if self.__short_circuit:
+                    self.__ongoing = []
+                    self.__outcome = Outcome(False, True)
+                    return False
+                else:
+                    self.__outcome = Outcome(False, False)
+
+            if not (self.__ignore_certain and operand.outcome().is_certain()):
+                still_ongoing.append(operand)
+
+        self.__ongoing = still_ongoing
+        self.__outcome = Outcome(self.__outcome.current_value(), bool(still_ongoing))
+
+        return not self.__outcome.is_certain()
+
+
+    def on_model(self, model: Model) -> bool:
+        def call_operand(operand: Test) -> None:
+            operand.on_model(model)
+
+        return self.__on_whatever(call_operand)
+
+
+    def on_unsat(self, lower_bound: Sequence[int]) -> None:
+        def call_operand(operand: Test) -> None:
+            operand.on_unsat(lower_bound)
+
+        self.__on_whatever(call_operand)
+
+    def on_core(self, core: Sequence[int]) -> None:
+        def call_operand(operand: Test) -> None:
+            operand.on_core(core)
+
+        self.__on_whatever(call_operand)
+
+    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
+        def call_operand(operand: Test) -> None:
+            operand.on_statistics(step, accumulated)
+
+        self.__on_whatever(call_operand)
+
+    def on_finish(self, result: SolveResult) -> None:
+        def call_operand(operand: Test) -> None:
+            operand.on_finish(result)
+
+        self.__on_whatever(call_operand)
+
+        assert not self.__ongoing
+        assert self.__outcome.is_certain()
+
+    def outcome(self) -> Outcome:
+        return self.__outcome
