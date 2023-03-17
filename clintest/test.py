@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Sequence
+from typing import Any, Dict, List, Sequence
 
 from clingo.solving import Model, SolveResult
 from clingo.statistics import StatisticsMap
@@ -61,8 +61,8 @@ class False_(Test):
 
 class Inspect(Test):
     def __init__(self, test: Test = True_(lazy_evaluation = False)):
-        self.artifacts = []
-        self.test = test
+        self.artifacts: List[Dict[str, Any]] = []
+        self.test: Test = test
 
     def on_model(self, model: Model) -> bool:
         self.artifacts.append({
