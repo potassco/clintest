@@ -120,3 +120,27 @@ class Assert(Test):
 
     def outcome(self) -> Outcome:
         return self.__quantifier.outcome()
+
+
+class Not(Test):
+    def __init__(self, operand: Test) -> None:
+        self.__operand = operand
+
+    def on_model(self, model: Model) -> bool:
+        return self.__operand.on_model(model)
+
+    def on_unsat(self, lower_bound: Sequence[int]) -> None:
+        self.__operand.on_unsat(lower_bound)
+
+    def on_core(self, core: Sequence[int]) -> None:
+        self.__operand.on_core(core)
+
+    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
+        self.__operand.on_statistics(step, accumulated)
+
+    def on_finish(self, result: SolveResult) -> None:
+        self.__operand.on_finish(result)
+
+    def outcome(self) -> Outcome:
+        outcome = self.__operand.outcome()
+        return Outcome(not outcome.current_value(), outcome.is_certain())

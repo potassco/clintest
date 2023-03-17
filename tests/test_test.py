@@ -148,3 +148,42 @@ def test_false():
 
     assert test.outcome().is_certainly_false()
     assert_execution_4(test)
+
+
+def test_not():
+    from clintest.solver import Clingo
+    from clintest.test import False_, True_, Not, Inspect
+
+    solver = Clingo("0", "a. {b}.")
+
+    inner = Inspect(False_())
+    outer = Inspect(Not(inner))
+    solver.solve(outer)
+
+    assert outer.outcome().is_certainly_true()
+    assert_execution_3(inner)
+    assert_execution_3(outer)
+
+    inner = Inspect(False_(lazy_evaluation = False))
+    outer = Inspect(Not(inner))
+    solver.solve(outer)
+
+    assert outer.outcome().is_certainly_true()
+    assert_execution_4(inner)
+    assert_execution_4(outer)
+
+    inner = Inspect(True_())
+    outer = Inspect(Not(inner))
+    solver.solve(outer)
+
+    assert outer.outcome().is_certainly_false()
+    assert_execution_3(inner)
+    assert_execution_3(outer)
+
+    inner = Inspect(True_(lazy_evaluation = False))
+    outer = Inspect(Not(inner))
+    solver.solve(outer)
+
+    assert outer.outcome().is_certainly_false()
+    assert_execution_4(inner)
+    assert_execution_4(outer)
