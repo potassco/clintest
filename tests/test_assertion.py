@@ -70,3 +70,32 @@ def test_true(frame):
 def test_false(frame):
     from clintest.assertion import False_
     frame([], [False_()])
+
+
+def test_not(frame):
+    from clintest.assertion import Not, True_, False_
+    frame([Not(False_())], [Not(True_())])
+
+
+def test_and(frame):
+    from clintest.assertion import And, True_, False_
+    frame([
+        And(),
+        And(True_(), True_()),
+    ], [
+        And(True_(), False_()),
+        And(False_(), True_()),
+        And(False_(), False_()),
+    ])
+
+
+def test_or(frame):
+    from clintest.assertion import Or, True_, False_
+    frame([
+        Or(True_(), True_()),
+        Or(True_(), False_()),
+        Or(False_(), True_()),
+    ], [
+        Or(),
+        Or(False_(), False_()),
+    ])

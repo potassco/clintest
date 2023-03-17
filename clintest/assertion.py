@@ -57,3 +57,27 @@ class True_(Assertion):
 class False_(Assertion):
     def holds_for(self, model: Model) -> bool:
         return False
+
+
+class Not(Assertion):
+    def __init__(self, operand: Assertion) -> None:
+        self.__operand = operand
+
+    def holds_for(self, model: Model) -> bool:
+        return not self.__operand.holds_for(model)
+
+
+class And(Assertion):
+    def __init__(self, *args: Assertion) -> None:
+        self.__operands = args
+
+    def holds_for(self, model: Model) -> bool:
+        return all((operand.holds_for(model) for operand in self.__operands))
+
+
+class Or(Assertion):
+    def __init__(self, *args: Assertion) -> None:
+        self.__operands = args
+
+    def holds_for(self, model: Model) -> bool:
+        return any((operand.holds_for(model) for operand in self.__operands))
