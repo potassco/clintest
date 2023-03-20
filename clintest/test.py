@@ -251,7 +251,7 @@ class Or(Test):
                 still_ongoing.append(operand)
 
         self.__ongoing = still_ongoing
-        self.__outcome = Outcome(self.__outcome.current_value(), bool(still_ongoing))
+        self.__outcome = Outcome(self.__outcome.current_value(), not bool(still_ongoing))
 
         return not self.__outcome.is_certain()
 
