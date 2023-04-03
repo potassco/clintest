@@ -5,6 +5,13 @@ class Outcome:
         self.__current_value = current_value
         self.__is_certain = is_certain
 
+    def __repr__(self):
+        name = self.__class__.__module__ + "." +  self.__class__.__name__
+        return f"{name}({self.__current_value}, {self.__is_certain})"
+
+    def __str__(self):
+        return str(self.__current_value) + ["?", "!"][self.__is_certain]
+
     def current_value(self) -> bool:
         return self.__current_value
 
