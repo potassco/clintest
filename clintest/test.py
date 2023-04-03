@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Sequence
+import os
+from typing import Any, Callable, Dict, Optional, Sequence
 
 from clingo.solving import Model, SolveResult
 from clingo.statistics import StatisticsMap
@@ -59,58 +60,87 @@ class False_(Test):
         return self.__outcome
 
 
-class Inspect(Test):
+class Recording:
+    def __init__(self, entries: Optional[Sequence[Dict[str, Any]]] = None):
+        if entries is None:
+            entries = []
+        self.__entries = list(entries)
+
+    def __repr__(self):
+        name = self.__class__.__module__ + "." +  self.__class__.__name__
+        return f"{name}({self.__entries})"
+
+    def __str__(self):
+        return os.linesep.join((f"{i}: {entry}" for i, entry in enumerate(self.__entries)))
+
+    def __eq__(self, other):
+        return self.__entries == other.__entries
+
+    def amend(self, changes: Dict[str, Any]):
+        self.__entries[-1].update(changes)
+
+    def append(self, entry: Dict[str, Any]):
+        self.__entries.append(entry)
+
+    def subsumes(self, other) -> bool:
+        return len(self.__entries) <= len(other.__entries) and all(
+            all(item in other_entry.items() for item in self_entry.items())
+            for self_entry, other_entry in zip(self.__entries, other.__entries)
+        )
+
+
+class Record(Test):
     def __init__(self, test: Test = True_(lazy = False)):
         self.test: Test = test
-        self.artifacts: List[Dict[str, Any]] = [{
+        self.recording: Recording = Recording([{
             "__f": "__init__",
             "__outcome": self.outcome(),
-        }]
+        }])
 
     def on_model(self, model: Model) -> bool:
-        self.artifacts.append({
+        self.recording.append({
             "__f": "on_model",
             "str(model)": str(model),
         })
         result = self.test.on_model(model)
-        self.artifacts[-1].update({
+        self.recording.amend({
             "__result": result,
             "__outcome": self.outcome(),
         })
         return result
 
     def on_unsat(self, lower_bound: Sequence[int]) -> None:
-        self.artifacts.append({
+        self.recording.append({
             "__f": "on_unsat",
             "lower_bound": lower_bound,
         })
         self.test.on_unsat(lower_bound)
-        self.artifacts[-1]["__outcome"] = self.outcome()
+        self.recording.amend({"__outcome": self.outcome()})
 
     def on_core(self, core: Sequence[int]) -> None:
-        self.artifacts.append({
+        self.recording.append({
             "__f": "on_core",
             "core": core,
         })
         self.test.on_core(core)
-        self.artifacts[-1]["__outcome"] = self.outcome()
+        self.recording.amend({"__outcome": self.outcome()})
 
     def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
-        self.artifacts.append({
+        self.recording.append({
             "__f": "on_statistics",
             "step": step,
             "accumulated": accumulated,
         })
         self.test.on_statistics(step, accumulated)
-        self.artifacts[-1]["__outcome"] = self.outcome()
+        self.recording.amend({"__outcome": self.outcome()})
 
     def on_finish(self, result: SolveResult) -> None:
-        self.artifacts.append({
+        self.recording.append({
             "__f": "on_finish",
             "result": result,
         })
         self.test.on_finish(result)
-        self.artifacts[-1]["__outcome"] = self.outcome()
+        self.recording.amend({"__outcome": self.outcome()})
 
     def outcome(self) -> Outcome:
         return self.test.outcome()

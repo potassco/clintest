@@ -4,15 +4,15 @@
 
 def test_clingo():
     from clintest.solver import Clingo
-    from clintest.test import Inspect
+    from clintest.test import Record, Recording
 
     solver = Clingo("0", "a.")
-    test = Inspect()
+    test = Record()
 
     solver.solve(test)
-
-    assert len(test.artifacts) == 3
-    assert test.artifacts[0]["__f"] == "on_model"
-    assert test.artifacts[0]["str(model)"] == "a"
-    assert test.artifacts[1]["__f"] == "on_statistics"
-    assert test.artifacts[2]["__f"] == "on_finish"
+    assert Recording([
+        {'__f': '__init__'},
+        {'__f': 'on_model', 'str(model)': 'a'},
+        {'__f': 'on_statistics'},
+        {'__f': 'on_finish'},
+    ]).subsumes(test.recording)

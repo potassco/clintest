@@ -1,5 +1,6 @@
 # pylint: disable=import-outside-toplevel
 
+# TODO: Rewrite all these tests with the new Recording
 
 def assert_execution_3(test):
     assert len(test.artifacts) == 3
@@ -187,3 +188,21 @@ def test_not():
     assert outer.outcome().is_certainly_false()
     assert_execution_4(inner)
     assert_execution_4(outer)
+
+def test_issue():
+    from clintest.solver import Clingo
+    from clintest.test import And, Assert
+    from clintest.quantifier import Any, Exact
+    from clintest.assertion import Contains, Not, True_
+
+    solver = Clingo("0", "a. {b}.")
+
+    test = And(
+        Assert(Exact(2), True_()),
+        Assert(Any(), Contains("b")),
+        Assert(Any(), Not(Contains("b")))
+    )
+
+    solver.solve(test)
+
+    assert test.outcome().is_certainly_true()
