@@ -83,7 +83,7 @@ class Recording:
         self.__entries.append(entry)
 
     def subsumes(self, other) -> bool:
-        return len(self.__entries) <= len(other.__entries) and all(
+        return len(self.__entries) == len(other.__entries) and all(
             all(item in other_entry.items() for item in self_entry.items())
             for self_entry, other_entry in zip(self.__entries, other.__entries)
         )

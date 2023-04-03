@@ -1,194 +1,179 @@
 # pylint: disable=import-outside-toplevel
 
-# TODO: Rewrite all these tests with the new Recording
-
-def assert_execution_3(test):
-    assert len(test.artifacts) == 3
-    assert test.artifacts[0]["__f"] == "on_model"
-    assert test.artifacts[0]["str(model)"] == "a"
-    assert test.artifacts[1]["__f"] == "on_statistics"
-    assert test.artifacts[2]["__f"] == "on_finish"
+import pytest
 
 
-def assert_execution_4(test):
-    assert len(test.artifacts) == 4
-    assert test.artifacts[0]["__f"] == "on_model"
-    assert test.artifacts[0]["str(model)"] == "a"
-    assert test.artifacts[1]["__f"] == "on_model"
-    assert test.artifacts[1]["str(model)"] == "b a"
-    assert test.artifacts[2]["__f"] == "on_statistics"
-    assert test.artifacts[3]["__f"] == "on_finish"
-
-
-def test_assert_all():
+@pytest.fixture
+def solver():
     from clintest.solver import Clingo
-    from clintest.test import Assert, Inspect
+    return Clingo("0", "a. {b}.")
+
+
+@pytest.fixture
+def recording_no_model():
+    from clintest.test import Recording
+    return Recording([
+        {'__f': '__init__'},
+    ])
+
+
+@pytest.fixture
+def recording_one_model():
+    from clintest.test import Recording
+    return Recording([
+        {'__f': '__init__'},
+        {'__f': 'on_model', 'str(model)': 'a'},
+        {'__f': 'on_statistics'},
+        {'__f': 'on_finish'},
+    ])
+
+
+@pytest.fixture
+def recording_two_models():
+    from clintest.test import Recording
+    return Recording([
+        {'__f': '__init__'},
+        {'__f': 'on_model', 'str(model)': 'a'},
+        {'__f': 'on_model', 'str(model)': 'b a'},
+        {'__f': 'on_statistics'},
+        {'__f': 'on_finish'},
+    ])
+
+
+def test_assert_all(solver, recording_one_model, recording_two_models):
+    from clintest.test import Assert, Record
     from clintest.quantifier import All
     from clintest.assertion import Contains
 
-    solver = Clingo("0", "a. {b}.")
-
-    test = Inspect(Assert(All(), Contains("a")))
+    test = Record(Assert(All(), Contains("a")))
     solver.solve(test)
-
     assert test.outcome().is_certainly_true()
-    assert_execution_4(test)
+    assert recording_two_models.subsumes(test.recording)
 
-    test = Inspect(Assert(All(), Contains("b")))
+    test = Record(Assert(All(), Contains("b")))
     solver.solve(test)
-
     assert test.outcome().is_certainly_false()
-    assert_execution_3(test)
+    assert recording_one_model.subsumes(test.recording)
 
 
-def test_assert_any():
-    from clintest.solver import Clingo
-    from clintest.test import Assert, Inspect
+def test_assert_any(solver, recording_one_model, recording_two_models):
+    from clintest.test import Assert, Record
     from clintest.quantifier import Any
     from clintest.assertion import Contains
 
-    solver = Clingo("0", "a. {b}.")
-
-    test = Inspect(Assert(Any(), Contains("a")))
+    test = Record(Assert(Any(), Contains("a")))
     solver.solve(test)
-
     assert test.outcome().is_certainly_true()
-    assert_execution_3(test)
+    assert recording_one_model.subsumes(test.recording)
 
-    test = Inspect(Assert(Any(), Contains("b")))
+    test = Record(Assert(Any(), Contains("b")))
     solver.solve(test)
-
     assert test.outcome().is_certainly_true()
-    assert_execution_4(test)
+    assert recording_two_models.subsumes(test.recording)
 
-    test = Inspect(Assert(Any(), Contains("c")))
+    test = Record(Assert(Any(), Contains("c")))
     solver.solve(test)
-
     assert test.outcome().is_certainly_false()
-    assert_execution_4(test)
+    assert recording_two_models.subsumes(test.recording)
 
 
-def test_assert_exact():
-    from clintest.solver import Clingo
-    from clintest.test import Assert, Inspect
+def test_assert_exact(solver, recording_one_model, recording_two_models):
+    from clintest.test import Assert, Record
     from clintest.quantifier import Exact
     from clintest.assertion import Contains
 
-    solver = Clingo("0", "a. {b}.")
-
-    test = Inspect(Assert(Exact(0), Contains("a")))
+    test = Record(Assert(Exact(0), Contains("a")))
     solver.solve(test)
-
     assert test.outcome().is_certainly_false()
-    assert_execution_3(test)
+    assert recording_one_model.subsumes(test.recording)
 
-    test = Inspect(Assert(Exact(1), Contains("a")))
+    test = Record(Assert(Exact(1), Contains("a")))
     solver.solve(test)
-
     assert test.outcome().is_certainly_false()
-    assert_execution_4(test)
+    recording_two_models.subsumes(test.recording)
 
-    test = Inspect(Assert(Exact(2), Contains("a")))
+    test = Record(Assert(Exact(2), Contains("a")))
     solver.solve(test)
-
     assert test.outcome().is_certainly_true()
-    assert_execution_4(test)
+    recording_two_models.subsumes(test.recording)
 
-    test = Inspect(Assert(Exact(0), Contains("b")))
+    test = Record(Assert(Exact(0), Contains("b")))
     solver.solve(test)
-
     assert test.outcome().is_certainly_false()
-    assert_execution_4(test)
+    recording_two_models.subsumes(test.recording)
 
-    test = Inspect(Assert(Exact(1), Contains("b")))
+    test = Record(Assert(Exact(1), Contains("b")))
     solver.solve(test)
-
     assert test.outcome().is_certainly_true()
-    assert_execution_4(test)
+    recording_two_models.subsumes(test.recording)
 
-    test = Inspect(Assert(Exact(2), Contains("b")))
+    test = Record(Assert(Exact(2), Contains("b")))
     solver.solve(test)
-
     assert test.outcome().is_certainly_false()
-    assert_execution_4(test)
+    recording_two_models.subsumes(test.recording)
 
 
-def test_true():
-    from clintest.solver import Clingo
-    from clintest.test import True_, Inspect
+def test_true(solver, recording_no_model, recording_two_models):
+    from clintest.test import True_, Record
 
-    solver = Clingo("0", "a. {b}.")
-
-    test = Inspect(True_())
+    test = Record(True_())
     solver.solve(test)
-
     assert test.outcome().is_certainly_true()
-    assert_execution_3(test)
+    assert recording_no_model.subsumes(test.recording)
 
-    test = Inspect(True_(lazy = False))
+    test = Record(True_(lazy = False))
     solver.solve(test)
-
     assert test.outcome().is_certainly_true()
-    assert_execution_4(test)
+    assert recording_two_models.subsumes(test.recording)
 
 
-def test_false():
-    from clintest.solver import Clingo
-    from clintest.test import False_, Inspect
+def test_false(solver, recording_no_model, recording_two_models):
+    from clintest.test import False_, Record
 
-    solver = Clingo("0", "a. {b}.")
-
-    test = Inspect(False_())
+    test = Record(False_())
     solver.solve(test)
-
     assert test.outcome().is_certainly_false()
-    assert_execution_3(test)
+    assert recording_no_model.subsumes(test.recording)
 
-    test = Inspect(False_(lazy = False))
+    test = Record(False_(lazy = False))
     solver.solve(test)
-
     assert test.outcome().is_certainly_false()
-    assert_execution_4(test)
+    assert recording_two_models.subsumes(test.recording)
 
 
-def test_not():
-    from clintest.solver import Clingo
-    from clintest.test import False_, True_, Not, Inspect
+def test_not(solver, recording_no_model, recording_two_models):
+    from clintest.test import False_, True_, Not, Record
 
-    solver = Clingo("0", "a. {b}.")
-
-    inner = Inspect(False_())
-    outer = Inspect(Not(inner))
+    inner = Record(False_())
+    outer = Record(Not(inner))
     solver.solve(outer)
-
     assert outer.outcome().is_certainly_true()
-    assert_execution_3(inner)
-    assert_execution_3(outer)
+    assert recording_no_model.subsumes(inner.recording)
+    assert recording_no_model.subsumes(outer.recording)
 
-    inner = Inspect(False_(lazy = False))
-    outer = Inspect(Not(inner))
+    inner = Record(False_(lazy = False))
+    outer = Record(Not(inner))
     solver.solve(outer)
-
     assert outer.outcome().is_certainly_true()
-    assert_execution_4(inner)
-    assert_execution_4(outer)
+    assert recording_two_models.subsumes(inner.recording)
+    assert recording_two_models.subsumes(outer.recording)
 
-    inner = Inspect(True_())
-    outer = Inspect(Not(inner))
+    inner = Record(True_())
+    outer = Record(Not(inner))
     solver.solve(outer)
-
     assert outer.outcome().is_certainly_false()
-    assert_execution_3(inner)
-    assert_execution_3(outer)
+    assert recording_no_model.subsumes(inner.recording)
+    assert recording_no_model.subsumes(outer.recording)
 
-    inner = Inspect(True_(lazy = False))
-    outer = Inspect(Not(inner))
+    inner = Record(True_(lazy = False))
+    outer = Record(Not(inner))
     solver.solve(outer)
-
     assert outer.outcome().is_certainly_false()
-    assert_execution_4(inner)
-    assert_execution_4(outer)
+    assert recording_two_models.subsumes(inner.recording)
+    assert recording_two_models.subsumes(outer.recording)
 
+
+# TODO: Write tests for And and Or and remove the following!
 def test_issue():
     from clintest.solver import Clingo
     from clintest.test import And, Assert
