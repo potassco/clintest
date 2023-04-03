@@ -33,10 +33,11 @@ class Clingo(Solver):
 
         ctl.ground([("base", [])])
 
-        ctl.solve(
-            on_model=test.on_model,
-            on_unsat=test.on_unsat,
-            on_core=test.on_core,
-            on_statistics=test.on_statistics,
-            on_finish=test.on_finish,
-        )
+        if not test.outcome().is_certain():
+            ctl.solve(
+                on_model=test.on_model,
+                on_unsat=test.on_unsat,
+                on_core=test.on_core,
+                on_statistics=test.on_statistics,
+                on_finish=test.on_finish,
+            )
