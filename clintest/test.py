@@ -61,15 +61,23 @@ class False_(Test):
 
 class Inspect(Test):
     def __init__(self, test: Test = True_(lazy = False)):
-        self.artifacts: List[Dict[str, Any]] = []
         self.test: Test = test
+        self.artifacts: List[Dict[str, Any]] = [{
+            "__f": "__init__",
+            "__outcome": self.outcome(),
+        }]
 
     def on_model(self, model: Model) -> bool:
         self.artifacts.append({
             "__f": "on_model",
             "str(model)": str(model),
         })
-        return self.test.on_model(model)
+        result = self.test.on_model(model)
+        self.artifacts[-1].update({
+            "__result": result,
+            "__outcome": self.outcome(),
+        })
+        return result
 
     def on_unsat(self, lower_bound: Sequence[int]) -> None:
         self.artifacts.append({
@@ -77,6 +85,7 @@ class Inspect(Test):
             "lower_bound": lower_bound,
         })
         self.test.on_unsat(lower_bound)
+        self.artifacts[-1]["__outcome"] = self.outcome()
 
     def on_core(self, core: Sequence[int]) -> None:
         self.artifacts.append({
@@ -84,6 +93,7 @@ class Inspect(Test):
             "core": core,
         })
         self.test.on_core(core)
+        self.artifacts[-1]["__outcome"] = self.outcome()
 
     def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
         self.artifacts.append({
@@ -92,6 +102,7 @@ class Inspect(Test):
             "accumulated": accumulated,
         })
         self.test.on_statistics(step, accumulated)
+        self.artifacts[-1]["__outcome"] = self.outcome()
 
     def on_finish(self, result: SolveResult) -> None:
         self.artifacts.append({
@@ -99,6 +110,7 @@ class Inspect(Test):
             "result": result,
         })
         self.test.on_finish(result)
+        self.artifacts[-1]["__outcome"] = self.outcome()
 
     def outcome(self) -> Outcome:
         return self.test.outcome()
