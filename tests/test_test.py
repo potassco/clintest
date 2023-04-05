@@ -1,4 +1,6 @@
 # pylint: disable=import-outside-toplevel
+# pylint: disable=redefined-outer-name
+
 
 import pytest
 
@@ -159,7 +161,7 @@ def test_not(solver, recording_no_model):
     assert recording_no_model.subsumes(outer.recording)
 
 
-def test_and(solver, recording_no_model, recording_one_model, recording_two_models):
+def test_and(solver, recording_no_model):
     from clintest.test import False_, True_, And, Record
 
     inner = [Record(test) for test in [False_(), False_()]]
@@ -371,23 +373,3 @@ def test_or_short_circuit(solver, recording_one_model, recording_two_models):
         {'__f': 'on_model', 'str(model)': 'a'}
     ]).subsumes(inner[0].recording)
     assert recording_two_models.subsumes(inner[1].recording)
-
-
-# TODO: Write tests for And and Or and remove the following!
-def test_issue():
-    from clintest.solver import Clingo
-    from clintest.test import And, Assert
-    from clintest.quantifier import Any, Exact
-    from clintest.assertion import Contains, Not, True_
-
-    solver = Clingo("0", "a. {b}.")
-
-    test = And(
-        Assert(Exact(2), True_()),
-        Assert(Any(), Contains("b")),
-        Assert(Any(), Not(Contains("b")))
-    )
-
-    solver.solve(test)
-
-    assert test.outcome().is_certainly_true()

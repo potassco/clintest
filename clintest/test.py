@@ -74,6 +74,7 @@ class Recording:
         return os.linesep.join((f"{i}: {entry}" for i, entry in enumerate(self.__entries)))
 
     def __eq__(self, other):
+        # pylint: disable=protected-access
         return self.__entries == other.__entries
 
     def amend(self, changes: Dict[str, Any]):
@@ -83,6 +84,7 @@ class Recording:
         self.__entries.append(entry)
 
     def subsumes(self, other) -> bool:
+        # pylint: disable=protected-access
         return len(self.__entries) == len(other.__entries) and all(
             all(item in other_entry.items() for item in self_entry.items())
             for self_entry, other_entry in zip(self.__entries, other.__entries)
@@ -201,7 +203,7 @@ class And(Test):
         self.__ignore_certain = ignore_certain
         self.__outcome = Outcome(True, False)
 
-        def call_operand(operand: Test) -> None:
+        def call_operand(_operand: Test) -> None:
             pass
 
         self.__on_whatever(call_operand)
@@ -259,7 +261,7 @@ class And(Test):
         ignore_certain_bck = self.__ignore_certain
         self.__ignore_certain = True
         self.__on_whatever(call_operand)
-        self.ignore_certain = ignore_certain_bck
+        self.__ignore_certain = ignore_certain_bck
 
         assert not self.__ongoing
         assert self.__outcome.is_certain()
@@ -281,7 +283,7 @@ class Or(Test):
         self.__ignore_certain = ignore_certain
         self.__outcome = Outcome(False, False)
 
-        def call_operand(operand: Test) -> None:
+        def call_operand(_operand: Test) -> None:
             pass
 
         self.__on_whatever(call_operand)
@@ -339,7 +341,7 @@ class Or(Test):
         ignore_certain_bck = self.__ignore_certain
         self.__ignore_certain = True
         self.__on_whatever(call_operand)
-        self.ignore_certain = ignore_certain_bck
+        self.__ignore_certain = ignore_certain_bck
 
         assert not self.__ongoing
         assert self.__outcome.is_certain()

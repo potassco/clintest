@@ -13,7 +13,9 @@ class Outcome:
         return str(self.__current_value) + ["?", "!"][self.__is_certain]
 
     def __eq__(self, other):
-        return self.__current_value == other.__current_value and self.__is_certain == other.__is_certain
+        # pylint: disable=protected-access
+        return self.__current_value == other.__current_value \
+            and self.__is_certain == other.__is_certain
 
     def current_value(self) -> bool:
         return self.__current_value
