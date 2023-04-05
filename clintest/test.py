@@ -284,10 +284,10 @@ class Or(Test):
             if operand.outcome().is_certainly_true():
                 if self.__short_circuit:
                     self.__ongoing = []
-                    self.__outcome = Outcome(False, True)
+                    self.__outcome = Outcome(True, True)
                     return False
                 else:
-                    self.__outcome = Outcome(False, False)
+                    self.__outcome = Outcome(True, False)
 
             if not (self.__ignore_certain and operand.outcome().is_certain()):
                 still_ongoing.append(operand)
