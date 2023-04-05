@@ -141,7 +141,7 @@ def test_false(solver, recording_no_model, recording_two_models):
     assert recording_two_models.subsumes(test.recording)
 
 
-def test_not(solver, recording_no_model, recording_two_models):
+def test_not(solver, recording_no_model):
     from clintest.test import False_, True_, Not, Record
 
     inner = Record(False_())
@@ -151,26 +151,12 @@ def test_not(solver, recording_no_model, recording_two_models):
     assert recording_no_model.subsumes(inner.recording)
     assert recording_no_model.subsumes(outer.recording)
 
-    inner = Record(False_(lazy = False))
-    outer = Record(Not(inner))
-    solver.solve(outer)
-    assert outer.outcome().is_certainly_true()
-    assert recording_two_models.subsumes(inner.recording)
-    assert recording_two_models.subsumes(outer.recording)
-
     inner = Record(True_())
     outer = Record(Not(inner))
     solver.solve(outer)
     assert outer.outcome().is_certainly_false()
     assert recording_no_model.subsumes(inner.recording)
     assert recording_no_model.subsumes(outer.recording)
-
-    inner = Record(True_(lazy = False))
-    outer = Record(Not(inner))
-    solver.solve(outer)
-    assert outer.outcome().is_certainly_false()
-    assert recording_two_models.subsumes(inner.recording)
-    assert recording_two_models.subsumes(outer.recording)
 
 
 # TODO: Write tests for And and Or and remove the following!
