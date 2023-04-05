@@ -256,7 +256,10 @@ class And(Test):
         def call_operand(operand: Test) -> None:
             operand.on_finish(result)
 
+        ignore_certain_bck = self.__ignore_certain
+        self.__ignore_certain = True
         self.__on_whatever(call_operand)
+        self.ignore_certain = ignore_certain_bck
 
         assert not self.__ongoing
         assert self.__outcome.is_certain()
@@ -333,7 +336,10 @@ class Or(Test):
         def call_operand(operand: Test) -> None:
             operand.on_finish(result)
 
+        ignore_certain_bck = self.__ignore_certain
+        self.__ignore_certain = True
         self.__on_whatever(call_operand)
+        self.ignore_certain = ignore_certain_bck
 
         assert not self.__ongoing
         assert self.__outcome.is_certain()
