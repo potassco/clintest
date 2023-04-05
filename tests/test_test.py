@@ -159,6 +159,79 @@ def test_not(solver, recording_no_model):
     assert recording_no_model.subsumes(outer.recording)
 
 
+def test_and(solver, recording_no_model, recording_one_model, recording_two_models):
+    from clintest.test import False_, True_, And, Record
+
+    inner = [Record(test) for test in [False_(), False_()]]
+    outer = Record(And(*inner))
+    solver.solve(outer)
+    assert outer.outcome().is_certainly_false()
+    assert recording_no_model.subsumes(outer.recording)
+    assert recording_no_model.subsumes(inner[0].recording)
+    assert recording_no_model.subsumes(inner[1].recording)
+
+    inner = [Record(test) for test in [False_(), True_()]]
+    outer = Record(And(*inner))
+    solver.solve(outer)
+    assert outer.outcome().is_certainly_false()
+    assert recording_no_model.subsumes(outer.recording)
+    assert recording_no_model.subsumes(inner[0].recording)
+    assert recording_no_model.subsumes(inner[1].recording)
+
+    inner = [Record(test) for test in [True_(), False_()]]
+    outer = Record(And(*inner))
+    solver.solve(outer)
+    assert outer.outcome().is_certainly_false()
+    assert recording_no_model.subsumes(outer.recording)
+    assert recording_no_model.subsumes(inner[0].recording)
+    assert recording_no_model.subsumes(inner[1].recording)
+
+    inner = [Record(test) for test in [True_(), True_()]]
+    outer = Record(And(*inner))
+    solver.solve(outer)
+    assert outer.outcome().is_certainly_true()
+    assert recording_no_model.subsumes(outer.recording)
+    assert recording_no_model.subsumes(inner[0].recording)
+    assert recording_no_model.subsumes(inner[1].recording)
+
+
+def test_or(solver, recording_no_model):
+    from clintest.test import False_, True_, Or, Record
+
+    inner = [Record(test) for test in [False_(), False_()]]
+    outer = Record(Or(*inner))
+    solver.solve(outer)
+    assert outer.outcome().is_certainly_false()
+    assert recording_no_model.subsumes(outer.recording)
+    assert recording_no_model.subsumes(inner[0].recording)
+    assert recording_no_model.subsumes(inner[1].recording)
+
+    inner = [Record(test) for test in [False_(), True_()]]
+    outer = Record(Or(*inner))
+    solver.solve(outer)
+    assert outer.outcome().is_certainly_true()
+    assert recording_no_model.subsumes(outer.recording)
+    assert recording_no_model.subsumes(inner[0].recording)
+    assert recording_no_model.subsumes(inner[1].recording)
+
+    inner = [Record(test) for test in [True_(), False_()]]
+    outer = Record(Or(*inner))
+    solver.solve(outer)
+    assert outer.outcome().is_certainly_true()
+    assert recording_no_model.subsumes(outer.recording)
+    assert recording_no_model.subsumes(inner[0].recording)
+    assert recording_no_model.subsumes(inner[1].recording)
+
+    inner = [Record(test) for test in [True_(), True_()]]
+    outer = Record(Or(*inner))
+    solver.solve(outer)
+    assert outer.outcome().is_certainly_true()
+    assert recording_no_model.subsumes(outer.recording)
+    assert recording_no_model.subsumes(inner[0].recording)
+    assert recording_no_model.subsumes(inner[1].recording)
+
+
+
 # TODO: Write tests for And and Or and remove the following!
 def test_issue():
     from clintest.solver import Clingo
