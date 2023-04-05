@@ -201,6 +201,11 @@ class And(Test):
         self.__ignore_certain = ignore_certain
         self.__outcome = Outcome(True, False)
 
+        def call_operand(operand: Test) -> None:
+            pass
+
+        self.__on_whatever(call_operand)
+
     def __on_whatever(self, call_operand: Callable[[Test], None]) -> bool:
         still_ongoing = []
 
@@ -223,13 +228,11 @@ class And(Test):
 
         return not self.__outcome.is_certain()
 
-
     def on_model(self, model: Model) -> bool:
         def call_operand(operand: Test) -> None:
             operand.on_model(model)
 
         return self.__on_whatever(call_operand)
-
 
     def on_unsat(self, lower_bound: Sequence[int]) -> None:
         def call_operand(operand: Test) -> None:
@@ -275,6 +278,11 @@ class Or(Test):
         self.__ignore_certain = ignore_certain
         self.__outcome = Outcome(False, False)
 
+        def call_operand(operand: Test) -> None:
+            pass
+
+        self.__on_whatever(call_operand)
+
     def __on_whatever(self, call_operand: Callable[[Test], None]) -> bool:
         still_ongoing = []
 
@@ -297,13 +305,11 @@ class Or(Test):
 
         return not self.__outcome.is_certain()
 
-
     def on_model(self, model: Model) -> bool:
         def call_operand(operand: Test) -> None:
             operand.on_model(model)
 
         return self.__on_whatever(call_operand)
-
 
     def on_unsat(self, lower_bound: Sequence[int]) -> None:
         def call_operand(operand: Test) -> None:
