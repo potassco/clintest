@@ -230,6 +230,42 @@ def test_and_ignore_certain(solver, recording_two_models):
     assert recording_two_models.subsumes(inner[1].recording)
 
 
+def test_and_short_circuit(solver, recording_one_model, recording_two_models):
+    from clintest.test import And, Assert, Record, Recording
+    from clintest.assertion import Contains
+    from clintest.quantifier import All
+
+    inner = [Record(test) for test in [
+        Assert(All(), Contains('b')),
+        Assert(All(), Contains('a'))
+    ]]
+    outer = Record(And(*inner))
+    solver.solve(outer)
+    assert outer.outcome().is_certainly_false()
+    assert recording_one_model.subsumes(outer.recording)
+    assert Recording([
+        {'__f': '__init__'},
+        {'__f': 'on_model', 'str(model)': 'a'}
+    ]).subsumes(inner[0].recording)
+    assert Recording([
+        {'__f': '__init__'},
+    ]).subsumes(inner[1].recording)
+
+    inner = [Record(test) for test in [
+        Assert(All(), Contains('b')),
+        Assert(All(), Contains('a'))
+    ]]
+    outer = Record(And(*inner, short_circuit=False))
+    solver.solve(outer)
+    assert outer.outcome().is_certainly_false()
+    assert recording_two_models.subsumes(outer.recording)
+    assert Recording([
+        {'__f': '__init__'},
+        {'__f': 'on_model', 'str(model)': 'a'}
+    ]).subsumes(inner[0].recording)
+    assert recording_two_models.subsumes(inner[1].recording)
+
+
 def test_or(solver, recording_no_model):
     from clintest.test import False_, True_, Or, Record
 
@@ -298,6 +334,42 @@ def test_or_ignore_certain(solver, recording_two_models):
     assert outer.outcome().is_certainly_false()
     assert recording_two_models.subsumes(outer.recording)
     assert recording_two_models.subsumes(inner[0].recording)
+    assert recording_two_models.subsumes(inner[1].recording)
+
+
+def test_or_short_circuit(solver, recording_one_model, recording_two_models):
+    from clintest.test import Assert, Or, Not, Record, Recording
+    from clintest.assertion import Contains
+    from clintest.quantifier import All
+
+    inner = [Record(test) for test in [
+        Not(Assert(All(), Contains('b'))),
+        Not(Assert(All(), Contains('a')))
+    ]]
+    outer = Record(Or(*inner))
+    solver.solve(outer)
+    assert outer.outcome().is_certainly_true()
+    assert recording_one_model.subsumes(outer.recording)
+    assert Recording([
+        {'__f': '__init__'},
+        {'__f': 'on_model', 'str(model)': 'a'}
+    ]).subsumes(inner[0].recording)
+    assert Recording([
+        {'__f': '__init__'},
+    ]).subsumes(inner[1].recording)
+
+    inner = [Record(test) for test in [
+        Not(Assert(All(), Contains('b'))),
+        Not(Assert(All(), Contains('a')))
+    ]]
+    outer = Record(Or(*inner, short_circuit=False))
+    solver.solve(outer)
+    assert outer.outcome().is_certainly_true()
+    assert recording_two_models.subsumes(outer.recording)
+    assert Recording([
+        {'__f': '__init__'},
+        {'__f': 'on_model', 'str(model)': 'a'}
+    ]).subsumes(inner[0].recording)
     assert recording_two_models.subsumes(inner[1].recording)
 
 
