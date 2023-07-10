@@ -1,7 +1,8 @@
 [MESSAGES CONTROL]
 
-# TODO: Reactivate missing-*-docstring warnings
+# TODO: Reactivate fixme and missing-*-docstring warnings
 disable=
+    fixme,
     missing-module-docstring,
     missing-class-docstring,
     missing-function-docstring,
