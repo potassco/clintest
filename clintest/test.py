@@ -247,7 +247,12 @@ class And(Test):
         short_circuit = repr(self.__short_circuit)
         ignore_certain = repr(self.__ignore_certain)
         outcome = repr(self.__outcome)
-        return f"{name}(ongoing={ongoing}, short_circuit={short_circuit}, ignore_certain={ignore_certain}, outcome={outcome})"
+        return (
+            f"{name}(ongoing={ongoing}, "
+            f"short_circuit={short_circuit}, "
+            f"ignore_certain={ignore_certain}, "
+            f"outcome={outcome})"
+        )
 
     # TODO: __str__(self)
 
@@ -337,7 +342,12 @@ class Or(Test):
         short_circuit = repr(self.__short_circuit)
         ignore_certain = repr(self.__ignore_certain)
         outcome = repr(self.__outcome)
-        return f"{name}(ongoing={ongoing}, short_circuit={short_circuit}, ignore_certain={ignore_certain}, outcome={outcome})"
+        return (
+            f"{name}(ongoing={ongoing}, "
+            f"short_circuit={short_circuit}, "
+            f"ignore_certain={ignore_certain}, "
+            f"outcome={outcome})"
+        )
 
     # TODO: __str__(self)
 
