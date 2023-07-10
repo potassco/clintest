@@ -6,7 +6,7 @@ class Outcome:
         self.__is_certain = is_certain
 
     def __repr__(self):
-        name = self.__class__.__module__ + "." +  self.__class__.__name__
+        name = self.__class__.__name__
         return f"{name}({self.__current_value}, {self.__is_certain})"
 
     def __str__(self):

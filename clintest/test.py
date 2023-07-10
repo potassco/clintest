@@ -36,6 +36,11 @@ class True_(Test):
     def __init__(self, lazy: bool = True) -> None:
         self.__outcome = Outcome(True, lazy)
 
+    def __repr__(self):
+        name = self.__class__.__name__
+        outcome = repr(self.__outcome)
+        return f"{name}(outcome={outcome})"
+
     def on_model(self, _model: Model) -> bool:
         return not self.__outcome.is_certain()
 
@@ -49,6 +54,11 @@ class True_(Test):
 class False_(Test):
     def __init__(self, lazy: bool = True) -> None:
         self.__outcome = Outcome(False, lazy)
+
+    def __repr__(self):
+        name = self.__class__.__name__
+        outcome = repr(self.__outcome)
+        return f"{name}(outcome={outcome})"
 
     def on_model(self, _model: Model) -> bool:
         return not self.__outcome.is_certain()
@@ -67,7 +77,7 @@ class Recording:
         self.__entries = list(entries)
 
     def __repr__(self):
-        name = self.__class__.__module__ + "." +  self.__class__.__name__
+        name = self.__class__.__name__
         return f"{name}({self.__entries})"
 
     def __str__(self):
@@ -98,6 +108,14 @@ class Record(Test):
             "__f": "__init__",
             "__outcome": self.outcome(),
         }])
+
+    def __repr__(self):
+        name = self.__class__.__name__
+        test = repr(self.test)
+        recording = repr(self.recording)
+        return f"{name}(test={test}, recording={recording})"
+
+    # TODO: __str__(self)
 
     def on_model(self, model: Model) -> bool:
         self.recording.append({
@@ -153,6 +171,14 @@ class Assert(Test):
         self.__quantifier = quantifier
         self.__assertion = assertion
 
+    def __repr__(self):
+        name = self.__class__.__name__
+        quantifier = repr(self.__quantifier)
+        assertion = repr(self.__assertion)
+        return f"{name}({quantifier}, {assertion})"
+
+    # TODO: __str__(self)
+
     def on_model(self, model: Model) -> bool:
         if not self.__quantifier.outcome().is_certain():
             self.__quantifier.consume(self.__assertion.holds_for(model))
@@ -169,6 +195,13 @@ class Assert(Test):
 class Not(Test):
     def __init__(self, operand: Test) -> None:
         self.__operand = operand
+
+    def __repr__(self):
+        name = self.__class__.__name__
+        operand = repr(self.__operand)
+        return f"{name}({operand})"
+
+    # TODO: __str__(self)
 
     def on_model(self, model: Model) -> bool:
         return self.__operand.on_model(model)
@@ -207,6 +240,10 @@ class And(Test):
             pass
 
         self.__on_whatever(call_operand)
+
+    # TODO: __repr__(self)
+
+    # TODO: __str__(self)
 
     def __on_whatever(self, call_operand: Callable[[Test], None]) -> bool:
         still_ongoing = []
@@ -287,6 +324,10 @@ class Or(Test):
             pass
 
         self.__on_whatever(call_operand)
+
+    # TODO: __repr__(self)
+
+    # TODO: __str__(self)
 
     def __on_whatever(self, call_operand: Callable[[Test], None]) -> bool:
         still_ongoing = []

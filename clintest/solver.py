@@ -41,3 +41,10 @@ class Clingo(Solver):
                 on_statistics=test.on_statistics,
                 on_finish=test.on_finish,
             )
+
+    def __repr__(self):
+        name = self.__class__.__name__
+        arguments = repr(self.__arguments)
+        program = repr(self.__program)
+        files = repr(self.__files)
+        return f"{name}({arguments}, {program}, {files})"
