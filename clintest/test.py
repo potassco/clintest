@@ -241,7 +241,13 @@ class And(Test):
 
         self.__on_whatever(call_operand)
 
-    # TODO: __repr__(self)
+    def __repr__(self):
+        name = self.__class__.__name__
+        ongoing = repr(self.__ongoing)
+        short_circuit = repr(self.__short_circuit)
+        ignore_certain = repr(self.__ignore_certain)
+        outcome = repr(self.__outcome)
+        return f"{name}(ongoing={ongoing}, short_circuit={short_circuit}, ignore_certain={ignore_certain}, outcome={outcome})"
 
     # TODO: __str__(self)
 
@@ -325,7 +331,13 @@ class Or(Test):
 
         self.__on_whatever(call_operand)
 
-    # TODO: __repr__(self)
+    def __repr__(self):
+        name = self.__class__.__name__
+        ongoing = repr(self.__ongoing)
+        short_circuit = repr(self.__short_circuit)
+        ignore_certain = repr(self.__ignore_certain)
+        outcome = repr(self.__outcome)
+        return f"{name}(ongoing={ongoing}, short_circuit={short_circuit}, ignore_certain={ignore_certain}, outcome={outcome})"
 
     # TODO: __str__(self)
 
