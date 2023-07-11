@@ -39,7 +39,7 @@ class True_(Test):
     def __repr__(self):
         name = self.__class__.__name__
         outcome = repr(self.__outcome)
-        return f"{name}(outcome={outcome})"
+        return f"{name}(__outcome={outcome})"
 
     def on_model(self, _model: Model) -> bool:
         return not self.__outcome.is_certain()
@@ -58,7 +58,7 @@ class False_(Test):
     def __repr__(self):
         name = self.__class__.__name__
         outcome = repr(self.__outcome)
-        return f"{name}(outcome={outcome})"
+        return f"{name}(__outcome={outcome})"
 
     def on_model(self, _model: Model) -> bool:
         return not self.__outcome.is_certain()
@@ -245,7 +245,7 @@ class And(Test):
     def __repr__(self):
         name = self.__class__.__name__
 
-        operands = repr(self.__operands)
+        operands = ", ".join(repr(operand) for operand in self.__operands)
         short_circuit = repr(self.__short_circuit)
         ignore_certain = repr(self.__ignore_certain)
 
@@ -254,11 +254,11 @@ class And(Test):
 
         return (
             f"{name}("
-            f"operands={operands}, "
+            f"{operands}, "
             f"short_circuit={short_circuit}, "
             f"ignore_certain={ignore_certain}, "
-            f"ongoing={ongoing}, "
-            f"outcome={outcome})"
+            f"__ongoing={ongoing}, "
+            f"__outcome={outcome})"
         )
 
     # TODO: __str__(self)
@@ -347,7 +347,7 @@ class Or(Test):
     def __repr__(self):
         name = self.__class__.__name__
 
-        operands = repr(self.__operands)
+        operands = ", ".join(repr(operand) for operand in self.__operands)
         short_circuit = repr(self.__short_circuit)
         ignore_certain = repr(self.__ignore_certain)
 
@@ -356,11 +356,11 @@ class Or(Test):
 
         return (
             f"{name}("
-            f"operands={operands}, "
+            f"{operands}, "
             f"short_circuit={short_circuit}, "
             f"ignore_certain={ignore_certain}, "
-            f"ongoing={ongoing}, "
-            f"outcome={outcome})"
+            f"__ongoing={ongoing}, "
+            f"__outcome={outcome})"
         )
 
     # TODO: __str__(self)

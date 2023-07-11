@@ -20,7 +20,7 @@ class All(Quantifier):
     def __repr__(self):
         name = self.__class__.__name__
         state = repr(self.__state)
-        return f"{name}(state={state})"
+        return f"{name}(__state={state})"
 
     def outcome(self) -> Outcome:
         return self.__state
@@ -38,7 +38,7 @@ class Any(Quantifier):
     def __repr__(self):
         name = self.__class__.__name__
         state = repr(self.__state)
-        return f"{name}(state={state})"
+        return f"{name}(__state={state})"
 
     def outcome(self) -> Outcome:
         return self.__state
@@ -56,7 +56,7 @@ class Exact(Quantifier):
 
     def __repr__(self):
         name = self.__class__.__name__
-        return f"{name}({self.__target}, state={self.__state})"
+        return f"{name}({self.__target}, __state={self.__state})"
 
     def outcome(self) -> Outcome:
         return Outcome(self.__state == self.__target, self.__state > self.__target)
@@ -73,7 +73,7 @@ class Finished(Quantifier):
     def __repr__(self):
         name = self.__class__.__name__
         state = repr(self.__state)
-        return f"{name}(state={state})"
+        return f"{name}(__state={state})"
 
     def outcome(self) -> Outcome:
         return self.__state
