@@ -230,10 +230,11 @@ class And(Test):
         short_circuit: bool = True,
         ignore_certain: bool = True
     ) -> None:
-        # self.__operands = list(args)
-        self.__ongoing = list(args)
+        self.__operands = list(args)
         self.__short_circuit = short_circuit
         self.__ignore_certain = ignore_certain
+
+        self.__ongoing = list(args)
         self.__outcome = Outcome(True, False)
 
         def call_operand(_operand: Test) -> None:
@@ -243,14 +244,20 @@ class And(Test):
 
     def __repr__(self):
         name = self.__class__.__name__
-        ongoing = repr(self.__ongoing)
+
+        operands = repr(self.__operands)
         short_circuit = repr(self.__short_circuit)
         ignore_certain = repr(self.__ignore_certain)
+
+        ongoing = repr(self.__ongoing)
         outcome = repr(self.__outcome)
+
         return (
-            f"{name}(ongoing={ongoing}, "
+            f"{name}("
+            f"operands={operands}, "
             f"short_circuit={short_circuit}, "
             f"ignore_certain={ignore_certain}, "
+            f"ongoing={ongoing}, "
             f"outcome={outcome})"
         )
 
@@ -325,10 +332,11 @@ class Or(Test):
         short_circuit: bool = True,
         ignore_certain: bool = True
     ) -> None:
-        # self.__operands = list(args)
-        self.__ongoing = list(args)
+        self.__operands = list(args)
         self.__short_circuit = short_circuit
         self.__ignore_certain = ignore_certain
+
+        self.__ongoing = list(args)
         self.__outcome = Outcome(False, False)
 
         def call_operand(_operand: Test) -> None:
@@ -338,14 +346,20 @@ class Or(Test):
 
     def __repr__(self):
         name = self.__class__.__name__
-        ongoing = repr(self.__ongoing)
+
+        operands = repr(self.__operands)
         short_circuit = repr(self.__short_circuit)
         ignore_certain = repr(self.__ignore_certain)
+
+        ongoing = repr(self.__ongoing)
         outcome = repr(self.__outcome)
+
         return (
-            f"{name}(ongoing={ongoing}, "
+            f"{name}("
+            f"operands={operands}, "
             f"short_circuit={short_circuit}, "
             f"ignore_certain={ignore_certain}, "
+            f"ongoing={ongoing}, "
             f"outcome={outcome})"
         )
 
