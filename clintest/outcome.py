@@ -10,7 +10,7 @@ class Outcome:
         return f"{name}({self.__current_value}, {self.__is_certain})"
 
     def __str__(self):
-        return str(self.__current_value) + ["?", "!"][self.__is_certain]
+        return str(self.__current_value)[:1] + ["?", "!"][self.__is_certain]
 
     def __eq__(self, other):
         # pylint: disable=protected-access

@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import os
+from textwrap import indent
 from typing import Any, Callable, Dict, Optional, Sequence
 
 from clingo.solving import Model, SolveResult
@@ -41,6 +42,9 @@ class True_(Test):
         outcome = repr(self.__outcome)
         return f"{name}(__outcome={outcome})"
 
+    def __str__(self):
+        return f"[{self.__outcome}] {self.__class__.__name__}"
+
     def on_model(self, _model: Model) -> bool:
         return not self.__outcome.is_certain()
 
@@ -59,6 +63,9 @@ class False_(Test):
         name = self.__class__.__name__
         outcome = repr(self.__outcome)
         return f"{name}(__outcome={outcome})"
+
+    def __str__(self):
+        return f"[{self.__outcome}] {self.__class__.__name__}"
 
     def on_model(self, _model: Model) -> bool:
         return not self.__outcome.is_certain()
@@ -81,7 +88,17 @@ class Recording:
         return f"{name}({self.__entries})"
 
     def __str__(self):
-        return os.linesep.join((f"{i}: {entry}" for i, entry in enumerate(self.__entries)))
+        def fmt(entry):
+            result = f"[{entry['__outcome']}] {entry['__f']}"
+            if entry['__f'] == "on_model":
+                result += os.linesep + 4 * " " + entry['str(model)']
+            return result
+
+        width = len(str(len(self.__entries) - 1))
+        return os.linesep.join((
+            f"{(width - len(str(i))) * ' '}{i}: {fmt(entry)}"
+            for i, entry in enumerate(self.__entries)
+        ))
 
     def __eq__(self, other):
         # pylint: disable=protected-access
@@ -115,7 +132,13 @@ class Record(Test):
         recording = repr(self.recording)
         return f"{name}(test={test}, recording={recording})"
 
-    # TODO: __str__(self)
+    def __str__(self):
+        return os.linesep.join([
+            f"[{self.outcome()}] {self.__class__.__name__}",
+            f"    test: {indent(str(self.test), 4 * ' ')[4:]}",
+            "    recording:",
+            indent(str(self.recording), 8 * " "),
+        ])
 
     def on_model(self, model: Model) -> bool:
         self.recording.append({
@@ -177,7 +200,12 @@ class Assert(Test):
         assertion = repr(self.__assertion)
         return f"{name}({quantifier}, {assertion})"
 
-    # TODO: __str__(self)
+    def __str__(self):
+        return os.linesep.join([
+            f"[{self.outcome()}] {self.__class__.__name__}",
+            f"    quantifier: {self.__quantifier}",
+            f"    assertion:  {self.__assertion}",
+        ])
 
     def on_model(self, model: Model) -> bool:
         if not self.__quantifier.outcome().is_certain():
@@ -201,7 +229,11 @@ class Not(Test):
         operand = repr(self.__operand)
         return f"{name}({operand})"
 
-    # TODO: __str__(self)
+    def __str__(self):
+        return os.linesep.join([
+            f"[{self.outcome()}] {self.__class__.__name__}",
+            f"    operand: {indent(str(self.__operand), 4 * ' ')[4:]}",
+        ])
 
     def on_model(self, model: Model) -> bool:
         return self.__operand.on_model(model)
@@ -261,7 +293,26 @@ class And(Test):
             f"__outcome={outcome})"
         )
 
-    # TODO: __str__(self)
+    def __str__(self):
+        if self.__operands:
+            operands = ""
+            width = len(str(len(self.__operands) - 1))
+            for i, operand in enumerate(self.__operands):
+                i = str(i)
+                operands += os.linesep
+                operands += (width - len(i)) * " "
+                operands += [" ", "*"][operand in self.__ongoing]
+                operands += f"{i}: {operand}"
+            operands = indent(operands, 8 * ' ')
+        else:
+            operands = " <none>"
+
+        return os.linesep.join([
+            f"[{self.outcome()}] {self.__class__.__name__} ",
+            f"    operands:{operands}",
+            f"    short_circuit:  {self.__short_circuit}",
+            f"    ignore_certain: {self.__ignore_certain}",
+        ])
 
     def __on_whatever(self, call_operand: Callable[[Test], None]) -> bool:
         still_ongoing = []
@@ -363,7 +414,26 @@ class Or(Test):
             f"__outcome={outcome})"
         )
 
-    # TODO: __str__(self)
+    def __str__(self):
+        if self.__operands:
+            operands = ""
+            width = len(str(len(self.__operands) - 1))
+            for i, operand in enumerate(self.__operands):
+                i = str(i)
+                operands += os.linesep
+                operands += (width - len(i)) * " "
+                operands += [" ", "*"][operand in self.__ongoing]
+                operands += f"{i}: {operand}"
+            operands = indent(operands, 8 * ' ')
+        else:
+            operands = " <none>"
+
+        return os.linesep.join([
+            f"[{self.outcome()}] {self.__class__.__name__} ",
+            f"    operands:{operands}",
+            f"    short_circuit:  {self.__short_circuit}",
+            f"    ignore_certain: {self.__ignore_certain}",
+        ])
 
     def __on_whatever(self, call_operand: Callable[[Test], None]) -> bool:
         still_ongoing = []
