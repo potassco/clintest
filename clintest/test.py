@@ -32,6 +32,15 @@ class Test(ABC):
     def outcome(self) -> Outcome:
         pass
 
+    def assert_(self):
+        if not self.outcome().is_certainly_true():
+            msg = "The following test "
+            msg += ["is incomplete.", "has failed."][self.outcome().is_certain()]
+            msg += os.linesep
+            msg += indent(str(self), 4 * " ")
+
+            raise AssertionError(msg)
+
 
 class True_(Test):
     def __init__(self, lazy: bool = True) -> None:
