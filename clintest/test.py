@@ -32,7 +32,7 @@ class Test(ABC):
     def outcome(self) -> Outcome:
         pass
 
-    def assert_(self):
+    def assert_(self) -> None:
         if not self.outcome().is_certainly_true():
             msg = "The following test "
             msg += ["is incomplete.", "has failed."][self.outcome().is_certain()]
