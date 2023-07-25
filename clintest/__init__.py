@@ -74,7 +74,7 @@ Once a solver is set up, it may solve your test as follows.
 T!
 
 As you realize from the output, any model of `a. {b}.` does indeed contain the atom `a`.
-If you want to ensure this within a framework like `pytest`, use `clintest.test.Test.assert_` to raise an `AssertionError` with proper message if the test's outcome is not certainly true (`T!`).
+If you want to ensure this within a framework like `pytest`, use `clintest.test.Test.assert_` to raise an `AssertionError` with a proper message if the test's outcome is not certainly true (`T!`).
 
 ```
 test.assert_()
@@ -123,7 +123,7 @@ AssertionError: The following test has failed.
         short_circuit:  True
         ignore_certain: True
 
-Because the test has failed, `clintest.test.Test.assert_` produces a rather detailed exception which may be used to explain the cause of the failure.
+Because the test has failed, `clintest.test.Test.assert_` produces a rather detailed exception which may be used to explain the cause of the failure:
 Test #1 did fail, probably because there was a model that did not contain the atom `b`.
 
 But if you watch carefully, there is something else to discover.
