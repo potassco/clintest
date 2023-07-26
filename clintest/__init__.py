@@ -26,7 +26,7 @@ TODO
 ## Quick start
 This section is meant to guide you through the most important features of `clintest` using simple examples.
 
-### Simple assertions
+### Inspecting models
 Imagine you have written the program `a. {b}.` and want to ensure that all its models contains the atom `a`.
 In order to do so, you first need to create a `test.Test`.
 
@@ -131,7 +131,44 @@ Test #2 was never completed.
 This is due to a deliberate optimization as the outcome of test #2 was irrelevant once the outcome of test #1 was certainly false (`F!`).
 
 ### Debugging
-TODO
+Understanding why a test has failed can be challenging if one has no insight into the interaction between the test and the solver.
+This is where `clintest.test.Record`, a test that can be wrapped around any other test, comes in handy.
+
+```
+from clintest.test import Record
+record = Record(test)
+```
+
+To the solver or the surrounding compound test, `record` behaves just as <code>test</code>.
+Any call to one of its `on_*`-methods is forwarded to the respective method of <code>test</code>.
+The only difference is that `record` also keeps a detailed `test.Recording`of these function calls.
+Using the <code>test</code> from the previous section, the following example is what a recording may look like.
+In order to obtain the same result, make sure <code>test</code> was not solved before as a previously solved test cannot be solved again and therefore leads to a different recording.
+
+>>> solver.solve(record)
+>>> print(record)
+[F!] Record
+    test: [F!] And
+        operands:
+             0: [T!] Assert
+                quantifier: Any
+                assertion:  Contains("a")
+             1: [F!] Assert
+                quantifier: All
+                assertion:  Contains("b")
+             2: [F?] Assert
+                quantifier: Any
+                assertion:  Contains("c")
+        short_circuit:  True
+        ignore_certain: True
+    recording:
+        0: [T?] __init__
+        1: [F!] on_model
+            a
+        2: [F!] on_statistics
+        3: [F!] on_finish
+
+From this recording we learn that the absence of atom `b` in a model was indeed the reason for the failure of the test.
 
 ### Hand-crafted tests
 TODO
