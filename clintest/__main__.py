@@ -1,5 +1,2 @@
 if __name__ == "__main__":
-    # pylint: disable=fixme
-    # TODO
-    print("Hello, world")
-    # pylint: enable=fixme
+    print("Currently, there is not clintest application, but the might be in the future.")
