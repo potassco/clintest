@@ -1,8 +1,9 @@
 [MESSAGES CONTROL]
 
-# TODO: Reactivate fixme and missing-*-docstring warnings
+# TODO: Reactivate fixme, line-too-long and missing-*-docstring warnings
 disable=
     fixme,
+    line-too-long,
     missing-module-docstring,
     missing-class-docstring,
     missing-function-docstring,
