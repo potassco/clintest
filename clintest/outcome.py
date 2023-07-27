@@ -1,5 +1,5 @@
 """
-The `clintest.outcome.Outcome` of a test, usually accessible via `clintest.test.Test.outcome()`.
+The class `clintest.outcome.Outcome`.
 """
 
 from typing import Tuple

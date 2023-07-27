@@ -1,5 +1,5 @@
 """
-The abstract class `clintest.test.Test` and its off-the-shelf implementations.
+The abstract class `clintest.test.Test` and off-the-shelf test implementations.
 """
 
 from abc import ABC, abstractmethod

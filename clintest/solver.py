@@ -1,5 +1,5 @@
 """
-The abstract class `clintest.solver.Solver` and its off-the-shelf implementations.
+The abstract class `clintest.solver.Solver` and off-the-shelf solver implementations.
 """
 
 from abc import ABC, abstractmethod
