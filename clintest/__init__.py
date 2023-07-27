@@ -3,7 +3,7 @@ A test framework for `clingo` programs.
 
 `clintest` is a test framework written in Python that makes it easy to write efficient tests for `clingo` programs.
 It provides you with numerous off-the-shelf components that allow you to assemble the most commonly used tests quickly, saving you the time to write them yourself.
-However, should you require a hand-crafted test, it will work along the others just fine.
+However, should you require a custom-build test, it will work along the others just fine.
 
 In order to avoid time wasted on unnecessary computations, `clintest` will monitor the outcome of your test while steering the solving process.
 Once the outcome of your test is certain, it will automatically tell the solver to abort the search for further solutions.
@@ -23,7 +23,7 @@ TOOD
 ### From source
 TODO
 
-## Quick start
+## Usage
 This section is meant to guide you through the most important features of `clintest` using simple examples.
 
 ### Inspecting models
@@ -170,6 +170,29 @@ In order to obtain the same result, make sure <code>test</code> was not solved b
 
 From this recording we learn that the absence of atom `b` in a model was indeed the reason for the failure of the test.
 
-### Hand-crafted tests
-TODO
+### Custom-build tests
+In case you are unable to assemble your test from the off-the-shelf components in `clintest`, you might consider to custom-build it.
+Custom-build tests must, just as any other tests, extend `test.Test` in order to work with this library.
+This includes implementing two methods though a third is often needed:
+
+1. `test.Test.outcome()` may me called anytime and should return the current `outcome.Outcome` of your test.
+Once the outcome is certain, it must not change anymore.
+2. `test.Test.on_finish()` is called once solving comes to an end.
+The call to this method is your last change to alter the outcome of your test.
+After the call, the outcome must be certain.
+3. optional: `test.Test.on_model()` is called whenever a model is found.
+You may inspect the model to change the outcome of your test.
+This method should return if additional models are necessary to decide the test.
+In case it returns `False`, the outcome of the test must be certain.
+
+There are further `on_*`-methods you may override.
+For detailed information, refer to the class level documentation of `test.Test`.
+You may also draw inspiration from the tests implemented in `test`.
+
+Instead of custom-building a whole test, it often advisable to implement the missing components.
+This approach is often less labor-intensive as it aligns more seamlessly with the modular approach of `clintest`.
+See `quantifier.Quantifier` and `assertion.Assertion`.
+
+If you have an idea for an addition to `clintest` that could benefit other users as well, we encourage you to submit a pull request or open an issue.
+We are happy to consider including your idea into this project.
 """
