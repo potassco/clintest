@@ -1,3 +1,7 @@
+"""
+The abstract class `clintest.solver.Solver` and its off-the-shelf implementations.
+"""
+
 from abc import ABC, abstractmethod
 from typing import Optional, Sequence
 

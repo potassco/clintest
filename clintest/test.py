@@ -1,3 +1,7 @@
+"""
+The abstract class `clintest.test.Test` and its off-the-shelf implementations.
+"""
+
 from abc import ABC, abstractmethod
 import os
 from textwrap import indent

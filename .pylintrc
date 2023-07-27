@@ -4,7 +4,7 @@
 disable=
     fixme,
     line-too-long,
-    missing-module-docstring,
+    # missing-module-docstring,
     missing-class-docstring,
     missing-function-docstring,
     too-few-public-methods,

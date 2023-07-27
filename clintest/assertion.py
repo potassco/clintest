@@ -1,3 +1,10 @@
+"""
+The abstract class `clintest.assertion.Assertion` and classes extending it.
+
+An assertion is a statement that may or may not hold for a certain `clingo.model.Model`.
+As such, one is necessary to assemble the `clintest.test.Assert` test.
+"""
+
 from abc import ABC, abstractmethod
 from typing import Set, Union
 

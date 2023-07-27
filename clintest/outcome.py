@@ -1,3 +1,7 @@
+"""
+The `clintest.outcome.Outcome` of a test, usually accessible via `clintest.test.Test.outcome()`.
+"""
+
 from typing import Tuple
 
 class Outcome:

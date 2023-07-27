@@ -1,3 +1,10 @@
+"""
+The abstract class `clintest.quantifier.Quantifier` and classes extending it.
+
+A quantifier specifies how many assertions must hold in order to pass the test.
+As such, one is necessary to assemble the `clintest.test.Assert` test.
+"""
+
 from abc import ABC, abstractmethod
 
 from .outcome import Outcome
