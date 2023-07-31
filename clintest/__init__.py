@@ -18,7 +18,7 @@ You have several options to install it:
 TODO
 
 ### Using pip
-TOOD
+TODO
 
 ### From source
 TODO
