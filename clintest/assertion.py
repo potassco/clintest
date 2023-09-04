@@ -1,8 +1,5 @@
 """
 The abstract class `clintest.assertion.Assertion` and classes extending it.
-
-An assertion is a statement that may or may not hold for a certain `clingo.model.Model`.
-As such, one is necessary to assemble the `clintest.test.Assert` test.
 """
 
 from abc import ABC, abstractmethod
@@ -19,12 +16,41 @@ def _into_symbol(symbol: Union[Symbol, str]) -> Symbol:
 
 
 class Assertion(ABC):
+    """
+    An assertion is a statement that may or may not hold for a certain `clingo.model.Model`.
+    As such, one is necessary to assemble the `clintest.test.Assert` test.
+    """
+
     @abstractmethod
     def holds_for(self, model: Model) -> bool:
+        """
+        Returns whether this assertions holds for `model`.
+
+        Parameters
+        ----------
+        model
+            A `clingo.model.Model`.
+
+
+        Returns
+        -------
+        Whether this assertions holds for `model`.
+        """
+
+
         pass
 
 
 class Contains(Assertion):
+    """
+    An assertion that holds if a model contains a given `symbol`.
+
+    Parameters
+    ----------
+    symbol
+        The `clingo.symbol.Symbol` or a `str` that can be parsed into a `clingo.symbol.Symbol` with `clingo.symbol.parse_term`.
+    """
+
     def __init__(self, symbol: Union[Symbol, str]) -> None:
         self.__symbol = _into_symbol(symbol)
 
@@ -37,6 +63,15 @@ class Contains(Assertion):
 
 
 class Equals(Assertion):
+    """
+    An assertion that holds if the symbols of a model are equals to a given set of `symbols`.
+
+    Parameters
+    ----------
+    symbols
+        A set of `clingo.symbol.Symbol`s or `str`s that can be parsed into a `clingo.symbol.Symbol`s with `clingo.symbol.parse_term`
+    """
+
     def __init__(self, symbols: Set[Union[Symbol, str]]) -> None:
         self.__symbols = {_into_symbol(s) for s in symbols}
 
@@ -50,6 +85,15 @@ class Equals(Assertion):
 
 
 class SubsetOf(Assertion):
+    """
+    An assertion that holds if the symbols of a model are a subset of a given set of `symbols`.
+
+    Parameters
+    ----------
+    symbols
+        A set of `clingo.symbol.Symbol`s or `str`s that can be parsed into a `clingo.symbol.Symbol`s with `clingo.symbol.parse_term`
+    """
+
     def __init__(self, symbols: Set[Union[Symbol, str]]) -> None:
         self.__symbols = {_into_symbol(s) for s in symbols}
 
@@ -63,6 +107,15 @@ class SubsetOf(Assertion):
 
 
 class SupersetOf(Assertion):
+    """
+    An assertion that holds if the symbols of a model are a superset of a given set of `symbols`.
+
+    Parameters
+    ----------
+    symbols
+        A set of `clingo.symbol.Symbol`s or `str`s that can be parsed into a `clingo.symbol.Symbol`s with `clingo.symbol.parse_term`
+    """
+
     def __init__(self, symbols: Set[Union[Symbol, str]]) -> None:
         self.__symbols = {_into_symbol(s) for s in symbols}
 
@@ -76,6 +129,10 @@ class SupersetOf(Assertion):
 
 
 class True_(Assertion):
+    """
+    The assertion that is true for each model.
+    """
+
     def __repr__(self):
         return f"{self.__class__.__name__}()"
 
@@ -84,6 +141,10 @@ class True_(Assertion):
 
 
 class False_(Assertion):
+    """
+    The assertion that is false for each model.
+    """
+
     def __repr__(self):
         return f"{self.__class__.__name__}()"
 
@@ -92,6 +153,16 @@ class False_(Assertion):
 
 
 class Not(Assertion):
+    """
+    The negation of a given assertion.
+    This assertion holds if `operand` does not hold and vice versa.
+
+    Parameters
+    ----------
+    operand
+        The `Assertion` to be negated
+    """
+
     def __init__(self, operand: Assertion) -> None:
         self.__operand = operand
 
@@ -105,6 +176,16 @@ class Not(Assertion):
 
 
 class And(Assertion):
+    """
+    The conjunction of a list of given assertions.
+    This assertion holds if all `args` hold.
+
+    Parameters
+    ----------
+    args
+        The `Assertion`s to be combined
+    """
+
     def __init__(self, *args: Assertion) -> None:
         self.__operands = args
 
@@ -118,6 +199,16 @@ class And(Assertion):
 
 
 class Or(Assertion):
+    """
+    The disjunction of a list of given assertions.
+    This assertions hold if any `args` hold.
+
+    Parameters
+    ----------
+    args
+        The `Assertion`s to be combined
+    """
+
     def __init__(self, *args: Assertion) -> None:
         self.__operands = args
 
