@@ -15,13 +15,24 @@ This framework is guaranteed to work with Python 3.8 or greater.
 You have several options to install it:
 
 ### Using conda
-TODO
+A conda package is planned but currently not available.
 
 ### Using pip
-TODO
+The pip package is hosted at https://pypi.org/project/clintest.
+It can be installed with
+
+```
+$ pip install clintest
+```
 
 ### From source
-TODO
+The project is hosted on GitHub at https://github.com/potassco/clintest and can also be installed from source. We recommend this only for development purposes.
+
+```
+$ git clone https://github.com/potassco/clintest
+$ cd clintest
+$ pip install -e .
+```
 
 ## Usage
 This section is meant to guide you through the most important features of `clintest` using simple examples.
