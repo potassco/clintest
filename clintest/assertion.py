@@ -38,9 +38,6 @@ class Assertion(ABC):
         """
 
 
-        pass
-
-
 class Contains(Assertion):
     """
     An assertion that holds if a model contains a given `symbol`.
