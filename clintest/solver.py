@@ -11,12 +11,38 @@ from .test import Test
 
 
 class Solver(ABC):
+    """
+    An initialized solver that may solve any test.
+    """
+
     @abstractmethod
     def solve(self, test: Test) -> None:
-        pass
+        """
+        Use this solver to solve a given `test`.
+
+        Parameters
+        ----------
+        test
+            The `clintest.test.Test` to be solved by this solver
+        """
 
 
 class Clingo(Solver):
+    """
+    A solver using `clingo.control.Control`.
+
+    Parameters
+    ----------
+    arguments
+        A list of arguments
+
+    program
+        The program as a `str`
+
+    files
+        A list of files to read the program from
+    """
+
     def __init__(
         self,
         arguments: Optional[Sequence[str]] = None,
