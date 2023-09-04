@@ -28,7 +28,7 @@ class Test(ABC):
         Parameters
         ----------
         model
-            The `clingo.model.Model` to consume
+            The `clingo.model.Model` to consume.
 
         Returns
         -------
@@ -45,7 +45,7 @@ class Test(ABC):
         Parameters
         ----------
         lower_bound
-            The lower bound
+            The lower bound.
         """
 
     def on_core(self, core: Sequence[int]) -> None:
@@ -55,7 +55,7 @@ class Test(ABC):
         Parameters
         ----------
         core
-            The unsat core
+            The unsat core.
         """
 
     def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
@@ -65,10 +65,10 @@ class Test(ABC):
         Parameters
         ----------
         step
-            The step statistics
+            The step statistics.
 
         accumulated
-            The accumulated statistics
+            The accumulated statistics.
         """
 
     @abstractmethod
@@ -82,7 +82,7 @@ class Test(ABC):
         Parameters
         ----------
         result
-            The `clingo.solving.SolveResult`
+            The `clingo.solving.SolveResult`.
         """
 
     @abstractmethod
@@ -211,7 +211,7 @@ class Recording:
         Parameters
         ----------
         changes
-            The changes
+            The changes.
         """
 
         self.__entries[-1].update(changes)
@@ -223,7 +223,7 @@ class Recording:
         Parameters
         ----------
         entry
-            The entry
+            The entry.
         """
 
         self.__entries.append(entry)
@@ -235,7 +235,7 @@ class Recording:
         Parameters
         ----------
         other
-            The other recording
+            The other recording.
         """
 
         # pylint: disable=protected-access
@@ -379,7 +379,7 @@ class Not(Test):
     Parameters
     ----------
     operand
-        The `Test` to be negated
+        The `Test` to be negated.
     """
 
     def __init__(self, operand: Test) -> None:

@@ -21,10 +21,6 @@ class Quantifier(ABC):
     def outcome(self) -> Outcome:
         """
         Returns the current outcome of this quantifier.
-
-        Returns
-        -------
-        The current outcome of this quantifier.
         """
 
     @abstractmethod
@@ -36,11 +32,11 @@ class Quantifier(ABC):
         Parameters
         ----------
         value
-            The return value of `clintest.assertion.Assertion.holds_for`
+            The return value of `clintest.assertion.Assertion.holds_for`.
 
         Returns
         -------
-        The outcome of this quantifier after `value` was consumed
+        The outcome of this quantifier after `value` was consumed.
         """
 
 
@@ -129,10 +125,10 @@ class Finished(Quantifier):
     The outcome of this quantifier is the outcome of `inner` beside that it is always certain.
     Calling `Finished.consume` will not alter outcome of this or the `inner` quantifier.
 
-    Paramters
+    Parameters
     ---------
     inner
-        The quantifier that should be finished
+        The quantifier that should be finished.
     """
 
     def __init__(self, inner: Quantifier) -> None:

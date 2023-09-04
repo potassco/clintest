@@ -23,7 +23,7 @@ class Solver(ABC):
         Parameters
         ----------
         test
-            The `clintest.test.Test` to be solved by this solver
+            The `clintest.test.Test` to be solved by this solver.
         """
 
 
@@ -34,13 +34,13 @@ class Clingo(Solver):
     Parameters
     ----------
     arguments
-        A list of arguments
+        A list of arguments.
 
     program
-        The program as a `str`
+        The program as a `str`.
 
     files
-        A list of files to read the program from
+        A list of files to read the program from.
     """
 
     def __init__(

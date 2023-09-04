@@ -66,7 +66,7 @@ class Equals(Assertion):
     Parameters
     ----------
     symbols
-        A set of `clingo.symbol.Symbol`s or `str`s that can be parsed into a `clingo.symbol.Symbol`s with `clingo.symbol.parse_term`
+        A set of `clingo.symbol.Symbol`s or `str`s that can be parsed into a `clingo.symbol.Symbol`s with `clingo.symbol.parse_term`.
     """
 
     def __init__(self, symbols: Set[Union[Symbol, str]]) -> None:
@@ -88,7 +88,7 @@ class SubsetOf(Assertion):
     Parameters
     ----------
     symbols
-        A set of `clingo.symbol.Symbol`s or `str`s that can be parsed into a `clingo.symbol.Symbol`s with `clingo.symbol.parse_term`
+        A set of `clingo.symbol.Symbol`s or `str`s that can be parsed into a `clingo.symbol.Symbol`s with `clingo.symbol.parse_term`.
     """
 
     def __init__(self, symbols: Set[Union[Symbol, str]]) -> None:
@@ -110,7 +110,7 @@ class SupersetOf(Assertion):
     Parameters
     ----------
     symbols
-        A set of `clingo.symbol.Symbol`s or `str`s that can be parsed into a `clingo.symbol.Symbol`s with `clingo.symbol.parse_term`
+        A set of `clingo.symbol.Symbol`s or `str`s that can be parsed into a `clingo.symbol.Symbol`s with `clingo.symbol.parse_term`.
     """
 
     def __init__(self, symbols: Set[Union[Symbol, str]]) -> None:
@@ -157,7 +157,7 @@ class Not(Assertion):
     Parameters
     ----------
     operand
-        The `Assertion` to be negated
+        The `Assertion` to be negated.
     """
 
     def __init__(self, operand: Assertion) -> None:
@@ -180,7 +180,7 @@ class And(Assertion):
     Parameters
     ----------
     args
-        The `Assertion`s to be combined
+        The `Assertion`s to be combined.
     """
 
     def __init__(self, *args: Assertion) -> None:
@@ -203,7 +203,7 @@ class Or(Assertion):
     Parameters
     ----------
     args
-        The `Assertion`s to be combined
+        The `Assertion`s to be combined.
     """
 
     def __init__(self, *args: Assertion) -> None:
