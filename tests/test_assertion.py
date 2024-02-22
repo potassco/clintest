@@ -102,3 +102,13 @@ def test_or(frame):
         Or(),
         Or(False_(), False_()),
     ])
+
+def test_implies(frame):
+    from clintest.assertion import Implies, True_, False_
+    frame([
+        Implies(False_(), False_()),
+        Implies(False_(), True_()),
+        Implies(True_(), True_()),
+    ], [
+        Implies(True_(), False_()),
+    ])
