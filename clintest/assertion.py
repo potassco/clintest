@@ -228,3 +228,31 @@ class Or(Assertion):
 
     def holds_for(self, model: Model) -> bool:
         return any((operand.holds_for(model) for operand in self.__operands))
+
+
+class Implies(Assertion):
+    """
+    The implication of two given assertions.
+    This assertion holds if `antecedent` holds implies that `consequent` holds.
+    In other words, this assertion holds if `antecedent` does not hold or `consequent` holds.
+
+    Parameters
+    ----------
+    antecedent
+        The `Assertion` to be the antecedent of the implication
+    consequent
+        The `Assertion` to be the consequent of the implication
+    """
+
+    def __init__(self, antecedent: Assertion, consequent: Assertion) -> None:
+        self.__antecedent = antecedent
+        self.__consequent = consequent
+
+    def __repr__(self):
+        name = self.__class__.__name__
+        antecedent = repr(self.__antecedent)
+        consequent = repr(self.__consequent)
+        return f"{name}({antecedent}, {consequent})"
+
+    def holds_for(self, model: Model) -> bool:
+        return not self.__antecedent.holds_for(model) or self.__consequent.holds_for(model)
