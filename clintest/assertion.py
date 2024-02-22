@@ -125,6 +125,18 @@ class SupersetOf(Assertion):
         return set(model.symbols(shown=True)).issuperset(self.__symbols)
 
 
+class Optimal(Assertion):
+    """
+    An assertion that holds if the optimality of a model is proven.
+    """
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}()"
+
+    def holds_for(self, model: Model) -> bool:
+        return model.optimality_proven
+
+
 class True_(Assertion):
     """
     The assertion that is true for each model.
