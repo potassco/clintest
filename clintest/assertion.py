@@ -198,7 +198,7 @@ class And(Assertion):
 class Or(Assertion):
     """
     The disjunction of a list of given assertions.
-    This assertions hold if any `args` hold.
+    This assertion holds if any `args` hold.
 
     Parameters
     ----------
