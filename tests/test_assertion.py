@@ -112,3 +112,18 @@ def test_implies(frame):
     ], [
         Implies(True_(), False_()),
     ])
+
+def test_equivalent(frame):
+    from clintest.assertion import Equivalent, True_, False_
+    frame(
+        [
+            Equivalent(),
+            Equivalent(False_()),
+            Equivalent(True_()),
+            Equivalent(False_(), False_()),
+            Equivalent(True_(), True_()),
+        ], [
+            Equivalent(False_(), True_()),
+            Equivalent(True_(), False_()),
+        ]
+    )

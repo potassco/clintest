@@ -256,3 +256,33 @@ class Implies(Assertion):
 
     def holds_for(self, model: Model) -> bool:
         return not self.__antecedent.holds_for(model) or self.__consequent.holds_for(model)
+
+
+class Equivalent(Assertion):
+    """
+    The equivalence of a list of given assertions.
+    This assertion holds if all `args` simultaneously hold or not hold.
+
+    Parameters
+    ----------
+    args
+        The `Assertion`s to be combined.
+    """
+
+    def __init__(self, *args: Assertion) -> None:
+        self.__operands = args
+
+    def __repr__(self):
+        name = self.__class__.__name__
+        operands = ", ".join(repr(operand) for operand in self.__operands)
+        return f"{name}({operands})"
+
+    def holds_for(self, model: Model) -> bool:
+        operands = iter(self.__operands)
+
+        try:
+            first = next(operands).holds_for(model)
+        except StopIteration:
+            return True
+
+        return all((first == operand.holds_for(model) for operand in operands))
