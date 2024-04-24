@@ -200,7 +200,7 @@ There are further `on_*`-methods you may override.
 For detailed information, refer to the class level documentation of `test.Test`.
 You may also draw inspiration from the tests implemented in `test`.
 
-Instead of custom-building a whole test, it often advisable to implement the missing components.
+Instead of custom-building a whole test, it is often advisable to implement the missing components.
 This approach is often less labor-intensive as it aligns more seamlessly with the modular approach of `clintest`.
 See `quantifier.Quantifier` and `assertion.Assertion`.
 
