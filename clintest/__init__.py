@@ -18,7 +18,7 @@ You have several options to install it:
 A conda package is planned but currently not available.
 
 ### Using pip
-The pip package is hosted at https://pypi.org/project/clintest.
+The pip package is hosted at [https://pypi.org/project/clintest](https://pypi.org/project/clintest).
 It can be installed with
 
 ```
