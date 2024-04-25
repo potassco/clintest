@@ -183,13 +183,13 @@ From this recording we learn that the absence of atom `b` in a model was indeed 
 
 ### Custom-build tests
 In case you are unable to assemble your test from the off-the-shelf components in `clintest`, you might consider to custom-build it.
-Custom-build tests must, just as any other tests, extend `test.Test` in order to work with this library.
+Custom-built tests must, just as any other tests, extend `test.Test` in order to work with this library.
 This includes implementing two methods though a third is often needed:
 
-1. `test.Test.outcome()` may me called anytime and should return the current `outcome.Outcome` of your test.
+1. `test.Test.outcome()` may be called anytime and should return the current `outcome.Outcome` of your test.
 Once the outcome is certain, it must not change anymore.
 2. `test.Test.on_finish()` is called once solving comes to an end.
-The call to this method is your last change to alter the outcome of your test.
+The call to this method is your last chance to alter the outcome of your test.
 After the call, the outcome must be certain.
 3. optional: `test.Test.on_model()` is called whenever a model is found.
 You may inspect the model to change the outcome of your test.
