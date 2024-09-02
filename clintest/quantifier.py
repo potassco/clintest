@@ -119,6 +119,122 @@ class Exact(Quantifier):
         return self.outcome()
 
 
+class Less(Quantifier):
+    """
+    A quantifier demanding that an assertion holds for a number of models less than a given supremum.
+
+    Parameters
+    ----------
+    supremum
+        The supremum
+    """
+
+    def __init__(self, supremum: int) -> None:
+        self.__supremum = supremum
+        self.__state = 0
+
+    def __repr__(self):
+        name = self.__class__.__name__
+        return f"{name}({self.__supremum}, __state={self.__state})"
+
+    def __str__(self):
+        return f"{self.__class__.__name__} {self.__state}/{self.__supremum}"
+
+    def outcome(self) -> Outcome:
+        return Outcome(self.__state < self.__supremum, self.__state >= self.__supremum)
+
+    def consume(self, value: bool) -> Outcome:
+        self.__state += value
+        return self.outcome()
+
+
+class LessEqual(Quantifier):
+    """
+    A quantifier demanding that an assertion holds for a number of models less than or equal to a given maximum.
+
+    Parameters
+    ----------
+    maximum
+        The maximum
+    """
+
+    def __init__(self, maximum: int) -> None:
+        self.__maximum = maximum
+        self.__state = 0
+
+    def __repr__(self):
+        name = self.__class__.__name__
+        return f"{name}({self.__maximum}, __state={self.__state})"
+
+    def __str__(self):
+        return f"{self.__class__.__name__} {self.__state}/{self.__maximum}"
+
+    def outcome(self) -> Outcome:
+        return Outcome(self.__state <= self.__maximum, self.__state > self.__maximum)
+
+    def consume(self, value: bool) -> Outcome:
+        self.__state += value
+        return self.outcome()
+
+
+class Greater(Quantifier):
+    """
+    A quantifier demanding that an assertion holds for a number of models greater than a given infimum.
+
+    Parameters
+    ----------
+    supremum
+        The infimum
+    """
+
+    def __init__(self, infimum: int) -> None:
+        self.__infimum = infimum
+        self.__state = 0
+
+    def __repr__(self):
+        name = self.__class__.__name__
+        return f"{name}({self.__infimum}, __state={self.__state})"
+
+    def __str__(self):
+        return f"{self.__class__.__name__} {self.__state}/{self.__infimum}"
+
+    def outcome(self) -> Outcome:
+        return Outcome(self.__state > self.__infimum, self.__state > self.__infimum)
+
+    def consume(self, value: bool) -> Outcome:
+        self.__state += value
+        return self.outcome()
+
+
+class GreaterEqual(Quantifier):
+    """
+    A quantifier demanding that an assertion holds for a number of models than or equal to a given minimum.
+
+    Parameters
+    ----------
+    supremum
+        The minimum
+    """
+
+    def __init__(self, minimum: int) -> None:
+        self.__minimum = minimum
+        self.__state = 0
+
+    def __repr__(self):
+        name = self.__class__.__name__
+        return f"{name}({self.__minimum}, __state={self.__state})"
+
+    def __str__(self):
+        return f"{self.__class__.__name__} {self.__state}/{self.__minimum}"
+
+    def outcome(self) -> Outcome:
+        return Outcome(self.__state >= self.__minimum, self.__state >= self.__minimum)
+
+    def consume(self, value: bool) -> Outcome:
+        self.__state += value
+        return self.outcome()
+
+
 class Finished(Quantifier):
     """
     A wrapper around an `inner` quantifier indicating that computation has finished.
