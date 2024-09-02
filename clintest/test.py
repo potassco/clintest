@@ -247,7 +247,7 @@ class Recording:
 
 class Record(Test):
     """
-    A test that behaves identical to a given other `test` but records any call to one of it
+    A test that behaves identical to a given other `test` but records any call to one of its
     `on_*`-methods. This can be very helpful for debugging.
 
     Parameters
