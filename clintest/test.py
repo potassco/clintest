@@ -340,12 +340,12 @@ class Context(Test):
     def __init__(
         self,
         test: Test,
-        str: Callable[[Test], str] = lambda test: str(test),
-        repr: Callable[[Test], str] = lambda test: repr(test),
+        str_: Callable[[Test], str] = str,
+        repr_: Callable[[Test], str] = repr,
     ):
         self.test: Test = test
-        self.__str = str
-        self.__repr = repr
+        self.__str = str_
+        self.__repr = repr_
 
     def __repr__(self):
         return self.__repr(self.test)

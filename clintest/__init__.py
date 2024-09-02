@@ -191,7 +191,7 @@ This problem can be solved by adding a `clintest.test.Context`.
 from clintest.test import Context
 context = Context(
     test,
-    str=lambda test: f"[{test.outcome()}] Models need to know their ABC.",
+    str_=lambda test: f"[{test.outcome()}] Models need to know their ABC.",
 )
 ```
 
