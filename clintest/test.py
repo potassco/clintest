@@ -326,6 +326,52 @@ class Record(Test):
         return self.test.outcome()
 
 
+class Context(Test):
+    """
+    A test that behaves identical to a given other `test` but permits changes to its
+    string representation. This can be helpful to create human-readable error messages.
+
+    Parameters
+    ----------
+    test
+        A `Test` that determines how this test should behave.
+    """
+
+    def __init__(
+        self,
+        test: Test,
+        str: Callable[[Test], str] = lambda test: str(test),
+        repr: Callable[[Test], str] = lambda test: repr(test),
+    ):
+        self.test: Test = test
+        self.__str = str
+        self.__repr = repr
+
+    def __repr__(self):
+        return self.__repr(self.test)
+
+    def __str__(self):
+        return self.__str(self.test)
+
+    def on_model(self, model: Model) -> bool:
+        return self.test.on_model(model)
+
+    def on_unsat(self, lower_bound: Sequence[int]) -> None:
+        self.test.on_unsat(lower_bound)
+
+    def on_core(self, core: Sequence[int]) -> None:
+        self.test.on_core(core)
+
+    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
+        self.test.on_statistics(step, accumulated)
+
+    def on_finish(self, result: SolveResult) -> None:
+        self.test.on_finish(result)
+
+    def outcome(self) -> Outcome:
+        return self.test.outcome()
+
+
 class Assert(Test):
     """
     A test that asserts certain properties about the `clingo.model.Model`s of a program. This test
