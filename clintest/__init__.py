@@ -182,6 +182,27 @@ In order to obtain the same result, make sure <code>test</code> was not solved b
 
 From this recording we learn that the absence of atom `b` in a model was indeed the reason for the failure of the test.
 
+### Human-friendly error messages
+As seen in the previous sections, the default string representation of a test can be quite detailed and therefore difficult to understand.
+While a detailed report might be preferable for a skilled programmer, it is often unwanted for the end user.
+This problem can be solved by adding a `clintest.test.Context`.
+
+```
+from clintest.test import Context
+context = Context(
+    test,
+    str=lambda test: f"[{test.outcome()}] Models need to know their ABC.",
+)
+```
+
+Like a `clintest.test.Record`, a `clintest.test.Context` wraps around another <code>test</code> and acts like it.
+However, it enables the user to overwrite the `__str__`- and `__repr__`-methods to give more insight into what really went wrong.
+
+Running the above test with our previous solver leads to a more digestible error message:
+>>> solver.solve(context)
+>>> print(context)
+[F!] Models need to know their ABC.
+
 ### Custom-build tests
 In case you are unable to assemble your test from the off-the-shelf components in `clintest`, you might consider to custom-build it.
 Custom-built tests must, just as any other tests, extend `test.Test` in order to work with this library.
