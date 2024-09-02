@@ -143,7 +143,8 @@ This is due to a deliberate optimization as the outcome of test #2 was irrelevan
 
 ### Debugging
 Understanding why a test has failed can be challenging if one has no insight into the interaction between the test and the solver.
-This is where `clintest.test.Record`, a test that can be wrapped around any other test, comes in handy.
+This is where `clintest.test.Record` comes in handy.
+`clintest.test.Record` can be wrapped around any other test to save crucial information.
 
 ```
 from clintest.test import Record
