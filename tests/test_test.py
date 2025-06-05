@@ -82,6 +82,43 @@ def test_assert_any(solver, recording_one_model, recording_two_models):
     assert recording_two_models.subsumes(test.recording)
 
 
+def test_assert_first(solver, recording_one_model):
+    from clintest.test import Assert, Record
+    from clintest.quantifier import First
+    from clintest.assertion import Contains
+
+    test = Record(Assert(First(), Contains("a")))
+    solver.solve(test)
+    assert test.outcome().is_certainly_true()
+    assert recording_one_model.subsumes(test.recording)
+
+    test = Record(Assert(First(), Contains("b")))
+    solver.solve(test)
+    assert test.outcome().is_certainly_false()
+    assert recording_one_model.subsumes(test.recording)
+
+
+def test_assert_last(solver, recording_two_models):
+    from clintest.test import Assert, Record
+    from clintest.quantifier import Last
+    from clintest.assertion import Contains
+
+    test = Record(Assert(Last(), Contains("a")))
+    solver.solve(test)
+    assert test.outcome().is_certainly_true()
+    assert recording_two_models.subsumes(test.recording)
+
+    test = Record(Assert(Last(), Contains("b")))
+    solver.solve(test)
+    assert test.outcome().is_certainly_true()
+    assert recording_two_models.subsumes(test.recording)
+
+    test = Record(Assert(Last(), Contains("c")))
+    solver.solve(test)
+    assert test.outcome().is_certainly_false()
+    assert recording_two_models.subsumes(test.recording)
+
+
 def test_assert_exact(solver, recording_one_model, recording_two_models):
     from clintest.test import Assert, Record
     from clintest.quantifier import Exact
