@@ -90,6 +90,55 @@ class Any(Quantifier):
         return self.__state
 
 
+class First(Quantifier):
+    """
+    A quantifier demanding that an assertion holds for the first model.
+    """
+
+    def __init__(self) -> None:
+        self.__state = Outcome(False, False)
+
+    def __repr__(self):
+        name = self.__class__.__name__
+        state = repr(self.__state)
+        return f"{name}(__state={state})"
+
+    def __str__(self):
+        return self.__class__.__name__
+
+    def outcome(self) -> Outcome:
+        return self.__state
+
+    def consume(self, value: bool) -> Outcome:
+        if not self.__state.is_certain():
+            self.__state = Outcome(value, True)
+        return self.__state
+
+
+class Last(Quantifier):
+    """
+    A quantifier demanding that an assertion holds for the last model.
+    """
+
+    def __init__(self) -> None:
+        self.__state = Outcome(False, False)
+
+    def __repr__(self):
+        name = self.__class__.__name__
+        state = repr(self.__state)
+        return f"{name}(__state={state})"
+
+    def __str__(self):
+        return self.__class__.__name__
+
+    def outcome(self) -> Outcome:
+        return self.__state
+
+    def consume(self, value: bool) -> Outcome:
+        self.__state = Outcome(value, False)
+        return self.__state
+
+
 class Exact(Quantifier):
     """
     A quantifier demanding that an assertion holds for an exact number of models.
