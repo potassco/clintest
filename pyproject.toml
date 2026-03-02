@@ -23,6 +23,9 @@ dev = [
     "pytest>=8",
     "ruff>=0.15",
 ]
+doc = [
+    "pdoc3>=0.11",
+]
 
 [project.urls]
 Documentation = "https://potassco.org/clintest/"
