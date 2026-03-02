@@ -58,15 +58,16 @@ select = [
     "I",    # isort
 ]
 ignore = [
-    # TODO: Remove these ignores once the issues are resolved
+    "D105", # pydocstyle: missing docstring in magic method
+    "D107", # pydocstyle: missing docstring in __init__
+
+    # TODO: Remove the following once the issues are resolved
     "PLW1641",
     "PLW2901",
     "B008",
     "B027",
     "B905",
     "S101",
-    "D105",
-    "D107",
 ]
 
 [tool.ruff.lint.pydocstyle]
