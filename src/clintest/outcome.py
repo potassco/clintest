@@ -13,7 +13,7 @@ These four options are represented using two booleans within `Outcome`:
 - `is_certain` indicates whether the result is certain.
 """
 
-from typing import Tuple
+from typing import Tuple, override
 
 
 class Outcome:
@@ -32,17 +32,17 @@ class Outcome:
         self.__current_value = current_value
         self.__is_certain = is_certain
 
-    def __repr__(self):
-        """Returns a detailed string representation of this outcome."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         return f"{name}({self.__current_value}, {self.__is_certain})"
 
-    def __str__(self):
-        """Returns a human-readable string representation of this outcome."""
+    @override
+    def __str__(self):  # noqa: D105
         return str(self.__current_value)[:1] + ["?", "!"][self.__is_certain]
 
-    def __eq__(self, other):
-        """Returns whether this outcome is equal to `other`."""
+    @override
+    def __eq__(self, other):  # noqa: D105
         # pylint: disable=protected-access
         return self.__current_value == other.__current_value and self.__is_certain == other.__is_certain
 

@@ -1,7 +1,7 @@
 """The abstract class `clintest.solver.Solver` and off-the-shelf solver implementations."""
 
 from abc import ABC, abstractmethod
-from typing import Optional, Sequence
+from typing import Optional, Sequence, override
 
 from clingo.control import Control
 
@@ -49,8 +49,8 @@ class Clingo(Solver):
         self.__program = "" if program is None else program
         self.__files = [] if files is None else files
 
-    def solve(self, test: Test) -> None:
-        """Uses this solver to solve `test`."""
+    @override
+    def solve(self, test: Test) -> None:  # noqa: D102
         ctl = Control(self.__arguments)
 
         ctl.add("base", [], self.__program)
@@ -69,8 +69,8 @@ class Clingo(Solver):
                 on_finish=test.on_finish,
             )
 
-    def __repr__(self):
-        """Returns a detailed string representation of this solver."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         arguments = repr(self.__arguments)
         program = repr(self.__program)

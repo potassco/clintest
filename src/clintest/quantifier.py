@@ -1,6 +1,7 @@
 """The abstract class `clintest.quantifier.Quantifier` and classes extending it."""
 
 from abc import ABC, abstractmethod
+from typing import override
 
 from .outcome import Outcome
 
@@ -43,22 +44,22 @@ class All(Quantifier):
         """Initializes an `All` quantifier."""
         self.__state = Outcome(True, False)
 
-    def __repr__(self):
-        """Returns a detailed string representation of this quantifier."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         state = repr(self.__state)
         return f"{name}(__state={state})"
 
-    def __str__(self):
-        """Returns a human-readable string representation of this quantifier."""
+    @override
+    def __str__(self):  # noqa: D105
         return self.__class__.__name__
 
-    def outcome(self) -> Outcome:
-        """Returns the current outcome of this quantifier."""
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.__state
 
-    def consume(self, value: bool) -> Outcome:
-        """Consumes `value` and returns the updated outcome."""
+    @override
+    def consume(self, value: bool) -> Outcome:  # noqa: D102
         if not value:
             self.__state = Outcome(False, True)
         return self.__state
@@ -71,22 +72,22 @@ class Any(Quantifier):
         """Initializes an `Any` quantifier."""
         self.__state = Outcome(False, False)
 
-    def __repr__(self):
-        """Returns a detailed string representation of this quantifier."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         state = repr(self.__state)
         return f"{name}(__state={state})"
 
-    def __str__(self):
-        """Returns a human-readable string representation of this quantifier."""
+    @override
+    def __str__(self):  # noqa: D105
         return self.__class__.__name__
 
-    def outcome(self) -> Outcome:
-        """Returns the current outcome of this quantifier."""
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.__state
 
-    def consume(self, value: bool) -> Outcome:
-        """Consumes `value` and returns the updated outcome."""
+    @override
+    def consume(self, value: bool) -> Outcome:  # noqa: D102
         if value:
             self.__state = Outcome(True, True)
         return self.__state
@@ -99,22 +100,22 @@ class First(Quantifier):
         """Initializes a `First` quantifier."""
         self.__state = Outcome(False, False)
 
-    def __repr__(self):
-        """Returns a detailed string representation of this quantifier."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         state = repr(self.__state)
         return f"{name}(__state={state})"
 
-    def __str__(self):
-        """Returns a human-readable string representation of this quantifier."""
+    @override
+    def __str__(self):  # noqa: D105
         return self.__class__.__name__
 
-    def outcome(self) -> Outcome:
-        """Returns the current outcome of this quantifier."""
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.__state
 
-    def consume(self, value: bool) -> Outcome:
-        """Consumes `value` and returns the updated outcome."""
+    @override
+    def consume(self, value: bool) -> Outcome:  # noqa: D102
         if not self.__state.is_certain():
             self.__state = Outcome(value, True)
         return self.__state
@@ -127,22 +128,22 @@ class Last(Quantifier):
         """Initializes a `Last` quantifier."""
         self.__state = Outcome(False, False)
 
-    def __repr__(self):
-        """Returns a detailed string representation of this quantifier."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         state = repr(self.__state)
         return f"{name}(__state={state})"
 
-    def __str__(self):
-        """Returns a human-readable string representation of this quantifier."""
+    @override
+    def __str__(self):  # noqa: D105
         return self.__class__.__name__
 
-    def outcome(self) -> Outcome:
-        """Returns the current outcome of this quantifier."""
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.__state
 
-    def consume(self, value: bool) -> Outcome:
-        """Consumes `value` and returns the updated outcome."""
+    @override
+    def consume(self, value: bool) -> Outcome:  # noqa: D102
         self.__state = Outcome(value, False)
         return self.__state
 
@@ -161,21 +162,21 @@ class Exact(Quantifier):
         self.__target = target
         self.__state = 0
 
-    def __repr__(self):
-        """Returns a detailed string representation of this quantifier."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         return f"{name}({self.__target}, __state={self.__state})"
 
-    def __str__(self):
-        """Returns a human-readable string representation of this quantifier."""
+    @override
+    def __str__(self):  # noqa: D105
         return f"{self.__class__.__name__} {self.__state}/{self.__target}"
 
-    def outcome(self) -> Outcome:
-        """Returns the current outcome of this quantifier."""
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return Outcome(self.__state == self.__target, self.__state > self.__target)
 
-    def consume(self, value: bool) -> Outcome:
-        """Consumes `value` and returns the updated outcome."""
+    @override
+    def consume(self, value: bool) -> Outcome:  # noqa: D102
         self.__state += value
         return self.outcome()
 
@@ -194,21 +195,21 @@ class Less(Quantifier):
         self.__supremum = supremum
         self.__state = 0
 
-    def __repr__(self):
-        """Returns a detailed string representation of this quantifier."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         return f"{name}({self.__supremum}, __state={self.__state})"
 
-    def __str__(self):
-        """Returns a human-readable string representation of this quantifier."""
+    @override
+    def __str__(self):  # noqa: D105
         return f"{self.__class__.__name__} {self.__state}/{self.__supremum}"
 
-    def outcome(self) -> Outcome:
-        """Returns the current outcome of this quantifier."""
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return Outcome(self.__state < self.__supremum, self.__state >= self.__supremum)
 
-    def consume(self, value: bool) -> Outcome:
-        """Consumes `value` and returns the updated outcome."""
+    @override
+    def consume(self, value: bool) -> Outcome:  # noqa: D102
         self.__state += value
         return self.outcome()
 
@@ -227,21 +228,21 @@ class LessEqual(Quantifier):
         self.__maximum = maximum
         self.__state = 0
 
-    def __repr__(self):
-        """Returns a detailed string representation of this quantifier."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         return f"{name}({self.__maximum}, __state={self.__state})"
 
-    def __str__(self):
-        """Returns a human-readable string representation of this quantifier."""
+    @override
+    def __str__(self):  # noqa: D105
         return f"{self.__class__.__name__} {self.__state}/{self.__maximum}"
 
-    def outcome(self) -> Outcome:
-        """Returns the current outcome of this quantifier."""
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return Outcome(self.__state <= self.__maximum, self.__state > self.__maximum)
 
-    def consume(self, value: bool) -> Outcome:
-        """Consumes `value` and returns the updated outcome."""
+    @override
+    def consume(self, value: bool) -> Outcome:  # noqa: D102
         self.__state += value
         return self.outcome()
 
@@ -260,21 +261,21 @@ class Greater(Quantifier):
         self.__infimum = infimum
         self.__state = 0
 
-    def __repr__(self):
-        """Returns a detailed string representation of this quantifier."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         return f"{name}({self.__infimum}, __state={self.__state})"
 
-    def __str__(self):
-        """Returns a human-readable string representation of this quantifier."""
+    @override
+    def __str__(self):  # noqa: D105
         return f"{self.__class__.__name__} {self.__state}/{self.__infimum}"
 
-    def outcome(self) -> Outcome:
-        """Returns the current outcome of this quantifier."""
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return Outcome(self.__state > self.__infimum, self.__state > self.__infimum)
 
-    def consume(self, value: bool) -> Outcome:
-        """Consumes `value` and returns the updated outcome."""
+    @override
+    def consume(self, value: bool) -> Outcome:  # noqa: D102
         self.__state += value
         return self.outcome()
 
@@ -293,21 +294,21 @@ class GreaterEqual(Quantifier):
         self.__minimum = minimum
         self.__state = 0
 
-    def __repr__(self):
-        """Returns a detailed string representation of this quantifier."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         return f"{name}({self.__minimum}, __state={self.__state})"
 
-    def __str__(self):
-        """Returns a human-readable string representation of this quantifier."""
+    @override
+    def __str__(self):  # noqa: D105
         return f"{self.__class__.__name__} {self.__state}/{self.__minimum}"
 
-    def outcome(self) -> Outcome:
-        """Returns the current outcome of this quantifier."""
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return Outcome(self.__state >= self.__minimum, self.__state >= self.__minimum)
 
-    def consume(self, value: bool) -> Outcome:
-        """Consumes `value` and returns the updated outcome."""
+    @override
+    def consume(self, value: bool) -> Outcome:  # noqa: D102
         self.__state += value
         return self.outcome()
 
@@ -328,20 +329,20 @@ class Finished(Quantifier):
         """Initializes a `Finished` quantifier wrapping `inner`."""
         self.__state = Outcome(inner.outcome().current_value(), True)
 
-    def __repr__(self):
-        """Returns a detailed string representation of this quantifier."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         state = repr(self.__state)
         return f"{name}(__state={state})"
 
-    def __str__(self):
-        """Returns a human-readable string representation of this quantifier."""
+    @override
+    def __str__(self):  # noqa: D105
         return self.__class__.__name__
 
-    def outcome(self) -> Outcome:
-        """Returns the current outcome of this quantifier."""
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.__state
 
-    def consume(self, value: bool) -> Outcome:
-        """Returns the current outcome without consuming `value`."""
+    @override
+    def consume(self, value: bool) -> Outcome:  # noqa: D102
         return self.__state

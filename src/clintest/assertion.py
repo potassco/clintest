@@ -1,7 +1,7 @@
 """The abstract class `clintest.assertion.Assertion` and classes extending it."""
 
 from abc import ABC, abstractmethod
-from typing import Set, Union
+from typing import Set, Union, override
 
 from clingo.solving import Model
 from clingo.symbol import Symbol, parse_term
@@ -49,13 +49,13 @@ class Contains(Assertion):
         """Initializes a `Contains` assertion for `symbol`."""
         self.__symbol = _into_symbol(symbol)
 
-    def __repr__(self):
-        """Returns a string representation of this assertion."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         return f'{name}("{self.__symbol}")'
 
-    def holds_for(self, model: Model) -> bool:
-        """Returns whether this assertion holds for `model`."""
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         return model.contains(self.__symbol)
 
 
@@ -73,14 +73,14 @@ class Equals(Assertion):
         """Initializes an `Equals` assertion for `symbols`."""
         self.__symbols = {_into_symbol(s) for s in symbols}
 
-    def __repr__(self):
-        """Returns a string representation of this assertion."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         symbols = {str(symbol) for symbol in self.__symbols}
         return f"{name}({symbols})"
 
-    def holds_for(self, model: Model) -> bool:
-        """Returns whether this assertion holds for `model`."""
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         return self.__symbols == set(model.symbols(shown=True))
 
 
@@ -98,14 +98,14 @@ class SubsetOf(Assertion):
         """Initializes a `SubsetOf` assertion for `symbols`."""
         self.__symbols = {_into_symbol(s) for s in symbols}
 
-    def __repr__(self):
-        """Returns a string representation of this assertion."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         symbols = {str(symbol) for symbol in self.__symbols}
         return f"{name}({symbols})"
 
-    def holds_for(self, model: Model) -> bool:
-        """Returns whether this assertion holds for `model`."""
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         return set(model.symbols(shown=True)).issubset(self.__symbols)
 
 
@@ -123,50 +123,50 @@ class SupersetOf(Assertion):
         """Initializes a `SupersetOf` assertion for `symbols`."""
         self.__symbols = {_into_symbol(s) for s in symbols}
 
-    def __repr__(self):
-        """Returns a string representation of this assertion."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         symbols = {str(symbol) for symbol in self.__symbols}
         return f"{name}({symbols})"
 
-    def holds_for(self, model: Model) -> bool:
-        """Returns whether this assertion holds for `model`."""
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         return set(model.symbols(shown=True)).issuperset(self.__symbols)
 
 
 class Optimal(Assertion):
     """An assertion that holds if the optimality of a model is proven."""
 
-    def __repr__(self):
-        """Returns a string representation of this assertion."""
+    @override
+    def __repr__(self):  # noqa: D105
         return f"{self.__class__.__name__}()"
 
-    def holds_for(self, model: Model) -> bool:
-        """Returns whether this assertion holds for `model`."""
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         return model.optimality_proven
 
 
 class True_(Assertion):
     """The assertion that is true for each model."""
 
-    def __repr__(self):
-        """Returns a string representation of this assertion."""
+    @override
+    def __repr__(self):  # noqa: D105
         return f"{self.__class__.__name__}()"
 
-    def holds_for(self, model: Model) -> bool:
-        """Returns whether this assertion holds for `model`."""
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         return True
 
 
 class False_(Assertion):
     """The assertion that is false for each model."""
 
-    def __repr__(self):
-        """Returns a string representation of this assertion."""
+    @override
+    def __repr__(self):  # noqa: D105
         return f"{self.__class__.__name__}()"
 
-    def holds_for(self, model: Model) -> bool:
-        """Returns whether this assertion holds for `model`."""
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         return False
 
 
@@ -185,14 +185,14 @@ class Not(Assertion):
         """Initializes a `Not` assertion for `operand`."""
         self.__operand = operand
 
-    def __repr__(self):
-        """Returns a string representation of this assertion."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         operand = repr(self.__operand)
         return f"{name}({operand})"
 
-    def holds_for(self, model: Model) -> bool:
-        """Returns whether this assertion holds for `model`."""
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         return not self.__operand.holds_for(model)
 
 
@@ -212,14 +212,14 @@ class And(Assertion):
         """Initializes an `And` assertion for `args`."""
         self.__operands = args
 
-    def __repr__(self):
-        """Returns a string representation of this assertion."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         operands = ", ".join(repr(operand) for operand in self.__operands)
         return f"{name}({operands})"
 
-    def holds_for(self, model: Model) -> bool:
-        """Returns whether this assertion holds for `model`."""
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         return all((operand.holds_for(model) for operand in self.__operands))
 
 
@@ -239,14 +239,14 @@ class Or(Assertion):
         """Initializes an `Or` assertion for `args`."""
         self.__operands = args
 
-    def __repr__(self):
-        """Returns a string representation of this assertion."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         operands = ", ".join(repr(operand) for operand in self.__operands)
         return f"{name}({operands})"
 
-    def holds_for(self, model: Model) -> bool:
-        """Returns whether this assertion holds for `model`."""
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         return any((operand.holds_for(model) for operand in self.__operands))
 
 
@@ -269,15 +269,15 @@ class Implies(Assertion):
         self.__antecedent = antecedent
         self.__consequent = consequent
 
-    def __repr__(self):
-        """Returns a string representation of this assertion."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         antecedent = repr(self.__antecedent)
         consequent = repr(self.__consequent)
         return f"{name}({antecedent}, {consequent})"
 
-    def holds_for(self, model: Model) -> bool:
-        """Returns whether this assertion holds for `model`."""
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         return not self.__antecedent.holds_for(model) or self.__consequent.holds_for(model)
 
 
@@ -297,14 +297,14 @@ class Equivalent(Assertion):
         """Initializes an `Equivalent` assertion for `args`."""
         self.__operands = args
 
-    def __repr__(self):
-        """Returns a string representation of this assertion."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         operands = ", ".join(repr(operand) for operand in self.__operands)
         return f"{name}({operands})"
 
-    def holds_for(self, model: Model) -> bool:
-        """Returns whether this assertion holds for `model`."""
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         operands = iter(self.__operands)
 
         try:

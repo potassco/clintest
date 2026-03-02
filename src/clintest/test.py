@@ -3,7 +3,7 @@
 import os
 from abc import ABC, abstractmethod
 from textwrap import indent
-from typing import Any, Callable, Dict, Optional, Sequence
+from typing import Any, Callable, Dict, Optional, Sequence, override
 
 from clingo.solving import Model, SolveResult
 from clingo.statistics import StatisticsMap
@@ -109,26 +109,26 @@ class True_(Test):
         """Initializes a `True_` test."""
         self.__outcome = Outcome(True, lazy)
 
-    def __repr__(self):
-        """Returns a detailed string representation of this test."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         outcome = repr(self.__outcome)
         return f"{name}(__outcome={outcome})"
 
-    def __str__(self):
-        """Returns a human-readable string representation of this test."""
+    @override
+    def __str__(self):  # noqa: D105
         return f"[{self.__outcome}] {self.__class__.__name__}"
 
-    def on_model(self, _model: Model) -> bool:
-        """Returns whether further models are needed to decide this test."""
+    @override
+    def on_model(self, _model: Model) -> bool:  # noqa: D102
         return not self.__outcome.is_certain()
 
-    def on_finish(self, result: SolveResult) -> None:
-        """Finalizes the outcome of this test."""
+    @override
+    def on_finish(self, result: SolveResult) -> None:  # noqa: D102
         self.__outcome = Outcome(True, True)
 
-    def outcome(self) -> Outcome:
-        """Returns the current outcome of this test."""
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.__outcome
 
 
@@ -145,26 +145,26 @@ class False_(Test):
         """Initializes a `False_` test."""
         self.__outcome = Outcome(False, lazy)
 
-    def __repr__(self):
-        """Returns a detailed string representation of this test."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         outcome = repr(self.__outcome)
         return f"{name}(__outcome={outcome})"
 
-    def __str__(self):
-        """Returns a human-readable string representation of this test."""
+    @override
+    def __str__(self):  # noqa: D105
         return f"[{self.__outcome}] {self.__class__.__name__}"
 
-    def on_model(self, _model: Model) -> bool:
-        """Returns whether further models are needed to decide this test."""
+    @override
+    def on_model(self, _model: Model) -> bool:  # noqa: D102
         return not self.__outcome.is_certain()
 
-    def on_finish(self, result: SolveResult) -> None:
-        """Finalizes the outcome of this test."""
+    @override
+    def on_finish(self, result: SolveResult) -> None:  # noqa: D102
         self.__outcome = Outcome(False, True)
 
-    def outcome(self) -> Outcome:
-        """Returns the current outcome of this test."""
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.__outcome
 
 
@@ -180,13 +180,13 @@ class Recording:
             entries = []
         self.__entries = list(entries)
 
-    def __repr__(self):
-        """Returns a detailed string representation of this recording."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         return f"{name}({self.__entries})"
 
-    def __str__(self):
-        """Returns a human-readable string representation of this recording."""
+    @override
+    def __str__(self):  # noqa: D105
         def fmt(entry):
             result = f"[{entry['__outcome']}] {entry['__f']}"
             if entry["__f"] == "on_model":
@@ -198,8 +198,8 @@ class Recording:
             (f"{(width - len(str(i))) * ' '}{i}: {fmt(entry)}" for i, entry in enumerate(self.__entries))
         )
 
-    def __eq__(self, other):
-        """Returns whether this recording is equal to `other`."""
+    @override
+    def __eq__(self, other):  # noqa: D105
         # pylint: disable=protected-access
         return self.__entries == other.__entries
 
@@ -261,15 +261,15 @@ class Record(Test):
             ]
         )
 
-    def __repr__(self):
-        """Returns a detailed string representation of this test."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         test = repr(self.test)
         recording = repr(self.recording)
         return f"{name}(test={test}, recording={recording})"
 
-    def __str__(self):
-        """Returns a human-readable string representation of this test."""
+    @override
+    def __str__(self):  # noqa: D105
         return os.linesep.join(
             [
                 f"[{self.outcome()}] {self.__class__.__name__}",
@@ -279,8 +279,8 @@ class Record(Test):
             ]
         )
 
-    def on_model(self, model: Model) -> bool:
-        """Records and forwards the `on_model` call, returning whether further models are needed."""
+    @override
+    def on_model(self, model: Model) -> bool:  # noqa: D102
         self.recording.append(
             {
                 "__f": "on_model",
@@ -296,8 +296,8 @@ class Record(Test):
         )
         return result
 
-    def on_unsat(self, lower_bound: Sequence[int]) -> None:
-        """Records and forwards the `on_unsat` call."""
+    @override
+    def on_unsat(self, lower_bound: Sequence[int]) -> None:  # noqa: D102
         self.recording.append(
             {
                 "__f": "on_unsat",
@@ -307,8 +307,8 @@ class Record(Test):
         self.test.on_unsat(lower_bound)
         self.recording.amend({"__outcome": self.outcome()})
 
-    def on_core(self, core: Sequence[int]) -> None:
-        """Records and forwards the `on_core` call."""
+    @override
+    def on_core(self, core: Sequence[int]) -> None:  # noqa: D102
         self.recording.append(
             {
                 "__f": "on_core",
@@ -318,8 +318,8 @@ class Record(Test):
         self.test.on_core(core)
         self.recording.amend({"__outcome": self.outcome()})
 
-    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
-        """Records and forwards the `on_statistics` call."""
+    @override
+    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:  # noqa: D102
         self.recording.append(
             {
                 "__f": "on_statistics",
@@ -330,8 +330,8 @@ class Record(Test):
         self.test.on_statistics(step, accumulated)
         self.recording.amend({"__outcome": self.outcome()})
 
-    def on_finish(self, result: SolveResult) -> None:
-        """Records and forwards the `on_finish` call."""
+    @override
+    def on_finish(self, result: SolveResult) -> None:  # noqa: D102
         self.recording.append(
             {
                 "__f": "on_finish",
@@ -341,8 +341,8 @@ class Record(Test):
         self.test.on_finish(result)
         self.recording.amend({"__outcome": self.outcome()})
 
-    def outcome(self) -> Outcome:
-        """Returns the current outcome of this test."""
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.test.outcome()
 
 
@@ -368,36 +368,36 @@ class Context(Test):
         self.__str = str_
         self.__repr = repr_
 
-    def __repr__(self):
-        """Returns a detailed string representation of this test."""
+    @override
+    def __repr__(self):  # noqa: D105
         return self.__repr(self.test)
 
-    def __str__(self):
-        """Returns a human-readable string representation of this test."""
+    @override
+    def __str__(self):  # noqa: D105
         return self.__str(self.test)
 
-    def on_model(self, model: Model) -> bool:
-        """Forwards the `on_model` call to the wrapped test."""
+    @override
+    def on_model(self, model: Model) -> bool:  # noqa: D102
         return self.test.on_model(model)
 
-    def on_unsat(self, lower_bound: Sequence[int]) -> None:
-        """Forwards the `on_unsat` call to the wrapped test."""
+    @override
+    def on_unsat(self, lower_bound: Sequence[int]) -> None:  # noqa: D102
         self.test.on_unsat(lower_bound)
 
-    def on_core(self, core: Sequence[int]) -> None:
-        """Forwards the `on_core` call to the wrapped test."""
+    @override
+    def on_core(self, core: Sequence[int]) -> None:  # noqa: D102
         self.test.on_core(core)
 
-    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
-        """Forwards the `on_statistics` call to the wrapped test."""
+    @override
+    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:  # noqa: D102
         self.test.on_statistics(step, accumulated)
 
-    def on_finish(self, result: SolveResult) -> None:
-        """Forwards the `on_finish` call to the wrapped test."""
+    @override
+    def on_finish(self, result: SolveResult) -> None:  # noqa: D102
         self.test.on_finish(result)
 
-    def outcome(self) -> Outcome:
-        """Returns the current outcome of this test."""
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.test.outcome()
 
 
@@ -421,15 +421,15 @@ class Assert(Test):
         self.__quantifier = quantifier
         self.__assertion = assertion
 
-    def __repr__(self):
-        """Returns a detailed string representation of this test."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         quantifier = repr(self.__quantifier)
         assertion = repr(self.__assertion)
         return f"{name}({quantifier}, {assertion})"
 
-    def __str__(self):
-        """Returns a human-readable string representation of this test."""
+    @override
+    def __str__(self):  # noqa: D105
         return os.linesep.join(
             [
                 f"[{self.outcome()}] {self.__class__.__name__}",
@@ -438,19 +438,19 @@ class Assert(Test):
             ]
         )
 
-    def on_model(self, model: Model) -> bool:
-        """Evaluates the assertion on `model` and returns whether further models are needed."""
+    @override
+    def on_model(self, model: Model) -> bool:  # noqa: D102
         if not self.__quantifier.outcome().is_certain():
             self.__quantifier.consume(self.__assertion.holds_for(model))
 
         return not self.__quantifier.outcome().is_certain()
 
-    def on_finish(self, result: SolveResult) -> None:
-        """Finalizes the outcome of this test."""
+    @override
+    def on_finish(self, result: SolveResult) -> None:  # noqa: D102
         self.__quantifier = Finished(self.__quantifier)
 
-    def outcome(self) -> Outcome:
-        """Returns the current outcome of this test."""
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.__quantifier.outcome()
 
 
@@ -469,14 +469,14 @@ class Not(Test):
         """Initializes a `Not` test that negates `operand`."""
         self.__operand = operand
 
-    def __repr__(self):
-        """Returns a detailed string representation of this test."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
         operand = repr(self.__operand)
         return f"{name}({operand})"
 
-    def __str__(self):
-        """Returns a human-readable string representation of this test."""
+    @override
+    def __str__(self):  # noqa: D105
         return os.linesep.join(
             [
                 f"[{self.outcome()}] {self.__class__.__name__}",
@@ -484,28 +484,28 @@ class Not(Test):
             ]
         )
 
-    def on_model(self, model: Model) -> bool:
-        """Forwards the `on_model` call to the wrapped test."""
+    @override
+    def on_model(self, model: Model) -> bool:  # noqa: D102
         return self.__operand.on_model(model)
 
-    def on_unsat(self, lower_bound: Sequence[int]) -> None:
-        """Forwards the `on_unsat` call to the wrapped test."""
+    @override
+    def on_unsat(self, lower_bound: Sequence[int]) -> None:  # noqa: D102
         self.__operand.on_unsat(lower_bound)
 
-    def on_core(self, core: Sequence[int]) -> None:
-        """Forwards the `on_core` call to the wrapped test."""
+    @override
+    def on_core(self, core: Sequence[int]) -> None:  # noqa: D102
         self.__operand.on_core(core)
 
-    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
-        """Forwards the `on_statistics` call to the wrapped test."""
+    @override
+    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:  # noqa: D102
         self.__operand.on_statistics(step, accumulated)
 
-    def on_finish(self, result: SolveResult) -> None:
-        """Forwards the `on_finish` call to the wrapped test."""
+    @override
+    def on_finish(self, result: SolveResult) -> None:  # noqa: D102
         self.__operand.on_finish(result)
 
-    def outcome(self) -> Outcome:
-        """Returns the negated outcome of the wrapped test."""
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         outcome = self.__operand.outcome()
         return Outcome(not outcome.current_value(), outcome.is_certain())
 
@@ -544,8 +544,8 @@ class And(Test):
 
         self.__on_whatever(call_operand)
 
-    def __repr__(self):
-        """Returns a detailed string representation of this test."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
 
         operands = ", ".join(repr(operand) for operand in self.__operands)
@@ -564,8 +564,8 @@ class And(Test):
             f"__outcome={outcome})"
         )
 
-    def __str__(self):
-        """Returns a human-readable string representation of this test."""
+    @override
+    def __str__(self):  # noqa: D105
         if self.__operands:
             operands = ""
             width = len(str(len(self.__operands) - 1))
@@ -610,36 +610,36 @@ class And(Test):
 
         return not self.__outcome.is_certain()
 
-    def on_model(self, model: Model) -> bool:
-        """Forwards the `on_model` call to all ongoing operands."""
+    @override
+    def on_model(self, model: Model) -> bool:  # noqa: D102
         def call_operand(operand: Test) -> None:
             operand.on_model(model)
 
         return self.__on_whatever(call_operand)
 
-    def on_unsat(self, lower_bound: Sequence[int]) -> None:
-        """Forwards the `on_unsat` call to all ongoing operands."""
+    @override
+    def on_unsat(self, lower_bound: Sequence[int]) -> None:  # noqa: D102
         def call_operand(operand: Test) -> None:
             operand.on_unsat(lower_bound)
 
         self.__on_whatever(call_operand)
 
-    def on_core(self, core: Sequence[int]) -> None:
-        """Forwards the `on_core` call to all ongoing operands."""
+    @override
+    def on_core(self, core: Sequence[int]) -> None:  # noqa: D102
         def call_operand(operand: Test) -> None:
             operand.on_core(core)
 
         self.__on_whatever(call_operand)
 
-    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
-        """Forwards the `on_statistics` call to all ongoing operands."""
+    @override
+    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:  # noqa: D102
         def call_operand(operand: Test) -> None:
             operand.on_statistics(step, accumulated)
 
         self.__on_whatever(call_operand)
 
-    def on_finish(self, result: SolveResult) -> None:
-        """Forwards the `on_finish` call to all operands and finalizes the outcome."""
+    @override
+    def on_finish(self, result: SolveResult) -> None:  # noqa: D102
         def call_operand(operand: Test) -> None:
             operand.on_finish(result)
 
@@ -651,8 +651,8 @@ class And(Test):
         assert not self.__ongoing
         assert self.__outcome.is_certain()
 
-    def outcome(self) -> Outcome:
-        """Returns the current outcome of this test."""
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.__outcome
 
 
@@ -690,8 +690,8 @@ class Or(Test):
 
         self.__on_whatever(call_operand)
 
-    def __repr__(self):
-        """Returns a detailed string representation of this test."""
+    @override
+    def __repr__(self):  # noqa: D105
         name = self.__class__.__name__
 
         operands = ", ".join(repr(operand) for operand in self.__operands)
@@ -710,8 +710,8 @@ class Or(Test):
             f"__outcome={outcome})"
         )
 
-    def __str__(self):
-        """Returns a human-readable string representation of this test."""
+    @override
+    def __str__(self):  # noqa: D105
         if self.__operands:
             operands = ""
             width = len(str(len(self.__operands) - 1))
@@ -756,36 +756,36 @@ class Or(Test):
 
         return not self.__outcome.is_certain()
 
-    def on_model(self, model: Model) -> bool:
-        """Forwards the `on_model` call to all ongoing operands."""
+    @override
+    def on_model(self, model: Model) -> bool:  # noqa: D102
         def call_operand(operand: Test) -> None:
             operand.on_model(model)
 
         return self.__on_whatever(call_operand)
 
-    def on_unsat(self, lower_bound: Sequence[int]) -> None:
-        """Forwards the `on_unsat` call to all ongoing operands."""
+    @override
+    def on_unsat(self, lower_bound: Sequence[int]) -> None:  # noqa: D102
         def call_operand(operand: Test) -> None:
             operand.on_unsat(lower_bound)
 
         self.__on_whatever(call_operand)
 
-    def on_core(self, core: Sequence[int]) -> None:
-        """Forwards the `on_core` call to all ongoing operands."""
+    @override
+    def on_core(self, core: Sequence[int]) -> None:  # noqa: D102
         def call_operand(operand: Test) -> None:
             operand.on_core(core)
 
         self.__on_whatever(call_operand)
 
-    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
-        """Forwards the `on_statistics` call to all ongoing operands."""
+    @override
+    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:  # noqa: D102
         def call_operand(operand: Test) -> None:
             operand.on_statistics(step, accumulated)
 
         self.__on_whatever(call_operand)
 
-    def on_finish(self, result: SolveResult) -> None:
-        """Forwards the `on_finish` call to all operands and finalizes the outcome."""
+    @override
+    def on_finish(self, result: SolveResult) -> None:  # noqa: D102
         def call_operand(operand: Test) -> None:
             operand.on_finish(result)
 
@@ -797,6 +797,6 @@ class Or(Test):
         assert not self.__ongoing
         assert self.__outcome.is_certain()
 
-    def outcome(self) -> Outcome:
-        """Returns the current outcome of this test."""
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.__outcome
