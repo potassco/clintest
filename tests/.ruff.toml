@@ -1,0 +1,8 @@
+extend = "../pyproject.toml"
+
+[lint]
+extend-ignore = [
+    "PLC0415",  # pylint: import should be at top-level of file
+    "S101",     # bandit: use of assert detected
+    "D1",       # pydocstyle: missing docstring
+]

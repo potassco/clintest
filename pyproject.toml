@@ -5,10 +5,6 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "clintest"
 version = "0.5.0"
-dependencies = [
-    "clingo>=5.5.0",
-]
-requires-python = ">=3.11"
 authors = [
     {name = "Tobias Stolzmann", email = "tobias.stolzmann@uni-potsdam.de"},
 ]
@@ -16,6 +12,10 @@ description = "A test framework for clingo programs"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
+requires-python = ">=3.11"
+dependencies = [
+    "clingo>=5.5.0",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -44,3 +44,34 @@ testpaths = ["tests"]
 
 [tool.ruff]
 src = ["src"]
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "F",    # pyflakes
+    "PL",   # pylint
+    "B",    # bugbear
+    "S",    # bandit
+    "E",    # pycodestyle: errors
+    "W",    # pycodestyle: warnings
+    "D",    # pydocstyle
+    "I",    # isort
+]
+ignore = [
+    # TODO: Remove these ignores once the issues are resolved
+    "PLW1641",
+    "PLW2901",
+    "B008",
+    "B027",
+    "B905",
+    "S101",
+    "D1",
+    # TODO: These should be auto-fixable issues.
+    "E501",
+    "D2",
+    "D4",
+    "I",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
