@@ -11,7 +11,7 @@ Once the outcome of your test is certain, it will automatically tell the solver 
 As `clintest` is focussed on the specifics of `clingo` programs, it works best if you combine it with a general purpose frameworks like `pytest`.
 
 ## Installation
-This framework is guaranteed to work with Python 3.8 or greater.
+This framework is guaranteed to work with Python 3.11 or greater.
 You have several options to install it:
 
 ### Using conda
@@ -31,8 +31,10 @@ The project is hosted on GitHub at https://github.com/potassco/clintest and can 
 ```
 $ git clone https://github.com/potassco/clintest
 $ cd clintest
-$ pip install -e .
+$ pip install -e .[dev,doc]
 ```
+
+The features `dev` and `doc` are optional extras for development and documentation generation, respectively.
 
 ## Usage
 This section is meant to guide you through the most important features of `clintest` using simple examples.
