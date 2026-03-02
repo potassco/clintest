@@ -193,6 +193,9 @@ class Recording:
         # pylint: disable=protected-access
         return self.__entries == other.__entries
 
+    def __hash__(self):
+        return hash(self.__entries)
+
     def amend(self, changes: Dict[str, Any]):
         """Update the last entry of this encoding.
 
