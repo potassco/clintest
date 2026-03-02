@@ -4,3 +4,4 @@ clintest.egg-info
 .pytest_cache
 dist/
 html/
+.vscode/
