@@ -1,6 +1,3 @@
-# pylint: disable=redefined-outer-name
-
-
 import pytest
 from clingo import Control
 
@@ -12,7 +9,7 @@ def frame():
     ctl.ground([("base", [])])
 
     def test(positive, negative):
-        for model in ctl.solve(yield_=True):  # pylint: disable=not-an-iterable
+        for model in ctl.solve(yield_=True):
             for assertion in positive:
                 assert assertion.holds_for(model)
             for assertion in negative:
