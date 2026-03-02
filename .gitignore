@@ -5,3 +5,4 @@ __pycache__
 dist/
 html/
 .vscode/
+.ruff_cache/
