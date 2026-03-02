@@ -60,11 +60,10 @@ select = [
 ignore = [
     "D105", # pydocstyle: missing docstring in magic method
     "D107", # pydocstyle: missing docstring in __init__
-
-    # TODO: Remove the following once the issues are resolved
-    "B008",
-    "S101",
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101"]  # assert is expected in pytest tests
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

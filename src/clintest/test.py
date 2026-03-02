@@ -242,8 +242,8 @@ class Record(Test):
         A `Test` that determines how this test should behave.
     """
 
-    def __init__(self, test: Test = True_(lazy=False)):
-        self.test: Test = test
+    def __init__(self, test: Test | None = None):
+        self.test: Test = test if test is not None else True_(lazy=False)
         self.recording: Recording = Recording(
             [
                 {
@@ -626,8 +626,10 @@ class And(Test):
         self.__on_whatever(call_operand)
         self.__ignore_certain = ignore_certain_bck
 
-        assert not self.__ongoing
-        assert self.__outcome.is_certain()
+        if self.__ongoing:
+            raise AssertionError("test is still ongoing")
+        if not self.__outcome.is_certain():
+            raise AssertionError("outcome is not certain")
 
     @override
     def outcome(self) -> Outcome:  # noqa: D102
@@ -769,8 +771,10 @@ class Or(Test):
         self.__on_whatever(call_operand)
         self.__ignore_certain = ignore_certain_bck
 
-        assert not self.__ongoing
-        assert self.__outcome.is_certain()
+        if self.__ongoing:
+            raise AssertionError("test is still ongoing")
+        if not self.__outcome.is_certain():
+            raise AssertionError("outcome is not certain")
 
     @override
     def outcome(self) -> Outcome:  # noqa: D102
