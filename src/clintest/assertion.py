@@ -1,7 +1,7 @@
 """The abstract class `clintest.assertion.Assertion` and classes extending it."""
 
 from abc import ABC, abstractmethod
-from typing import Set, Union
+from typing import Set, Union, override
 
 from clingo.solving import Model
 from clingo.symbol import Symbol, parse_term
@@ -52,7 +52,8 @@ class Contains(Assertion):
         name = self.__class__.__name__
         return f'{name}("{self.__symbol}")'
 
-    def holds_for(self, model: Model) -> bool:
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         return model.contains(self.__symbol)
 
 
@@ -74,7 +75,8 @@ class Equals(Assertion):
         symbols = {str(symbol) for symbol in self.__symbols}
         return f"{name}({symbols})"
 
-    def holds_for(self, model: Model) -> bool:
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         return self.__symbols == set(model.symbols(shown=True))
 
 
@@ -96,7 +98,8 @@ class SubsetOf(Assertion):
         symbols = {str(symbol) for symbol in self.__symbols}
         return f"{name}({symbols})"
 
-    def holds_for(self, model: Model) -> bool:
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         return set(model.symbols(shown=True)).issubset(self.__symbols)
 
 
@@ -118,7 +121,8 @@ class SupersetOf(Assertion):
         symbols = {str(symbol) for symbol in self.__symbols}
         return f"{name}({symbols})"
 
-    def holds_for(self, model: Model) -> bool:
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         return set(model.symbols(shown=True)).issuperset(self.__symbols)
 
 
@@ -128,7 +132,8 @@ class Optimal(Assertion):
     def __repr__(self):
         return f"{self.__class__.__name__}()"
 
-    def holds_for(self, model: Model) -> bool:
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         return model.optimality_proven
 
 
@@ -138,7 +143,8 @@ class True_(Assertion):
     def __repr__(self):
         return f"{self.__class__.__name__}()"
 
-    def holds_for(self, model: Model) -> bool:
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         return True
 
 
@@ -148,7 +154,8 @@ class False_(Assertion):
     def __repr__(self):
         return f"{self.__class__.__name__}()"
 
-    def holds_for(self, model: Model) -> bool:
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         return False
 
 
@@ -171,7 +178,8 @@ class Not(Assertion):
         operand = repr(self.__operand)
         return f"{name}({operand})"
 
-    def holds_for(self, model: Model) -> bool:
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         return not self.__operand.holds_for(model)
 
 
@@ -195,7 +203,8 @@ class And(Assertion):
         operands = ", ".join(repr(operand) for operand in self.__operands)
         return f"{name}({operands})"
 
-    def holds_for(self, model: Model) -> bool:
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         return all((operand.holds_for(model) for operand in self.__operands))
 
 
@@ -219,7 +228,8 @@ class Or(Assertion):
         operands = ", ".join(repr(operand) for operand in self.__operands)
         return f"{name}({operands})"
 
-    def holds_for(self, model: Model) -> bool:
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         return any((operand.holds_for(model) for operand in self.__operands))
 
 
@@ -247,7 +257,8 @@ class Implies(Assertion):
         consequent = repr(self.__consequent)
         return f"{name}({antecedent}, {consequent})"
 
-    def holds_for(self, model: Model) -> bool:
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         return not self.__antecedent.holds_for(model) or self.__consequent.holds_for(model)
 
 
@@ -271,7 +282,8 @@ class Equivalent(Assertion):
         operands = ", ".join(repr(operand) for operand in self.__operands)
         return f"{name}({operands})"
 
-    def holds_for(self, model: Model) -> bool:
+    @override
+    def holds_for(self, model: Model) -> bool:  # noqa: D102
         operands = iter(self.__operands)
 
         try:

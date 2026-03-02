@@ -3,7 +3,7 @@
 import os
 from abc import ABC, abstractmethod
 from textwrap import indent
-from typing import Any, Callable, Dict, Optional, Sequence
+from typing import Any, Callable, Dict, Optional, Sequence, override
 
 from clingo.solving import Model, SolveResult
 from clingo.statistics import StatisticsMap
@@ -116,13 +116,16 @@ class True_(Test):
     def __str__(self):
         return f"[{self.__outcome}] {self.__class__.__name__}"
 
-    def on_model(self, _model: Model) -> bool:
+    @override
+    def on_model(self, _model: Model) -> bool:  # noqa: D102
         return not self.__outcome.is_certain()
 
-    def on_finish(self, result: SolveResult) -> None:
+    @override
+    def on_finish(self, result: SolveResult) -> None:  # noqa: D102
         self.__outcome = Outcome(True, True)
 
-    def outcome(self) -> Outcome:
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.__outcome
 
 
@@ -146,13 +149,16 @@ class False_(Test):
     def __str__(self):
         return f"[{self.__outcome}] {self.__class__.__name__}"
 
-    def on_model(self, _model: Model) -> bool:
+    @override
+    def on_model(self, _model: Model) -> bool:  # noqa: D102
         return not self.__outcome.is_certain()
 
-    def on_finish(self, result: SolveResult) -> None:
+    @override
+    def on_finish(self, result: SolveResult) -> None:  # noqa: D102
         self.__outcome = Outcome(False, True)
 
-    def outcome(self) -> Outcome:
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.__outcome
 
 
@@ -260,7 +266,8 @@ class Record(Test):
             ]
         )
 
-    def on_model(self, model: Model) -> bool:
+    @override
+    def on_model(self, model: Model) -> bool:  # noqa: D102
         self.recording.append(
             {
                 "__f": "on_model",
@@ -276,7 +283,8 @@ class Record(Test):
         )
         return result
 
-    def on_unsat(self, lower_bound: Sequence[int]) -> None:
+    @override
+    def on_unsat(self, lower_bound: Sequence[int]) -> None:  # noqa: D102
         self.recording.append(
             {
                 "__f": "on_unsat",
@@ -286,7 +294,8 @@ class Record(Test):
         self.test.on_unsat(lower_bound)
         self.recording.amend({"__outcome": self.outcome()})
 
-    def on_core(self, core: Sequence[int]) -> None:
+    @override
+    def on_core(self, core: Sequence[int]) -> None:  # noqa: D102
         self.recording.append(
             {
                 "__f": "on_core",
@@ -296,7 +305,8 @@ class Record(Test):
         self.test.on_core(core)
         self.recording.amend({"__outcome": self.outcome()})
 
-    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
+    @override
+    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:  # noqa: D102
         self.recording.append(
             {
                 "__f": "on_statistics",
@@ -307,7 +317,8 @@ class Record(Test):
         self.test.on_statistics(step, accumulated)
         self.recording.amend({"__outcome": self.outcome()})
 
-    def on_finish(self, result: SolveResult) -> None:
+    @override
+    def on_finish(self, result: SolveResult) -> None:  # noqa: D102
         self.recording.append(
             {
                 "__f": "on_finish",
@@ -317,7 +328,8 @@ class Record(Test):
         self.test.on_finish(result)
         self.recording.amend({"__outcome": self.outcome()})
 
-    def outcome(self) -> Outcome:
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.test.outcome()
 
 
@@ -348,22 +360,28 @@ class Context(Test):
     def __str__(self):
         return self.__str(self.test)
 
-    def on_model(self, model: Model) -> bool:
+    @override
+    def on_model(self, model: Model) -> bool:  # noqa: D102
         return self.test.on_model(model)
 
-    def on_unsat(self, lower_bound: Sequence[int]) -> None:
+    @override
+    def on_unsat(self, lower_bound: Sequence[int]) -> None:  # noqa: D102
         self.test.on_unsat(lower_bound)
 
-    def on_core(self, core: Sequence[int]) -> None:
+    @override
+    def on_core(self, core: Sequence[int]) -> None:  # noqa: D102
         self.test.on_core(core)
 
-    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
+    @override
+    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:  # noqa: D102
         self.test.on_statistics(step, accumulated)
 
-    def on_finish(self, result: SolveResult) -> None:
+    @override
+    def on_finish(self, result: SolveResult) -> None:  # noqa: D102
         self.test.on_finish(result)
 
-    def outcome(self) -> Outcome:
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.test.outcome()
 
 
@@ -401,16 +419,19 @@ class Assert(Test):
             ]
         )
 
-    def on_model(self, model: Model) -> bool:
+    @override
+    def on_model(self, model: Model) -> bool:  # noqa: D102
         if not self.__quantifier.outcome().is_certain():
             self.__quantifier.consume(self.__assertion.holds_for(model))
 
         return not self.__quantifier.outcome().is_certain()
 
-    def on_finish(self, result: SolveResult) -> None:
+    @override
+    def on_finish(self, result: SolveResult) -> None:  # noqa: D102
         self.__quantifier = Finished(self.__quantifier)
 
-    def outcome(self) -> Outcome:
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.__quantifier.outcome()
 
 
@@ -441,22 +462,28 @@ class Not(Test):
             ]
         )
 
-    def on_model(self, model: Model) -> bool:
+    @override
+    def on_model(self, model: Model) -> bool:  # noqa: D102
         return self.__operand.on_model(model)
 
-    def on_unsat(self, lower_bound: Sequence[int]) -> None:
+    @override
+    def on_unsat(self, lower_bound: Sequence[int]) -> None:  # noqa: D102
         self.__operand.on_unsat(lower_bound)
 
-    def on_core(self, core: Sequence[int]) -> None:
+    @override
+    def on_core(self, core: Sequence[int]) -> None:  # noqa: D102
         self.__operand.on_core(core)
 
-    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
+    @override
+    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:  # noqa: D102
         self.__operand.on_statistics(step, accumulated)
 
-    def on_finish(self, result: SolveResult) -> None:
+    @override
+    def on_finish(self, result: SolveResult) -> None:  # noqa: D102
         self.__operand.on_finish(result)
 
-    def outcome(self) -> Outcome:
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         outcome = self.__operand.outcome()
         return Outcome(not outcome.current_value(), outcome.is_certain())
 
@@ -558,31 +585,36 @@ class And(Test):
 
         return not self.__outcome.is_certain()
 
-    def on_model(self, model: Model) -> bool:
+    @override
+    def on_model(self, model: Model) -> bool:  # noqa: D102
         def call_operand(operand: Test) -> None:
             operand.on_model(model)
 
         return self.__on_whatever(call_operand)
 
-    def on_unsat(self, lower_bound: Sequence[int]) -> None:
+    @override
+    def on_unsat(self, lower_bound: Sequence[int]) -> None:  # noqa: D102
         def call_operand(operand: Test) -> None:
             operand.on_unsat(lower_bound)
 
         self.__on_whatever(call_operand)
 
-    def on_core(self, core: Sequence[int]) -> None:
+    @override
+    def on_core(self, core: Sequence[int]) -> None:  # noqa: D102
         def call_operand(operand: Test) -> None:
             operand.on_core(core)
 
         self.__on_whatever(call_operand)
 
-    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
+    @override
+    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:  # noqa: D102
         def call_operand(operand: Test) -> None:
             operand.on_statistics(step, accumulated)
 
         self.__on_whatever(call_operand)
 
-    def on_finish(self, result: SolveResult) -> None:
+    @override
+    def on_finish(self, result: SolveResult) -> None:  # noqa: D102
         def call_operand(operand: Test) -> None:
             operand.on_finish(result)
 
@@ -594,7 +626,8 @@ class And(Test):
         assert not self.__ongoing
         assert self.__outcome.is_certain()
 
-    def outcome(self) -> Outcome:
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.__outcome
 
 
@@ -695,31 +728,36 @@ class Or(Test):
 
         return not self.__outcome.is_certain()
 
-    def on_model(self, model: Model) -> bool:
+    @override
+    def on_model(self, model: Model) -> bool:  # noqa: D102
         def call_operand(operand: Test) -> None:
             operand.on_model(model)
 
         return self.__on_whatever(call_operand)
 
-    def on_unsat(self, lower_bound: Sequence[int]) -> None:
+    @override
+    def on_unsat(self, lower_bound: Sequence[int]) -> None:  # noqa: D102
         def call_operand(operand: Test) -> None:
             operand.on_unsat(lower_bound)
 
         self.__on_whatever(call_operand)
 
-    def on_core(self, core: Sequence[int]) -> None:
+    @override
+    def on_core(self, core: Sequence[int]) -> None:  # noqa: D102
         def call_operand(operand: Test) -> None:
             operand.on_core(core)
 
         self.__on_whatever(call_operand)
 
-    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
+    @override
+    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:  # noqa: D102
         def call_operand(operand: Test) -> None:
             operand.on_statistics(step, accumulated)
 
         self.__on_whatever(call_operand)
 
-    def on_finish(self, result: SolveResult) -> None:
+    @override
+    def on_finish(self, result: SolveResult) -> None:  # noqa: D102
         def call_operand(operand: Test) -> None:
             operand.on_finish(result)
 
@@ -731,5 +769,6 @@ class Or(Test):
         assert not self.__ongoing
         assert self.__outcome.is_certain()
 
-    def outcome(self) -> Outcome:
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.__outcome
