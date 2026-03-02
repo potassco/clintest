@@ -1,6 +1,7 @@
 """The abstract class `clintest.quantifier.Quantifier` and classes extending it."""
 
 from abc import ABC, abstractmethod
+from typing import override
 
 from .outcome import Outcome
 
@@ -50,10 +51,12 @@ class All(Quantifier):
     def __str__(self):
         return self.__class__.__name__
 
-    def outcome(self) -> Outcome:
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.__state
 
-    def consume(self, value: bool) -> Outcome:
+    @override
+    def consume(self, value: bool) -> Outcome:  # noqa: D102
         if not value:
             self.__state = Outcome(False, True)
         return self.__state
@@ -73,10 +76,12 @@ class Any(Quantifier):
     def __str__(self):
         return self.__class__.__name__
 
-    def outcome(self) -> Outcome:
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.__state
 
-    def consume(self, value: bool) -> Outcome:
+    @override
+    def consume(self, value: bool) -> Outcome:  # noqa: D102
         if value:
             self.__state = Outcome(True, True)
         return self.__state
@@ -96,10 +101,12 @@ class First(Quantifier):
     def __str__(self):
         return self.__class__.__name__
 
-    def outcome(self) -> Outcome:
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.__state
 
-    def consume(self, value: bool) -> Outcome:
+    @override
+    def consume(self, value: bool) -> Outcome:  # noqa: D102
         if not self.__state.is_certain():
             self.__state = Outcome(value, True)
         return self.__state
@@ -119,10 +126,12 @@ class Last(Quantifier):
     def __str__(self):
         return self.__class__.__name__
 
-    def outcome(self) -> Outcome:
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.__state
 
-    def consume(self, value: bool) -> Outcome:
+    @override
+    def consume(self, value: bool) -> Outcome:  # noqa: D102
         self.__state = Outcome(value, False)
         return self.__state
 
@@ -147,10 +156,12 @@ class Exact(Quantifier):
     def __str__(self):
         return f"{self.__class__.__name__} {self.__state}/{self.__target}"
 
-    def outcome(self) -> Outcome:
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return Outcome(self.__state == self.__target, self.__state > self.__target)
 
-    def consume(self, value: bool) -> Outcome:
+    @override
+    def consume(self, value: bool) -> Outcome:  # noqa: D102
         self.__state += value
         return self.outcome()
 
@@ -175,10 +186,12 @@ class Less(Quantifier):
     def __str__(self):
         return f"{self.__class__.__name__} {self.__state}/{self.__supremum}"
 
-    def outcome(self) -> Outcome:
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return Outcome(self.__state < self.__supremum, self.__state >= self.__supremum)
 
-    def consume(self, value: bool) -> Outcome:
+    @override
+    def consume(self, value: bool) -> Outcome:  # noqa: D102
         self.__state += value
         return self.outcome()
 
@@ -203,10 +216,12 @@ class LessEqual(Quantifier):
     def __str__(self):
         return f"{self.__class__.__name__} {self.__state}/{self.__maximum}"
 
-    def outcome(self) -> Outcome:
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return Outcome(self.__state <= self.__maximum, self.__state > self.__maximum)
 
-    def consume(self, value: bool) -> Outcome:
+    @override
+    def consume(self, value: bool) -> Outcome:  # noqa: D102
         self.__state += value
         return self.outcome()
 
@@ -231,10 +246,12 @@ class Greater(Quantifier):
     def __str__(self):
         return f"{self.__class__.__name__} {self.__state}/{self.__infimum}"
 
-    def outcome(self) -> Outcome:
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return Outcome(self.__state > self.__infimum, self.__state > self.__infimum)
 
-    def consume(self, value: bool) -> Outcome:
+    @override
+    def consume(self, value: bool) -> Outcome:  # noqa: D102
         self.__state += value
         return self.outcome()
 
@@ -259,10 +276,12 @@ class GreaterEqual(Quantifier):
     def __str__(self):
         return f"{self.__class__.__name__} {self.__state}/{self.__minimum}"
 
-    def outcome(self) -> Outcome:
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return Outcome(self.__state >= self.__minimum, self.__state >= self.__minimum)
 
-    def consume(self, value: bool) -> Outcome:
+    @override
+    def consume(self, value: bool) -> Outcome:  # noqa: D102
         self.__state += value
         return self.outcome()
 
@@ -290,8 +309,10 @@ class Finished(Quantifier):
     def __str__(self):
         return self.__class__.__name__
 
-    def outcome(self) -> Outcome:
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
         return self.__state
 
-    def consume(self, value: bool) -> Outcome:
+    @override
+    def consume(self, value: bool) -> Outcome:  # noqa: D102
         return self.__state
