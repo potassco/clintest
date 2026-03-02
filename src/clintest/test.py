@@ -14,9 +14,7 @@ from .quantifier import Finished, Quantifier
 
 
 class Test(ABC):
-    """An abstract test consuming the artifacts of a `clintest.solver.Solver` in order to compute an
-    `clintest.outcome.Outcome`.
-    """
+    """An abstract test consuming the artifacts of a `clintest.solver.Solver` in order to compute an `clintest.outcome.Outcome`."""
 
     def on_model(self, _model: Model) -> bool:
         """Consume a `clingo.model.Model` and possibly alter the current outcome of this test.
@@ -33,8 +31,7 @@ class Test(ABC):
         return True
 
     def on_unsat(self, lower_bound: Sequence[int]) -> None:
-        """Consume a `lower_bound` during optimization and possibly alter the current outcome of this
-        test.
+        """Consume a `lower_bound` during optimization and possibly alter the current outcome of this test.
 
         Parameters
         ----------
@@ -87,6 +84,7 @@ class Test(ABC):
 
     def assert_(self) -> None:
         """Assert the outcome of this test to be certainly true.
+
         Raise an `AssertionError` if the test is either incomplete or has failed.
         """
         if not self.outcome().is_certainly_true():
@@ -160,6 +158,7 @@ class False_(Test):
 
 class Recording:
     """A recording of the calls to the `on_*`-methods of a `Test`.
+
     This class is mainly used inside of `Record`.
     """
 
@@ -224,8 +223,7 @@ class Recording:
 
 
 class Record(Test):
-    """A test that behaves identical to a given other `test` but records any call to one of its
-    `on_*`-methods. This can be very helpful for debugging.
+    """A test that behaves identical to a given other `test` but records any call to one of its `on_*`-methods. This can be very helpful for debugging.
 
     Parameters
     ----------
@@ -322,8 +320,7 @@ class Record(Test):
 
 
 class Context(Test):
-    """A test that behaves identical to a given other `test` but permits changes to its
-    string representation. This can be helpful to create human-readable error messages.
+    """A test that behaves identical to a given other `test` but permits changes to its string representation. This can be helpful to create human-readable error messages.
 
     Parameters
     ----------
@@ -367,9 +364,7 @@ class Context(Test):
 
 
 class Assert(Test):
-    """A test that asserts certain properties about the `clingo.model.Model`s of a program. This test
-    can be highly costumized using a `clintest.quantifier.Quantifier` and a
-    `clintest.assertion.Assertion`.
+    """A test that asserts certain properties about the `clingo.model.Model`s of a program. This test can be highly customized using a `clintest.quantifier.Quantifier` and a `clintest.assertion.Assertion`.
 
     Parameters
     ----------
@@ -414,6 +409,7 @@ class Assert(Test):
 
 class Not(Test):
     """The negation of a given test.
+
     This test failes if `operand` succeeds and vice versa.
 
     Parameters
@@ -460,6 +456,7 @@ class Not(Test):
 
 class And(Test):
     """The conjunction of a list given tests.
+
     This test succeeds if all `args` succeed.
 
     Parameters
@@ -596,6 +593,7 @@ class And(Test):
 
 class Or(Test):
     """The disjunction of a list given tests.
+
     This test succeeds if any `args` succeed.
 
     Parameters

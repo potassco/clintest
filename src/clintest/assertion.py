@@ -15,6 +15,7 @@ def _into_symbol(symbol: Union[Symbol, str]) -> Symbol:
 
 class Assertion(ABC):
     """An assertion is a statement that may or may not hold for a certain `clingo.model.Model`.
+
     As such, one is necessary to assemble the `clintest.test.Assert` test.
     """
 
@@ -149,6 +150,7 @@ class False_(Assertion):
 
 class Not(Assertion):
     """The negation of a given assertion.
+
     This assertion holds if `operand` does not hold and vice versa.
 
     Parameters
@@ -171,6 +173,7 @@ class Not(Assertion):
 
 class And(Assertion):
     """The conjunction of a list of given assertions.
+
     This assertion holds if all `args` hold.
 
     Parameters
@@ -194,6 +197,7 @@ class And(Assertion):
 
 class Or(Assertion):
     """The disjunction of a list of given assertions.
+
     This assertion holds if any `args` hold.
 
     Parameters
@@ -217,6 +221,7 @@ class Or(Assertion):
 
 class Implies(Assertion):
     """The implication of two given assertions.
+
     This assertion holds if `antecedent` holds implies that `consequent` holds.
     In other words, this assertion holds if `antecedent` does not hold or `consequent` holds.
 
@@ -244,6 +249,7 @@ class Implies(Assertion):
 
 class Equivalent(Assertion):
     """The equivalence of a list of given assertions.
+
     This assertion holds if all `args` simultaneously hold or not hold.
 
     Parameters
