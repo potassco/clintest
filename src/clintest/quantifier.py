@@ -7,6 +7,7 @@ from .outcome import Outcome
 
 class Quantifier(ABC):
     """A quantifier specifies how many assertions must hold in order to pass the test.
+
     As such, one is necessary to assemble the `clintest.test.Assert` test.
 
     Quantifiers are stateful.
@@ -20,8 +21,7 @@ class Quantifier(ABC):
 
     @abstractmethod
     def consume(self, value: bool) -> Outcome:
-        """Consume the return value of `clintest.assertion.Assertion.holds_for` and possibly alter the
-        current outcome of this quantifier.
+        """Consume the return value of `clintest.assertion.Assertion.holds_for` and possibly alter the current outcome of this quantifier.
 
         Parameters
         ----------
@@ -267,6 +267,7 @@ class GreaterEqual(Quantifier):
 
 class Finished(Quantifier):
     """A wrapper around an `inner` quantifier indicating that computation has finished.
+
     The outcome of this quantifier is the outcome of `inner` beside that it is always certain.
     Calling `Finished.consume` will not alter outcome of this or the `inner` quantifier.
 
