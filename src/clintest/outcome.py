@@ -42,6 +42,9 @@ class Outcome:
         # pylint: disable=protected-access
         return self.__current_value == other.__current_value and self.__is_certain == other.__is_certain
 
+    def __hash__(self):
+        return hash((self.__current_value, self.__is_certain))
+
     def current_value(self) -> bool:
         """Returns the `current_value` of this outcome."""
         return self.__current_value
