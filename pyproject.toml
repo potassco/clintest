@@ -63,7 +63,6 @@ ignore = [
 
     # TODO: Remove the following once the issues are resolved
     "B008",
-    "B905",
     "S101",
 ]
 
