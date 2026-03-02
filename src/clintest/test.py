@@ -626,8 +626,8 @@ class And(Test):
         self.__on_whatever(call_operand)
         self.__ignore_certain = ignore_certain_bck
 
-        assert not self.__ongoing
-        assert self.__outcome.is_certain()
+        assert not self.__ongoing  # noqa: S101
+        assert self.__outcome.is_certain()  # noqa: S101
 
     @override
     def outcome(self) -> Outcome:  # noqa: D102
@@ -769,8 +769,8 @@ class Or(Test):
         self.__on_whatever(call_operand)
         self.__ignore_certain = ignore_certain_bck
 
-        assert not self.__ongoing
-        assert self.__outcome.is_certain()
+        assert not self.__ongoing  # noqa: S101
+        assert self.__outcome.is_certain()  # noqa: S101
 
     @override
     def outcome(self) -> Outcome:  # noqa: D102
