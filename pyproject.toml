@@ -62,7 +62,6 @@ ignore = [
     "D107", # pydocstyle: missing docstring in __init__
 
     # TODO: Remove the following once the issues are resolved
-    "PLW2901",
     "B008",
     "B027",
     "B905",

@@ -548,11 +548,11 @@ class And(Test):
             operands = ""
             width = len(str(len(self.__operands) - 1))
             for i, operand in enumerate(self.__operands):
-                i = str(i)
+                i_str = str(i)
                 operands += os.linesep
-                operands += (width - len(i)) * " "
+                operands += (width - len(i_str)) * " "
                 operands += [" ", "*"][operand in self.__ongoing]
-                operands += f"{i}: {operand}"
+                operands += f"{i_str}: {operand}"
             operands = indent(operands, 8 * " ")
         else:
             operands = " <none>"
@@ -691,11 +691,11 @@ class Or(Test):
             operands = ""
             width = len(str(len(self.__operands) - 1))
             for i, operand in enumerate(self.__operands):
-                i = str(i)
+                i_str = str(i)
                 operands += os.linesep
-                operands += (width - len(i)) * " "
+                operands += (width - len(i_str)) * " "
                 operands += [" ", "*"][operand in self.__ongoing]
-                operands += f"{i}: {operand}"
+                operands += f"{i_str}: {operand}"
             operands = indent(operands, 8 * " ")
         else:
             operands = " <none>"
