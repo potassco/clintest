@@ -9,9 +9,11 @@ def test_clingo():
     test = Record()
 
     solver.solve(test)
-    assert Recording([
-        {'__f': '__init__'},
-        {'__f': 'on_model', 'str(model)': 'a'},
-        {'__f': 'on_statistics'},
-        {'__f': 'on_finish'},
-    ]).subsumes(test.recording)
+    assert Recording(
+        [
+            {"__f": "__init__"},
+            {"__f": "on_model", "str(model)": "a"},
+            {"__f": "on_statistics"},
+            {"__f": "on_finish"},
+        ]
+    ).subsumes(test.recording)

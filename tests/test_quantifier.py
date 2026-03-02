@@ -3,6 +3,7 @@
 
 def test_all():
     from clintest.quantifier import All
+
     quantifier = All()
 
     assert quantifier.outcome().as_tuple() == (True, False)
@@ -20,6 +21,7 @@ def test_all():
 
 def test_any():
     from clintest.quantifier import Any
+
     quantifier = Any()
 
     assert quantifier.outcome().as_tuple() == (False, False)
@@ -34,8 +36,10 @@ def test_any():
         (True, True),
     ]
 
+
 def test_exact():
     from clintest.quantifier import Exact
+
     quantifier = Exact(2)
 
     assert quantifier.outcome().as_tuple() == (False, False)
@@ -57,6 +61,7 @@ def test_exact():
 
 def test_less():
     from clintest.quantifier import Less
+
     quantifier = Less(2)
 
     assert quantifier.outcome().as_tuple() == (True, False)
@@ -78,6 +83,7 @@ def test_less():
 
 def test_less_equal():
     from clintest.quantifier import LessEqual
+
     quantifier = LessEqual(2)
 
     assert quantifier.outcome().as_tuple() == (True, False)
@@ -99,6 +105,7 @@ def test_less_equal():
 
 def test_greater():
     from clintest.quantifier import Greater
+
     quantifier = Greater(2)
 
     assert quantifier.outcome().as_tuple() == (False, False)
@@ -120,6 +127,7 @@ def test_greater():
 
 def test_greater_equal():
     from clintest.quantifier import GreaterEqual
+
     quantifier = GreaterEqual(2)
 
     assert quantifier.outcome().as_tuple() == (False, False)

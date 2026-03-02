@@ -1,6 +1,4 @@
-"""
-The abstract class `clintest.solver.Solver` and off-the-shelf solver implementations.
-"""
+"""The abstract class `clintest.solver.Solver` and off-the-shelf solver implementations."""
 
 from abc import ABC, abstractmethod
 from typing import Optional, Sequence
@@ -11,14 +9,11 @@ from .test import Test
 
 
 class Solver(ABC):
-    """
-    An initialized solver that may solve any test.
-    """
+    """An initialized solver that may solve any test."""
 
     @abstractmethod
     def solve(self, test: Test) -> None:
-        """
-        Use this solver to solve a given `test`.
+        """Use this solver to solve a given `test`.
 
         Parameters
         ----------
@@ -28,12 +23,12 @@ class Solver(ABC):
 
 
 class Clingo(Solver):
-    """
-    A solver using `clingo.control.Control`.
+    """A solver using `clingo.control.Control`.
 
     Parameters
     ----------
-    arguments
+
+    Arguments:
         A list of arguments.
 
     program

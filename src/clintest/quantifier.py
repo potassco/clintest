@@ -1,6 +1,4 @@
-"""
-The abstract class `clintest.quantifier.Quantifier` and classes extending it.
-"""
+"""The abstract class `clintest.quantifier.Quantifier` and classes extending it."""
 
 from abc import ABC, abstractmethod
 
@@ -8,8 +6,7 @@ from .outcome import Outcome
 
 
 class Quantifier(ABC):
-    """
-    A quantifier specifies how many assertions must hold in order to pass the test.
+    """A quantifier specifies how many assertions must hold in order to pass the test.
     As such, one is necessary to assemble the `clintest.test.Assert` test.
 
     Quantifiers are stateful.
@@ -19,14 +16,11 @@ class Quantifier(ABC):
 
     @abstractmethod
     def outcome(self) -> Outcome:
-        """
-        Returns the current outcome of this quantifier.
-        """
+        """Returns the current outcome of this quantifier."""
 
     @abstractmethod
     def consume(self, value: bool) -> Outcome:
-        """
-        Consume the return value of `clintest.assertion.Assertion.holds_for` and possibly alter the
+        """Consume the return value of `clintest.assertion.Assertion.holds_for` and possibly alter the
         current outcome of this quantifier.
 
         Parameters
@@ -34,16 +28,14 @@ class Quantifier(ABC):
         value
             The return value of `clintest.assertion.Assertion.holds_for`.
 
-        Returns
+        Returns:
         -------
         The outcome of this quantifier after `value` was consumed.
         """
 
 
 class All(Quantifier):
-    """
-    A quantifier demanding that an assertion holds for all models.
-    """
+    """A quantifier demanding that an assertion holds for all models."""
 
     def __init__(self) -> None:
         self.__state = Outcome(True, False)
@@ -66,9 +58,7 @@ class All(Quantifier):
 
 
 class Any(Quantifier):
-    """
-    A quantifier demanding that an assertion holds for any model.
-    """
+    """A quantifier demanding that an assertion holds for any model."""
 
     def __init__(self) -> None:
         self.__state = Outcome(False, False)
@@ -91,9 +81,7 @@ class Any(Quantifier):
 
 
 class First(Quantifier):
-    """
-    A quantifier demanding that an assertion holds for the first model.
-    """
+    """A quantifier demanding that an assertion holds for the first model."""
 
     def __init__(self) -> None:
         self.__state = Outcome(False, False)
@@ -116,9 +104,7 @@ class First(Quantifier):
 
 
 class Last(Quantifier):
-    """
-    A quantifier demanding that an assertion holds for the last model.
-    """
+    """A quantifier demanding that an assertion holds for the last model."""
 
     def __init__(self) -> None:
         self.__state = Outcome(False, False)
@@ -140,8 +126,7 @@ class Last(Quantifier):
 
 
 class Exact(Quantifier):
-    """
-    A quantifier demanding that an assertion holds for an exact number of models.
+    """A quantifier demanding that an assertion holds for an exact number of models.
 
     Parameters
     ----------
@@ -169,8 +154,7 @@ class Exact(Quantifier):
 
 
 class Less(Quantifier):
-    """
-    A quantifier demanding that an assertion holds for a number of models less than a given supremum.
+    """A quantifier demanding that an assertion holds for a number of models less than a given supremum.
 
     Parameters
     ----------
@@ -198,8 +182,7 @@ class Less(Quantifier):
 
 
 class LessEqual(Quantifier):
-    """
-    A quantifier demanding that an assertion holds for a number of models less than or equal to a given maximum.
+    """A quantifier demanding that an assertion holds for a number of models less than or equal to a given maximum.
 
     Parameters
     ----------
@@ -227,8 +210,7 @@ class LessEqual(Quantifier):
 
 
 class Greater(Quantifier):
-    """
-    A quantifier demanding that an assertion holds for a number of models greater than a given infimum.
+    """A quantifier demanding that an assertion holds for a number of models greater than a given infimum.
 
     Parameters
     ----------
@@ -256,8 +238,7 @@ class Greater(Quantifier):
 
 
 class GreaterEqual(Quantifier):
-    """
-    A quantifier demanding that an assertion holds for a number of models than or equal to a given minimum.
+    """A quantifier demanding that an assertion holds for a number of models than or equal to a given minimum.
 
     Parameters
     ----------
@@ -285,8 +266,7 @@ class GreaterEqual(Quantifier):
 
 
 class Finished(Quantifier):
-    """
-    A wrapper around an `inner` quantifier indicating that computation has finished.
+    """A wrapper around an `inner` quantifier indicating that computation has finished.
     The outcome of this quantifier is the outcome of `inner` beside that it is always certain.
     Calling `Finished.consume` will not alter outcome of this or the `inner` quantifier.
 

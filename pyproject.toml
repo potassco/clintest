@@ -65,12 +65,9 @@ ignore = [
     "B027",
     "B905",
     "S101",
-    "D1",
-    # TODO: These should be auto-fixable issues.
     "E501",
-    "D2",
-    "D4",
-    "I",
+    "D1",
+    "D205",
 ]
 
 [tool.ruff.lint.pydocstyle]

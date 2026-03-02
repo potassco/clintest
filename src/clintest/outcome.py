@@ -1,5 +1,4 @@
-"""
-The `clintest.outcome.Outcome` of a test, accessible via `clintest.test.Test.outcome()`.
+"""The `clintest.outcome.Outcome` of a test, accessible via `clintest.test.Test.outcome()`.
 
 The outcome of a test may be either
 
@@ -16,9 +15,9 @@ These four options are represented using two booleans within `Outcome`:
 
 from typing import Tuple
 
+
 class Outcome:
-    """
-    The outcome of a test.
+    """The outcome of a test.
 
     Parameters
     ----------
@@ -41,40 +40,24 @@ class Outcome:
 
     def __eq__(self, other):
         # pylint: disable=protected-access
-        return self.__current_value == other.__current_value \
-            and self.__is_certain == other.__is_certain
+        return self.__current_value == other.__current_value and self.__is_certain == other.__is_certain
 
     def current_value(self) -> bool:
-        """
-        Returns the `current_value` of this outcome.
-        """
-
+        """Returns the `current_value` of this outcome."""
         return self.__current_value
 
     def is_certain(self) -> bool:
-        """
-        Returns whether this outcome `is_certain`.
-        """
-
+        """Returns whether this outcome `is_certain`."""
         return self.__is_certain
 
     def as_tuple(self) -> Tuple[bool, bool]:
-        """
-        Returns this outcome as a tuple `(current_value, is_certain)`.
-        """
-
+        """Returns this outcome as a tuple `(current_value, is_certain)`."""
         return (self.__current_value, self.__is_certain)
 
     def is_certainly_true(self) -> bool:
-        """
-        Returns whether this outcome is certainly true, i.e., if `is_certain and current_value` holds.
-        """
-
+        """Returns whether this outcome is certainly true, i.e., if `is_certain and current_value` holds."""
         return self.__is_certain and self.__current_value
 
     def is_certainly_false(self) -> bool:
-        """
-        Returns whether this outcome is certainly false, i.e., if `is_certain and not current_value` holds.
-        """
-
+        """Returns whether this outcome is certainly false, i.e., if `is_certain and not current_value` holds."""
         return self.__is_certain and not self.__current_value
