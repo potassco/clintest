@@ -14,7 +14,7 @@ As `clintest` is focussed on the specifics of `clingo` programs, it works best i
 frameworks like `pytest`.
 
 ## Installation
-This framework is guaranteed to work with Python 3.11 or greater.
+This framework is guaranteed to work with Python 3.12 or greater.
 You have several options to install it:
 
 ### Using conda
