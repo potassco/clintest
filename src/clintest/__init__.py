@@ -1,5 +1,4 @@
-"""
-A test framework for `clingo` programs.
+"""A test framework for `clingo` programs.
 
 `clintest` is a test framework written in Python that makes it easy to write efficient tests for `clingo` programs.
 It provides you with numerous off-the-shelf components that allow you to assemble the most commonly used tests quickly, saving you the time to write them yourself.

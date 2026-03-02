@@ -1,8 +1,8 @@
 # pylint: disable=redefined-outer-name
 
 
-from clingo import Control
 import pytest
+from clingo import Control
 
 
 @pytest.fixture
@@ -12,9 +12,9 @@ def frame():
     ctl.ground([("base", [])])
 
     def test(positive, negative):
-        for model in ctl.solve(yield_=True): # pylint: disable=not-an-iterable
+        for model in ctl.solve(yield_=True):  # pylint: disable=not-an-iterable
             for assertion in positive:
-                assert     assertion.holds_for(model)
+                assert assertion.holds_for(model)
             for assertion in negative:
                 assert not assertion.holds_for(model)
 
@@ -23,94 +23,128 @@ def frame():
 
 def test_contains(frame):
     from clintest.assertion import Contains
-    frame([
-        Contains("a"),
-        Contains("b"),
-    ], [
-        Contains("c"),
-    ])
+
+    frame(
+        [
+            Contains("a"),
+            Contains("b"),
+        ],
+        [
+            Contains("c"),
+        ],
+    )
 
 
 def test_equals(frame):
     from clintest.assertion import Equals
-    frame([
-        Equals({"a", "b"}),
-    ], [
-        Equals({"a"}),
-        Equals({"a", "b", "c"}),
-    ])
+
+    frame(
+        [
+            Equals({"a", "b"}),
+        ],
+        [
+            Equals({"a"}),
+            Equals({"a", "b", "c"}),
+        ],
+    )
 
 
 def test_subsetof(frame):
     from clintest.assertion import SubsetOf
-    frame([
-        SubsetOf({"a", "b"}),
-        SubsetOf({"a", "b", "c"}),
-    ], {
-        SubsetOf({"a"}),
-    })
+
+    frame(
+        [
+            SubsetOf({"a", "b"}),
+            SubsetOf({"a", "b", "c"}),
+        ],
+        {
+            SubsetOf({"a"}),
+        },
+    )
 
 
 def test_supersetof(frame):
     from clintest.assertion import SupersetOf
-    frame([
-        SupersetOf({"a"}),
-        SupersetOf({"a", "b"}),
-    ], {
-        SupersetOf({"a", "b", "c"}),
-    })
+
+    frame(
+        [
+            SupersetOf({"a"}),
+            SupersetOf({"a", "b"}),
+        ],
+        {
+            SupersetOf({"a", "b", "c"}),
+        },
+    )
 
 
 def test_true(frame):
     from clintest.assertion import True_
+
     frame([True_()], [])
 
 
 def test_false(frame):
     from clintest.assertion import False_
+
     frame([], [False_()])
 
 
 def test_not(frame):
-    from clintest.assertion import Not, True_, False_
+    from clintest.assertion import False_, Not, True_
+
     frame([Not(False_())], [Not(True_())])
 
 
 def test_and(frame):
-    from clintest.assertion import And, True_, False_
-    frame([
-        And(),
-        And(True_(), True_()),
-    ], [
-        And(True_(), False_()),
-        And(False_(), True_()),
-        And(False_(), False_()),
-    ])
+    from clintest.assertion import And, False_, True_
+
+    frame(
+        [
+            And(),
+            And(True_(), True_()),
+        ],
+        [
+            And(True_(), False_()),
+            And(False_(), True_()),
+            And(False_(), False_()),
+        ],
+    )
 
 
 def test_or(frame):
-    from clintest.assertion import Or, True_, False_
-    frame([
-        Or(True_(), True_()),
-        Or(True_(), False_()),
-        Or(False_(), True_()),
-    ], [
-        Or(),
-        Or(False_(), False_()),
-    ])
+    from clintest.assertion import False_, Or, True_
+
+    frame(
+        [
+            Or(True_(), True_()),
+            Or(True_(), False_()),
+            Or(False_(), True_()),
+        ],
+        [
+            Or(),
+            Or(False_(), False_()),
+        ],
+    )
+
 
 def test_implies(frame):
-    from clintest.assertion import Implies, True_, False_
-    frame([
-        Implies(False_(), False_()),
-        Implies(False_(), True_()),
-        Implies(True_(), True_()),
-    ], [
-        Implies(True_(), False_()),
-    ])
+    from clintest.assertion import False_, Implies, True_
+
+    frame(
+        [
+            Implies(False_(), False_()),
+            Implies(False_(), True_()),
+            Implies(True_(), True_()),
+        ],
+        [
+            Implies(True_(), False_()),
+        ],
+    )
+
 
 def test_equivalent(frame):
-    from clintest.assertion import Equivalent, True_, False_
+    from clintest.assertion import Equivalent, False_, True_
+
     frame(
         [
             Equivalent(),
@@ -118,8 +152,9 @@ def test_equivalent(frame):
             Equivalent(True_()),
             Equivalent(False_(), False_()),
             Equivalent(True_(), True_()),
-        ], [
+        ],
+        [
             Equivalent(False_(), True_()),
             Equivalent(True_(), False_()),
-        ]
+        ],
     )

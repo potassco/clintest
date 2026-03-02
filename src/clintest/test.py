@@ -1,45 +1,39 @@
-"""
-The abstract class `clintest.test.Test` and off-the-shelf test implementations.
-"""
+"""The abstract class `clintest.test.Test` and off-the-shelf test implementations."""
 
-from abc import ABC, abstractmethod
 import os
+from abc import ABC, abstractmethod
 from textwrap import indent
 from typing import Any, Callable, Dict, Optional, Sequence
 
 from clingo.solving import Model, SolveResult
 from clingo.statistics import StatisticsMap
 
-from .outcome import Outcome
-from .quantifier import Quantifier, Finished
 from .assertion import Assertion
+from .outcome import Outcome
+from .quantifier import Finished, Quantifier
 
 
 class Test(ABC):
-    """
-    An abstract test consuming the artifacts of a `clintest.solver.Solver` in order to compute an
+    """An abstract test consuming the artifacts of a `clintest.solver.Solver` in order to compute an
     `clintest.outcome.Outcome`.
     """
 
     def on_model(self, _model: Model) -> bool:
-        """
-        Consume a `clingo.model.Model` and possibly alter the current outcome of this test.
+        """Consume a `clingo.model.Model` and possibly alter the current outcome of this test.
 
         Parameters
         ----------
         model
             The `clingo.model.Model` to consume.
 
-        Returns
+        Returns:
         -------
         Whether further models a needed to decide this test.
         """
-
         return True
 
     def on_unsat(self, lower_bound: Sequence[int]) -> None:
-        """
-        Consume a `lower_bound` during optimization and possibly alter the current outcome of this
+        """Consume a `lower_bound` during optimization and possibly alter the current outcome of this
         test.
 
         Parameters
@@ -49,8 +43,7 @@ class Test(ABC):
         """
 
     def on_core(self, core: Sequence[int]) -> None:
-        """
-        Consume an unsat `core` and possibly alter the current outcome of this test.
+        """Consume an unsat `core` and possibly alter the current outcome of this test.
 
         Parameters
         ----------
@@ -59,8 +52,7 @@ class Test(ABC):
         """
 
     def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
-        """
-        Consume the solving statistics and possibly alter the current outcome of this test.
+        """Consume the solving statistics and possibly alter the current outcome of this test.
 
         Parameters
         ----------
@@ -73,8 +65,7 @@ class Test(ABC):
 
     @abstractmethod
     def on_finish(self, result: SolveResult) -> None:
-        """
-        Consume the final solve result and possibly alter the current outcome of this test.
+        """Consume the final solve result and possibly alter the current outcome of this test.
 
         This should be the last `on_*`-method ever called on a test.
         Afterwards the outcome must be certain.
@@ -87,20 +78,17 @@ class Test(ABC):
 
     @abstractmethod
     def outcome(self) -> Outcome:
-        """
-        Returns the current `Outcome` of this test.
+        """Returns the current `Outcome` of this test.
 
-        Returns
+        Returns:
         -------
         The current outcome of this test.
         """
 
     def assert_(self) -> None:
-        """
-        Assert the outcome of this test to be certainly true.
+        """Assert the outcome of this test to be certainly true.
         Raise an `AssertionError` if the test is either incomplete or has failed.
         """
-
         if not self.outcome().is_certainly_true():
             msg = "The following test "
             msg += ["is incomplete.", "has failed."][self.outcome().is_certain()]
@@ -111,8 +99,7 @@ class Test(ABC):
 
 
 class True_(Test):
-    """
-    The test which always succeeds.
+    """The test which always succeeds.
 
     Parameters
     ----------
@@ -142,8 +129,7 @@ class True_(Test):
 
 
 class False_(Test):
-    """
-    The test which always failes.
+    """The test which always failes.
 
     Parameters
     ----------
@@ -173,8 +159,7 @@ class False_(Test):
 
 
 class Recording:
-    """
-    A recording of the calls to the `on_*`-methods of a `Test`.
+    """A recording of the calls to the `on_*`-methods of a `Test`.
     This class is mainly used inside of `Record`.
     """
 
@@ -190,54 +175,47 @@ class Recording:
     def __str__(self):
         def fmt(entry):
             result = f"[{entry['__outcome']}] {entry['__f']}"
-            if entry['__f'] == "on_model":
-                result += os.linesep + 4 * " " + entry['str(model)']
+            if entry["__f"] == "on_model":
+                result += os.linesep + 4 * " " + entry["str(model)"]
             return result
 
         width = len(str(len(self.__entries) - 1))
-        return os.linesep.join((
-            f"{(width - len(str(i))) * ' '}{i}: {fmt(entry)}"
-            for i, entry in enumerate(self.__entries)
-        ))
+        return os.linesep.join(
+            (f"{(width - len(str(i))) * ' '}{i}: {fmt(entry)}" for i, entry in enumerate(self.__entries))
+        )
 
     def __eq__(self, other):
         # pylint: disable=protected-access
         return self.__entries == other.__entries
 
     def amend(self, changes: Dict[str, Any]):
-        """
-        Update the last entry of this encoding.
+        """Update the last entry of this encoding.
 
         Parameters
         ----------
         changes
             The changes.
         """
-
         self.__entries[-1].update(changes)
 
     def append(self, entry: Dict[str, Any]):
-        """
-        Append a new entry at the end of this recording.
+        """Append a new entry at the end of this recording.
 
         Parameters
         ----------
         entry
             The entry.
         """
-
         self.__entries.append(entry)
 
     def subsumes(self, other) -> bool:
-        """
-        Determine whether this recording subsumes another recording.
+        """Determine whether this recording subsumes another recording.
 
         Parameters
         ----------
         other
             The other recording.
         """
-
         # pylint: disable=protected-access
         return len(self.__entries) == len(other.__entries) and all(
             all(item in other_entry.items() for item in self_entry.items())
@@ -246,8 +224,7 @@ class Recording:
 
 
 class Record(Test):
-    """
-    A test that behaves identical to a given other `test` but records any call to one of its
+    """A test that behaves identical to a given other `test` but records any call to one of its
     `on_*`-methods. This can be very helpful for debugging.
 
     Parameters
@@ -256,12 +233,16 @@ class Record(Test):
         A `Test` that determines how this test should behave.
     """
 
-    def __init__(self, test: Test = True_(lazy = False)):
+    def __init__(self, test: Test = True_(lazy=False)):
         self.test: Test = test
-        self.recording: Recording = Recording([{
-            "__f": "__init__",
-            "__outcome": self.outcome(),
-        }])
+        self.recording: Recording = Recording(
+            [
+                {
+                    "__f": "__init__",
+                    "__outcome": self.outcome(),
+                }
+            ]
+        )
 
     def __repr__(self):
         name = self.__class__.__name__
@@ -270,55 +251,69 @@ class Record(Test):
         return f"{name}(test={test}, recording={recording})"
 
     def __str__(self):
-        return os.linesep.join([
-            f"[{self.outcome()}] {self.__class__.__name__}",
-            f"    test: {indent(str(self.test), 4 * ' ')[4:]}",
-            "    recording:",
-            indent(str(self.recording), 8 * " "),
-        ])
+        return os.linesep.join(
+            [
+                f"[{self.outcome()}] {self.__class__.__name__}",
+                f"    test: {indent(str(self.test), 4 * ' ')[4:]}",
+                "    recording:",
+                indent(str(self.recording), 8 * " "),
+            ]
+        )
 
     def on_model(self, model: Model) -> bool:
-        self.recording.append({
-            "__f": "on_model",
-            "str(model)": str(model),
-        })
+        self.recording.append(
+            {
+                "__f": "on_model",
+                "str(model)": str(model),
+            }
+        )
         result = self.test.on_model(model)
-        self.recording.amend({
-            "__result": result,
-            "__outcome": self.outcome(),
-        })
+        self.recording.amend(
+            {
+                "__result": result,
+                "__outcome": self.outcome(),
+            }
+        )
         return result
 
     def on_unsat(self, lower_bound: Sequence[int]) -> None:
-        self.recording.append({
-            "__f": "on_unsat",
-            "lower_bound": lower_bound,
-        })
+        self.recording.append(
+            {
+                "__f": "on_unsat",
+                "lower_bound": lower_bound,
+            }
+        )
         self.test.on_unsat(lower_bound)
         self.recording.amend({"__outcome": self.outcome()})
 
     def on_core(self, core: Sequence[int]) -> None:
-        self.recording.append({
-            "__f": "on_core",
-            "core": core,
-        })
+        self.recording.append(
+            {
+                "__f": "on_core",
+                "core": core,
+            }
+        )
         self.test.on_core(core)
         self.recording.amend({"__outcome": self.outcome()})
 
     def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
-        self.recording.append({
-            "__f": "on_statistics",
-            "step": step,
-            "accumulated": accumulated,
-        })
+        self.recording.append(
+            {
+                "__f": "on_statistics",
+                "step": step,
+                "accumulated": accumulated,
+            }
+        )
         self.test.on_statistics(step, accumulated)
         self.recording.amend({"__outcome": self.outcome()})
 
     def on_finish(self, result: SolveResult) -> None:
-        self.recording.append({
-            "__f": "on_finish",
-            "result": result,
-        })
+        self.recording.append(
+            {
+                "__f": "on_finish",
+                "result": result,
+            }
+        )
         self.test.on_finish(result)
         self.recording.amend({"__outcome": self.outcome()})
 
@@ -327,8 +322,7 @@ class Record(Test):
 
 
 class Context(Test):
-    """
-    A test that behaves identical to a given other `test` but permits changes to its
+    """A test that behaves identical to a given other `test` but permits changes to its
     string representation. This can be helpful to create human-readable error messages.
 
     Parameters
@@ -373,8 +367,7 @@ class Context(Test):
 
 
 class Assert(Test):
-    """
-    A test that asserts certain properties about the `clingo.model.Model`s of a program. This test
+    """A test that asserts certain properties about the `clingo.model.Model`s of a program. This test
     can be highly costumized using a `clintest.quantifier.Quantifier` and a
     `clintest.assertion.Assertion`.
 
@@ -398,11 +391,13 @@ class Assert(Test):
         return f"{name}({quantifier}, {assertion})"
 
     def __str__(self):
-        return os.linesep.join([
-            f"[{self.outcome()}] {self.__class__.__name__}",
-            f"    quantifier: {self.__quantifier}",
-            f"    assertion:  {self.__assertion}",
-        ])
+        return os.linesep.join(
+            [
+                f"[{self.outcome()}] {self.__class__.__name__}",
+                f"    quantifier: {self.__quantifier}",
+                f"    assertion:  {self.__assertion}",
+            ]
+        )
 
     def on_model(self, model: Model) -> bool:
         if not self.__quantifier.outcome().is_certain():
@@ -418,8 +413,7 @@ class Assert(Test):
 
 
 class Not(Test):
-    """
-    The negation of a given test.
+    """The negation of a given test.
     This test failes if `operand` succeeds and vice versa.
 
     Parameters
@@ -437,10 +431,12 @@ class Not(Test):
         return f"{name}({operand})"
 
     def __str__(self):
-        return os.linesep.join([
-            f"[{self.outcome()}] {self.__class__.__name__}",
-            f"    operand: {indent(str(self.__operand), 4 * ' ')[4:]}",
-        ])
+        return os.linesep.join(
+            [
+                f"[{self.outcome()}] {self.__class__.__name__}",
+                f"    operand: {indent(str(self.__operand), 4 * ' ')[4:]}",
+            ]
+        )
 
     def on_model(self, model: Model) -> bool:
         return self.__operand.on_model(model)
@@ -463,13 +459,13 @@ class Not(Test):
 
 
 class And(Test):
-    """
-    The conjunction of a list given tests.
+    """The conjunction of a list given tests.
     This test succeeds if all `args` succeed.
 
     Parameters
     ----------
-    args
+
+    Args:
         The `Test`s to be combined.
 
     short_circuit
@@ -481,12 +477,7 @@ class And(Test):
         to test that are already certain.
     """
 
-    def __init__(
-        self,
-        *args: Test,
-        short_circuit: bool = True,
-        ignore_certain: bool = True
-    ) -> None:
+    def __init__(self, *args: Test, short_circuit: bool = True, ignore_certain: bool = True) -> None:
         self.__operands = list(args)
         self.__short_circuit = short_circuit
         self.__ignore_certain = ignore_certain
@@ -528,16 +519,18 @@ class And(Test):
                 operands += (width - len(i)) * " "
                 operands += [" ", "*"][operand in self.__ongoing]
                 operands += f"{i}: {operand}"
-            operands = indent(operands, 8 * ' ')
+            operands = indent(operands, 8 * " ")
         else:
             operands = " <none>"
 
-        return os.linesep.join([
-            f"[{self.outcome()}] {self.__class__.__name__} ",
-            f"    operands:{operands}",
-            f"    short_circuit:  {self.__short_circuit}",
-            f"    ignore_certain: {self.__ignore_certain}",
-        ])
+        return os.linesep.join(
+            [
+                f"[{self.outcome()}] {self.__class__.__name__} ",
+                f"    operands:{operands}",
+                f"    short_circuit:  {self.__short_circuit}",
+                f"    ignore_certain: {self.__ignore_certain}",
+            ]
+        )
 
     def __on_whatever(self, call_operand: Callable[[Test], None]) -> bool:
         still_ongoing = []
@@ -602,13 +595,13 @@ class And(Test):
 
 
 class Or(Test):
-    """
-    The disjunction of a list given tests.
+    """The disjunction of a list given tests.
     This test succeeds if any `args` succeed.
 
     Parameters
     ----------
-    args
+
+    Args:
         The `Test`s to be combined.
 
     short_circuit
@@ -620,12 +613,7 @@ class Or(Test):
         to test that are already certain.
     """
 
-    def __init__(
-        self,
-        *args: Test,
-        short_circuit: bool = True,
-        ignore_certain: bool = True
-    ) -> None:
+    def __init__(self, *args: Test, short_circuit: bool = True, ignore_certain: bool = True) -> None:
         self.__operands = list(args)
         self.__short_circuit = short_circuit
         self.__ignore_certain = ignore_certain
@@ -667,16 +655,18 @@ class Or(Test):
                 operands += (width - len(i)) * " "
                 operands += [" ", "*"][operand in self.__ongoing]
                 operands += f"{i}: {operand}"
-            operands = indent(operands, 8 * ' ')
+            operands = indent(operands, 8 * " ")
         else:
             operands = " <none>"
 
-        return os.linesep.join([
-            f"[{self.outcome()}] {self.__class__.__name__} ",
-            f"    operands:{operands}",
-            f"    short_circuit:  {self.__short_circuit}",
-            f"    ignore_certain: {self.__ignore_certain}",
-        ])
+        return os.linesep.join(
+            [
+                f"[{self.outcome()}] {self.__class__.__name__} ",
+                f"    operands:{operands}",
+                f"    short_circuit:  {self.__short_circuit}",
+                f"    ignore_certain: {self.__ignore_certain}",
+            ]
+        )
 
     def __on_whatever(self, call_operand: Callable[[Test], None]) -> bool:
         still_ongoing = []

@@ -1,6 +1,4 @@
-"""
-The abstract class `clintest.assertion.Assertion` and classes extending it.
-"""
+"""The abstract class `clintest.assertion.Assertion` and classes extending it."""
 
 from abc import ABC, abstractmethod
 from typing import Set, Union
@@ -16,15 +14,13 @@ def _into_symbol(symbol: Union[Symbol, str]) -> Symbol:
 
 
 class Assertion(ABC):
-    """
-    An assertion is a statement that may or may not hold for a certain `clingo.model.Model`.
+    """An assertion is a statement that may or may not hold for a certain `clingo.model.Model`.
     As such, one is necessary to assemble the `clintest.test.Assert` test.
     """
 
     @abstractmethod
     def holds_for(self, model: Model) -> bool:
-        """
-        Returns whether this assertions holds for `model`.
+        """Returns whether this assertions holds for `model`.
 
         Parameters
         ----------
@@ -32,15 +28,14 @@ class Assertion(ABC):
             A `clingo.model.Model`.
 
 
-        Returns
+        Returns:
         -------
         Whether this assertions holds for `model`.
         """
 
 
 class Contains(Assertion):
-    """
-    An assertion that holds if a model contains a given `symbol`.
+    """An assertion that holds if a model contains a given `symbol`.
 
     Parameters
     ----------
@@ -53,15 +48,14 @@ class Contains(Assertion):
 
     def __repr__(self):
         name = self.__class__.__name__
-        return f"{name}(\"{self.__symbol}\")"
+        return f'{name}("{self.__symbol}")'
 
     def holds_for(self, model: Model) -> bool:
         return model.contains(self.__symbol)
 
 
 class Equals(Assertion):
-    """
-    An assertion that holds if the symbols of a model are equals to a given set of `symbols`.
+    """An assertion that holds if the symbols of a model are equals to a given set of `symbols`.
 
     Parameters
     ----------
@@ -82,8 +76,7 @@ class Equals(Assertion):
 
 
 class SubsetOf(Assertion):
-    """
-    An assertion that holds if the symbols of a model are a subset of a given set of `symbols`.
+    """An assertion that holds if the symbols of a model are a subset of a given set of `symbols`.
 
     Parameters
     ----------
@@ -104,8 +97,7 @@ class SubsetOf(Assertion):
 
 
 class SupersetOf(Assertion):
-    """
-    An assertion that holds if the symbols of a model are a superset of a given set of `symbols`.
+    """An assertion that holds if the symbols of a model are a superset of a given set of `symbols`.
 
     Parameters
     ----------
@@ -126,9 +118,7 @@ class SupersetOf(Assertion):
 
 
 class Optimal(Assertion):
-    """
-    An assertion that holds if the optimality of a model is proven.
-    """
+    """An assertion that holds if the optimality of a model is proven."""
 
     def __repr__(self):
         return f"{self.__class__.__name__}()"
@@ -138,9 +128,7 @@ class Optimal(Assertion):
 
 
 class True_(Assertion):
-    """
-    The assertion that is true for each model.
-    """
+    """The assertion that is true for each model."""
 
     def __repr__(self):
         return f"{self.__class__.__name__}()"
@@ -150,9 +138,7 @@ class True_(Assertion):
 
 
 class False_(Assertion):
-    """
-    The assertion that is false for each model.
-    """
+    """The assertion that is false for each model."""
 
     def __repr__(self):
         return f"{self.__class__.__name__}()"
@@ -162,8 +148,7 @@ class False_(Assertion):
 
 
 class Not(Assertion):
-    """
-    The negation of a given assertion.
+    """The negation of a given assertion.
     This assertion holds if `operand` does not hold and vice versa.
 
     Parameters
@@ -185,13 +170,13 @@ class Not(Assertion):
 
 
 class And(Assertion):
-    """
-    The conjunction of a list of given assertions.
+    """The conjunction of a list of given assertions.
     This assertion holds if all `args` hold.
 
     Parameters
     ----------
-    args
+
+    Args:
         The `Assertion`s to be combined.
     """
 
@@ -208,13 +193,13 @@ class And(Assertion):
 
 
 class Or(Assertion):
-    """
-    The disjunction of a list of given assertions.
+    """The disjunction of a list of given assertions.
     This assertion holds if any `args` hold.
 
     Parameters
     ----------
-    args
+
+    Args:
         The `Assertion`s to be combined.
     """
 
@@ -231,8 +216,7 @@ class Or(Assertion):
 
 
 class Implies(Assertion):
-    """
-    The implication of two given assertions.
+    """The implication of two given assertions.
     This assertion holds if `antecedent` holds implies that `consequent` holds.
     In other words, this assertion holds if `antecedent` does not hold or `consequent` holds.
 
@@ -259,13 +243,13 @@ class Implies(Assertion):
 
 
 class Equivalent(Assertion):
-    """
-    The equivalence of a list of given assertions.
+    """The equivalence of a list of given assertions.
     This assertion holds if all `args` simultaneously hold or not hold.
 
     Parameters
     ----------
-    args
+
+    Args:
         The `Assertion`s to be combined.
     """
 
