@@ -242,8 +242,8 @@ class Record(Test):
         A `Test` that determines how this test should behave.
     """
 
-    def __init__(self, test: Test = True_(lazy=False)):
-        self.test: Test = test
+    def __init__(self, test: Test | None = None):
+        self.test: Test = test if test is not None else True_(lazy=False)
         self.recording: Recording = Recording(
             [
                 {
