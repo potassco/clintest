@@ -14,7 +14,7 @@ from .quantifier import Finished, Quantifier
 
 
 class Test(ABC):
-    """An abstract test consuming the artifacts of a `clintest.solver.Solver` in order to compute an `clintest.outcome.Outcome`."""
+    """An abstract test consuming the `clintest.solver.Solver` artifacts to compute an `clintest.outcome.Outcome`."""
 
     def on_model(self, _model: Model) -> bool:
         """Consume a `clingo.model.Model` and possibly alter the current outcome of this test.
@@ -223,7 +223,9 @@ class Recording:
 
 
 class Record(Test):
-    """A test that behaves identical to a given other `test` but records any call to one of its `on_*`-methods. This can be very helpful for debugging.
+    """A test that behaves identical to a given other `test` but records any call to one of its `on_*`-methods.
+
+    This can be very helpful for debugging.
 
     Parameters
     ----------
@@ -320,7 +322,9 @@ class Record(Test):
 
 
 class Context(Test):
-    """A test that behaves identical to a given other `test` but permits changes to its string representation. This can be helpful to create human-readable error messages.
+    """A test that behaves identical to a given other `test` but permits changes to its string representation.
+
+    This can be helpful to create human-readable error messages.
 
     Parameters
     ----------
@@ -364,7 +368,10 @@ class Context(Test):
 
 
 class Assert(Test):
-    """A test that asserts certain properties about the `clingo.model.Model`s of a program. This test can be highly customized using a `clintest.quantifier.Quantifier` and a `clintest.assertion.Assertion`.
+    """A test that asserts certain properties about the `clingo.model.Model`s of a program.
+
+    This test can be highly customized using a `clintest.quantifier.Quantifier` and a
+    `clintest.assertion.Assertion`.
 
     Parameters
     ----------

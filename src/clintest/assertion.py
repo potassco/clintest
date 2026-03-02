@@ -41,7 +41,8 @@ class Contains(Assertion):
     Parameters
     ----------
     symbol
-        The `clingo.symbol.Symbol` or a `str` that can be parsed into a `clingo.symbol.Symbol` with `clingo.symbol.parse_term`.
+        The `clingo.symbol.Symbol` or a `str` that can be parsed into a `clingo.symbol.Symbol` with
+        `clingo.symbol.parse_term`.
     """
 
     def __init__(self, symbol: Union[Symbol, str]) -> None:
@@ -61,7 +62,8 @@ class Equals(Assertion):
     Parameters
     ----------
     symbols
-        A set of `clingo.symbol.Symbol`s or `str`s that can be parsed into a `clingo.symbol.Symbol`s with `clingo.symbol.parse_term`.
+        A set of `clingo.symbol.Symbol`s or `str`s that can be parsed into a `clingo.symbol.Symbol`s with
+        `clingo.symbol.parse_term`.
     """
 
     def __init__(self, symbols: Set[Union[Symbol, str]]) -> None:
@@ -82,7 +84,8 @@ class SubsetOf(Assertion):
     Parameters
     ----------
     symbols
-        A set of `clingo.symbol.Symbol`s or `str`s that can be parsed into a `clingo.symbol.Symbol`s with `clingo.symbol.parse_term`.
+        A set of `clingo.symbol.Symbol`s or `str`s that can be parsed into a `clingo.symbol.Symbol`s with
+        `clingo.symbol.parse_term`.
     """
 
     def __init__(self, symbols: Set[Union[Symbol, str]]) -> None:
@@ -103,7 +106,8 @@ class SupersetOf(Assertion):
     Parameters
     ----------
     symbols
-        A set of `clingo.symbol.Symbol`s or `str`s that can be parsed into a `clingo.symbol.Symbol`s with `clingo.symbol.parse_term`.
+        A set of `clingo.symbol.Symbol`s or `str`s that can be parsed into a `clingo.symbol.Symbol`s with
+        `clingo.symbol.parse_term`.
     """
 
     def __init__(self, symbols: Set[Union[Symbol, str]]) -> None:

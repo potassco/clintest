@@ -21,7 +21,9 @@ class Quantifier(ABC):
 
     @abstractmethod
     def consume(self, value: bool) -> Outcome:
-        """Consume the return value of `clintest.assertion.Assertion.holds_for` and possibly alter the current outcome of this quantifier.
+        """Consume the return value of `clintest.assertion.Assertion.holds_for`.
+
+        Possibly alters the current outcome of this quantifier.
 
         Parameters
         ----------
