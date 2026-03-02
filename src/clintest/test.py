@@ -30,7 +30,7 @@ class Test(ABC):
         """
         return True
 
-    def on_unsat(self, lower_bound: Sequence[int]) -> None:
+    def on_unsat(self, lower_bound: Sequence[int]) -> None: # noqa: B027
         """Consume a `lower_bound` during optimization and possibly alter the current outcome of this test.
 
         Parameters
@@ -39,7 +39,7 @@ class Test(ABC):
             The lower bound.
         """
 
-    def on_core(self, core: Sequence[int]) -> None:
+    def on_core(self, core: Sequence[int]) -> None: # noqa: B027
         """Consume an unsat `core` and possibly alter the current outcome of this test.
 
         Parameters
@@ -48,7 +48,7 @@ class Test(ABC):
             The unsat core.
         """
 
-    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
+    def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None: # noqa: B027
         """Consume the solving statistics and possibly alter the current outcome of this test.
 
         Parameters
