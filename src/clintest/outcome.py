@@ -28,17 +28,21 @@ class Outcome:
     """
 
     def __init__(self, current_value: bool, is_certain: bool) -> None:
+        """Initializes an `Outcome` with `current_value` and `is_certain`."""
         self.__current_value = current_value
         self.__is_certain = is_certain
 
     def __repr__(self):
+        """Returns a detailed string representation of this outcome."""
         name = self.__class__.__name__
         return f"{name}({self.__current_value}, {self.__is_certain})"
 
     def __str__(self):
+        """Returns a human-readable string representation of this outcome."""
         return str(self.__current_value)[:1] + ["?", "!"][self.__is_certain]
 
     def __eq__(self, other):
+        """Returns whether this outcome is equal to `other`."""
         # pylint: disable=protected-access
         return self.__current_value == other.__current_value and self.__is_certain == other.__is_certain
 

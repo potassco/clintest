@@ -40,20 +40,25 @@ class All(Quantifier):
     """A quantifier demanding that an assertion holds for all models."""
 
     def __init__(self) -> None:
+        """Initializes an `All` quantifier."""
         self.__state = Outcome(True, False)
 
     def __repr__(self):
+        """Returns a detailed string representation of this quantifier."""
         name = self.__class__.__name__
         state = repr(self.__state)
         return f"{name}(__state={state})"
 
     def __str__(self):
+        """Returns a human-readable string representation of this quantifier."""
         return self.__class__.__name__
 
     def outcome(self) -> Outcome:
+        """Returns the current outcome of this quantifier."""
         return self.__state
 
     def consume(self, value: bool) -> Outcome:
+        """Consumes `value` and returns the updated outcome."""
         if not value:
             self.__state = Outcome(False, True)
         return self.__state
@@ -63,20 +68,25 @@ class Any(Quantifier):
     """A quantifier demanding that an assertion holds for any model."""
 
     def __init__(self) -> None:
+        """Initializes an `Any` quantifier."""
         self.__state = Outcome(False, False)
 
     def __repr__(self):
+        """Returns a detailed string representation of this quantifier."""
         name = self.__class__.__name__
         state = repr(self.__state)
         return f"{name}(__state={state})"
 
     def __str__(self):
+        """Returns a human-readable string representation of this quantifier."""
         return self.__class__.__name__
 
     def outcome(self) -> Outcome:
+        """Returns the current outcome of this quantifier."""
         return self.__state
 
     def consume(self, value: bool) -> Outcome:
+        """Consumes `value` and returns the updated outcome."""
         if value:
             self.__state = Outcome(True, True)
         return self.__state
@@ -86,20 +96,25 @@ class First(Quantifier):
     """A quantifier demanding that an assertion holds for the first model."""
 
     def __init__(self) -> None:
+        """Initializes a `First` quantifier."""
         self.__state = Outcome(False, False)
 
     def __repr__(self):
+        """Returns a detailed string representation of this quantifier."""
         name = self.__class__.__name__
         state = repr(self.__state)
         return f"{name}(__state={state})"
 
     def __str__(self):
+        """Returns a human-readable string representation of this quantifier."""
         return self.__class__.__name__
 
     def outcome(self) -> Outcome:
+        """Returns the current outcome of this quantifier."""
         return self.__state
 
     def consume(self, value: bool) -> Outcome:
+        """Consumes `value` and returns the updated outcome."""
         if not self.__state.is_certain():
             self.__state = Outcome(value, True)
         return self.__state
@@ -109,20 +124,25 @@ class Last(Quantifier):
     """A quantifier demanding that an assertion holds for the last model."""
 
     def __init__(self) -> None:
+        """Initializes a `Last` quantifier."""
         self.__state = Outcome(False, False)
 
     def __repr__(self):
+        """Returns a detailed string representation of this quantifier."""
         name = self.__class__.__name__
         state = repr(self.__state)
         return f"{name}(__state={state})"
 
     def __str__(self):
+        """Returns a human-readable string representation of this quantifier."""
         return self.__class__.__name__
 
     def outcome(self) -> Outcome:
+        """Returns the current outcome of this quantifier."""
         return self.__state
 
     def consume(self, value: bool) -> Outcome:
+        """Consumes `value` and returns the updated outcome."""
         self.__state = Outcome(value, False)
         return self.__state
 
@@ -137,20 +157,25 @@ class Exact(Quantifier):
     """
 
     def __init__(self, target: int) -> None:
+        """Initializes an `Exact` quantifier with `target` as the target count."""
         self.__target = target
         self.__state = 0
 
     def __repr__(self):
+        """Returns a detailed string representation of this quantifier."""
         name = self.__class__.__name__
         return f"{name}({self.__target}, __state={self.__state})"
 
     def __str__(self):
+        """Returns a human-readable string representation of this quantifier."""
         return f"{self.__class__.__name__} {self.__state}/{self.__target}"
 
     def outcome(self) -> Outcome:
+        """Returns the current outcome of this quantifier."""
         return Outcome(self.__state == self.__target, self.__state > self.__target)
 
     def consume(self, value: bool) -> Outcome:
+        """Consumes `value` and returns the updated outcome."""
         self.__state += value
         return self.outcome()
 
@@ -165,20 +190,25 @@ class Less(Quantifier):
     """
 
     def __init__(self, supremum: int) -> None:
+        """Initializes a `Less` quantifier with `supremum` as the supremum."""
         self.__supremum = supremum
         self.__state = 0
 
     def __repr__(self):
+        """Returns a detailed string representation of this quantifier."""
         name = self.__class__.__name__
         return f"{name}({self.__supremum}, __state={self.__state})"
 
     def __str__(self):
+        """Returns a human-readable string representation of this quantifier."""
         return f"{self.__class__.__name__} {self.__state}/{self.__supremum}"
 
     def outcome(self) -> Outcome:
+        """Returns the current outcome of this quantifier."""
         return Outcome(self.__state < self.__supremum, self.__state >= self.__supremum)
 
     def consume(self, value: bool) -> Outcome:
+        """Consumes `value` and returns the updated outcome."""
         self.__state += value
         return self.outcome()
 
@@ -193,20 +223,25 @@ class LessEqual(Quantifier):
     """
 
     def __init__(self, maximum: int) -> None:
+        """Initializes a `LessEqual` quantifier with `maximum` as the maximum."""
         self.__maximum = maximum
         self.__state = 0
 
     def __repr__(self):
+        """Returns a detailed string representation of this quantifier."""
         name = self.__class__.__name__
         return f"{name}({self.__maximum}, __state={self.__state})"
 
     def __str__(self):
+        """Returns a human-readable string representation of this quantifier."""
         return f"{self.__class__.__name__} {self.__state}/{self.__maximum}"
 
     def outcome(self) -> Outcome:
+        """Returns the current outcome of this quantifier."""
         return Outcome(self.__state <= self.__maximum, self.__state > self.__maximum)
 
     def consume(self, value: bool) -> Outcome:
+        """Consumes `value` and returns the updated outcome."""
         self.__state += value
         return self.outcome()
 
@@ -221,20 +256,25 @@ class Greater(Quantifier):
     """
 
     def __init__(self, infimum: int) -> None:
+        """Initializes a `Greater` quantifier with `infimum` as the infimum."""
         self.__infimum = infimum
         self.__state = 0
 
     def __repr__(self):
+        """Returns a detailed string representation of this quantifier."""
         name = self.__class__.__name__
         return f"{name}({self.__infimum}, __state={self.__state})"
 
     def __str__(self):
+        """Returns a human-readable string representation of this quantifier."""
         return f"{self.__class__.__name__} {self.__state}/{self.__infimum}"
 
     def outcome(self) -> Outcome:
+        """Returns the current outcome of this quantifier."""
         return Outcome(self.__state > self.__infimum, self.__state > self.__infimum)
 
     def consume(self, value: bool) -> Outcome:
+        """Consumes `value` and returns the updated outcome."""
         self.__state += value
         return self.outcome()
 
@@ -249,20 +289,25 @@ class GreaterEqual(Quantifier):
     """
 
     def __init__(self, minimum: int) -> None:
+        """Initializes a `GreaterEqual` quantifier with `minimum` as the minimum."""
         self.__minimum = minimum
         self.__state = 0
 
     def __repr__(self):
+        """Returns a detailed string representation of this quantifier."""
         name = self.__class__.__name__
         return f"{name}({self.__minimum}, __state={self.__state})"
 
     def __str__(self):
+        """Returns a human-readable string representation of this quantifier."""
         return f"{self.__class__.__name__} {self.__state}/{self.__minimum}"
 
     def outcome(self) -> Outcome:
+        """Returns the current outcome of this quantifier."""
         return Outcome(self.__state >= self.__minimum, self.__state >= self.__minimum)
 
     def consume(self, value: bool) -> Outcome:
+        """Consumes `value` and returns the updated outcome."""
         self.__state += value
         return self.outcome()
 
@@ -280,18 +325,23 @@ class Finished(Quantifier):
     """
 
     def __init__(self, inner: Quantifier) -> None:
+        """Initializes a `Finished` quantifier wrapping `inner`."""
         self.__state = Outcome(inner.outcome().current_value(), True)
 
     def __repr__(self):
+        """Returns a detailed string representation of this quantifier."""
         name = self.__class__.__name__
         state = repr(self.__state)
         return f"{name}(__state={state})"
 
     def __str__(self):
+        """Returns a human-readable string representation of this quantifier."""
         return self.__class__.__name__
 
     def outcome(self) -> Outcome:
+        """Returns the current outcome of this quantifier."""
         return self.__state
 
     def consume(self, value: bool) -> Outcome:
+        """Returns the current outcome without consuming `value`."""
         return self.__state

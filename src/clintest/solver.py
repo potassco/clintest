@@ -44,11 +44,13 @@ class Clingo(Solver):
         program: Optional[str] = None,
         files: Optional[Sequence[str]] = None,
     ) -> None:
+        """Initializes a `Clingo` solver with `arguments`, `program`, and `files`."""
         self.__arguments = [] if arguments is None else arguments
         self.__program = "" if program is None else program
         self.__files = [] if files is None else files
 
     def solve(self, test: Test) -> None:
+        """Uses this solver to solve `test`."""
         ctl = Control(self.__arguments)
 
         ctl.add("base", [], self.__program)
@@ -68,6 +70,7 @@ class Clingo(Solver):
             )
 
     def __repr__(self):
+        """Returns a detailed string representation of this solver."""
         name = self.__class__.__name__
         arguments = repr(self.__arguments)
         program = repr(self.__program)

@@ -106,23 +106,29 @@ class True_(Test):
     """
 
     def __init__(self, lazy: bool = True) -> None:
+        """Initializes a `True_` test."""
         self.__outcome = Outcome(True, lazy)
 
     def __repr__(self):
+        """Returns a detailed string representation of this test."""
         name = self.__class__.__name__
         outcome = repr(self.__outcome)
         return f"{name}(__outcome={outcome})"
 
     def __str__(self):
+        """Returns a human-readable string representation of this test."""
         return f"[{self.__outcome}] {self.__class__.__name__}"
 
     def on_model(self, _model: Model) -> bool:
+        """Returns whether further models are needed to decide this test."""
         return not self.__outcome.is_certain()
 
     def on_finish(self, result: SolveResult) -> None:
+        """Finalizes the outcome of this test."""
         self.__outcome = Outcome(True, True)
 
     def outcome(self) -> Outcome:
+        """Returns the current outcome of this test."""
         return self.__outcome
 
 
@@ -136,23 +142,29 @@ class False_(Test):
     """
 
     def __init__(self, lazy: bool = True) -> None:
+        """Initializes a `False_` test."""
         self.__outcome = Outcome(False, lazy)
 
     def __repr__(self):
+        """Returns a detailed string representation of this test."""
         name = self.__class__.__name__
         outcome = repr(self.__outcome)
         return f"{name}(__outcome={outcome})"
 
     def __str__(self):
+        """Returns a human-readable string representation of this test."""
         return f"[{self.__outcome}] {self.__class__.__name__}"
 
     def on_model(self, _model: Model) -> bool:
+        """Returns whether further models are needed to decide this test."""
         return not self.__outcome.is_certain()
 
     def on_finish(self, result: SolveResult) -> None:
+        """Finalizes the outcome of this test."""
         self.__outcome = Outcome(False, True)
 
     def outcome(self) -> Outcome:
+        """Returns the current outcome of this test."""
         return self.__outcome
 
 
@@ -163,15 +175,18 @@ class Recording:
     """
 
     def __init__(self, entries: Optional[Sequence[Dict[str, Any]]] = None):
+        """Initializes a `Recording` with the given `entries`."""
         if entries is None:
             entries = []
         self.__entries = list(entries)
 
     def __repr__(self):
+        """Returns a detailed string representation of this recording."""
         name = self.__class__.__name__
         return f"{name}({self.__entries})"
 
     def __str__(self):
+        """Returns a human-readable string representation of this recording."""
         def fmt(entry):
             result = f"[{entry['__outcome']}] {entry['__f']}"
             if entry["__f"] == "on_model":
@@ -184,6 +199,7 @@ class Recording:
         )
 
     def __eq__(self, other):
+        """Returns whether this recording is equal to `other`."""
         # pylint: disable=protected-access
         return self.__entries == other.__entries
 
@@ -234,6 +250,7 @@ class Record(Test):
     """
 
     def __init__(self, test: Test = True_(lazy=False)):
+        """Initializes a `Record` that wraps `test` and records its `on_*`-method calls."""
         self.test: Test = test
         self.recording: Recording = Recording(
             [
@@ -245,12 +262,14 @@ class Record(Test):
         )
 
     def __repr__(self):
+        """Returns a detailed string representation of this test."""
         name = self.__class__.__name__
         test = repr(self.test)
         recording = repr(self.recording)
         return f"{name}(test={test}, recording={recording})"
 
     def __str__(self):
+        """Returns a human-readable string representation of this test."""
         return os.linesep.join(
             [
                 f"[{self.outcome()}] {self.__class__.__name__}",
@@ -261,6 +280,7 @@ class Record(Test):
         )
 
     def on_model(self, model: Model) -> bool:
+        """Records and forwards the `on_model` call, returning whether further models are needed."""
         self.recording.append(
             {
                 "__f": "on_model",
@@ -277,6 +297,7 @@ class Record(Test):
         return result
 
     def on_unsat(self, lower_bound: Sequence[int]) -> None:
+        """Records and forwards the `on_unsat` call."""
         self.recording.append(
             {
                 "__f": "on_unsat",
@@ -287,6 +308,7 @@ class Record(Test):
         self.recording.amend({"__outcome": self.outcome()})
 
     def on_core(self, core: Sequence[int]) -> None:
+        """Records and forwards the `on_core` call."""
         self.recording.append(
             {
                 "__f": "on_core",
@@ -297,6 +319,7 @@ class Record(Test):
         self.recording.amend({"__outcome": self.outcome()})
 
     def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
+        """Records and forwards the `on_statistics` call."""
         self.recording.append(
             {
                 "__f": "on_statistics",
@@ -308,6 +331,7 @@ class Record(Test):
         self.recording.amend({"__outcome": self.outcome()})
 
     def on_finish(self, result: SolveResult) -> None:
+        """Records and forwards the `on_finish` call."""
         self.recording.append(
             {
                 "__f": "on_finish",
@@ -318,6 +342,7 @@ class Record(Test):
         self.recording.amend({"__outcome": self.outcome()})
 
     def outcome(self) -> Outcome:
+        """Returns the current outcome of this test."""
         return self.test.outcome()
 
 
@@ -338,32 +363,41 @@ class Context(Test):
         str_: Callable[[Test], str] = str,
         repr_: Callable[[Test], str] = repr,
     ):
+        """Initializes a `Context` that wraps `test` with custom string representations."""
         self.test: Test = test
         self.__str = str_
         self.__repr = repr_
 
     def __repr__(self):
+        """Returns a detailed string representation of this test."""
         return self.__repr(self.test)
 
     def __str__(self):
+        """Returns a human-readable string representation of this test."""
         return self.__str(self.test)
 
     def on_model(self, model: Model) -> bool:
+        """Forwards the `on_model` call to the wrapped test."""
         return self.test.on_model(model)
 
     def on_unsat(self, lower_bound: Sequence[int]) -> None:
+        """Forwards the `on_unsat` call to the wrapped test."""
         self.test.on_unsat(lower_bound)
 
     def on_core(self, core: Sequence[int]) -> None:
+        """Forwards the `on_core` call to the wrapped test."""
         self.test.on_core(core)
 
     def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
+        """Forwards the `on_statistics` call to the wrapped test."""
         self.test.on_statistics(step, accumulated)
 
     def on_finish(self, result: SolveResult) -> None:
+        """Forwards the `on_finish` call to the wrapped test."""
         self.test.on_finish(result)
 
     def outcome(self) -> Outcome:
+        """Returns the current outcome of this test."""
         return self.test.outcome()
 
 
@@ -383,16 +417,19 @@ class Assert(Test):
     """
 
     def __init__(self, quantifier: Quantifier, assertion: Assertion) -> None:
+        """Initializes an `Assert` test with `quantifier` and `assertion`."""
         self.__quantifier = quantifier
         self.__assertion = assertion
 
     def __repr__(self):
+        """Returns a detailed string representation of this test."""
         name = self.__class__.__name__
         quantifier = repr(self.__quantifier)
         assertion = repr(self.__assertion)
         return f"{name}({quantifier}, {assertion})"
 
     def __str__(self):
+        """Returns a human-readable string representation of this test."""
         return os.linesep.join(
             [
                 f"[{self.outcome()}] {self.__class__.__name__}",
@@ -402,15 +439,18 @@ class Assert(Test):
         )
 
     def on_model(self, model: Model) -> bool:
+        """Evaluates the assertion on `model` and returns whether further models are needed."""
         if not self.__quantifier.outcome().is_certain():
             self.__quantifier.consume(self.__assertion.holds_for(model))
 
         return not self.__quantifier.outcome().is_certain()
 
     def on_finish(self, result: SolveResult) -> None:
+        """Finalizes the outcome of this test."""
         self.__quantifier = Finished(self.__quantifier)
 
     def outcome(self) -> Outcome:
+        """Returns the current outcome of this test."""
         return self.__quantifier.outcome()
 
 
@@ -426,14 +466,17 @@ class Not(Test):
     """
 
     def __init__(self, operand: Test) -> None:
+        """Initializes a `Not` test that negates `operand`."""
         self.__operand = operand
 
     def __repr__(self):
+        """Returns a detailed string representation of this test."""
         name = self.__class__.__name__
         operand = repr(self.__operand)
         return f"{name}({operand})"
 
     def __str__(self):
+        """Returns a human-readable string representation of this test."""
         return os.linesep.join(
             [
                 f"[{self.outcome()}] {self.__class__.__name__}",
@@ -442,21 +485,27 @@ class Not(Test):
         )
 
     def on_model(self, model: Model) -> bool:
+        """Forwards the `on_model` call to the wrapped test."""
         return self.__operand.on_model(model)
 
     def on_unsat(self, lower_bound: Sequence[int]) -> None:
+        """Forwards the `on_unsat` call to the wrapped test."""
         self.__operand.on_unsat(lower_bound)
 
     def on_core(self, core: Sequence[int]) -> None:
+        """Forwards the `on_core` call to the wrapped test."""
         self.__operand.on_core(core)
 
     def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
+        """Forwards the `on_statistics` call to the wrapped test."""
         self.__operand.on_statistics(step, accumulated)
 
     def on_finish(self, result: SolveResult) -> None:
+        """Forwards the `on_finish` call to the wrapped test."""
         self.__operand.on_finish(result)
 
     def outcome(self) -> Outcome:
+        """Returns the negated outcome of the wrapped test."""
         outcome = self.__operand.outcome()
         return Outcome(not outcome.current_value(), outcome.is_certain())
 
@@ -482,6 +531,7 @@ class And(Test):
     """
 
     def __init__(self, *args: Test, short_circuit: bool = True, ignore_certain: bool = True) -> None:
+        """Initializes an `And` test combining `args` with optional optimizations."""
         self.__operands = list(args)
         self.__short_circuit = short_circuit
         self.__ignore_certain = ignore_certain
@@ -495,6 +545,7 @@ class And(Test):
         self.__on_whatever(call_operand)
 
     def __repr__(self):
+        """Returns a detailed string representation of this test."""
         name = self.__class__.__name__
 
         operands = ", ".join(repr(operand) for operand in self.__operands)
@@ -514,6 +565,7 @@ class And(Test):
         )
 
     def __str__(self):
+        """Returns a human-readable string representation of this test."""
         if self.__operands:
             operands = ""
             width = len(str(len(self.__operands) - 1))
@@ -559,30 +611,35 @@ class And(Test):
         return not self.__outcome.is_certain()
 
     def on_model(self, model: Model) -> bool:
+        """Forwards the `on_model` call to all ongoing operands."""
         def call_operand(operand: Test) -> None:
             operand.on_model(model)
 
         return self.__on_whatever(call_operand)
 
     def on_unsat(self, lower_bound: Sequence[int]) -> None:
+        """Forwards the `on_unsat` call to all ongoing operands."""
         def call_operand(operand: Test) -> None:
             operand.on_unsat(lower_bound)
 
         self.__on_whatever(call_operand)
 
     def on_core(self, core: Sequence[int]) -> None:
+        """Forwards the `on_core` call to all ongoing operands."""
         def call_operand(operand: Test) -> None:
             operand.on_core(core)
 
         self.__on_whatever(call_operand)
 
     def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
+        """Forwards the `on_statistics` call to all ongoing operands."""
         def call_operand(operand: Test) -> None:
             operand.on_statistics(step, accumulated)
 
         self.__on_whatever(call_operand)
 
     def on_finish(self, result: SolveResult) -> None:
+        """Forwards the `on_finish` call to all operands and finalizes the outcome."""
         def call_operand(operand: Test) -> None:
             operand.on_finish(result)
 
@@ -595,6 +652,7 @@ class And(Test):
         assert self.__outcome.is_certain()
 
     def outcome(self) -> Outcome:
+        """Returns the current outcome of this test."""
         return self.__outcome
 
 
@@ -619,6 +677,7 @@ class Or(Test):
     """
 
     def __init__(self, *args: Test, short_circuit: bool = True, ignore_certain: bool = True) -> None:
+        """Initializes an `Or` test combining `args` with optional optimizations."""
         self.__operands = list(args)
         self.__short_circuit = short_circuit
         self.__ignore_certain = ignore_certain
@@ -632,6 +691,7 @@ class Or(Test):
         self.__on_whatever(call_operand)
 
     def __repr__(self):
+        """Returns a detailed string representation of this test."""
         name = self.__class__.__name__
 
         operands = ", ".join(repr(operand) for operand in self.__operands)
@@ -651,6 +711,7 @@ class Or(Test):
         )
 
     def __str__(self):
+        """Returns a human-readable string representation of this test."""
         if self.__operands:
             operands = ""
             width = len(str(len(self.__operands) - 1))
@@ -696,30 +757,35 @@ class Or(Test):
         return not self.__outcome.is_certain()
 
     def on_model(self, model: Model) -> bool:
+        """Forwards the `on_model` call to all ongoing operands."""
         def call_operand(operand: Test) -> None:
             operand.on_model(model)
 
         return self.__on_whatever(call_operand)
 
     def on_unsat(self, lower_bound: Sequence[int]) -> None:
+        """Forwards the `on_unsat` call to all ongoing operands."""
         def call_operand(operand: Test) -> None:
             operand.on_unsat(lower_bound)
 
         self.__on_whatever(call_operand)
 
     def on_core(self, core: Sequence[int]) -> None:
+        """Forwards the `on_core` call to all ongoing operands."""
         def call_operand(operand: Test) -> None:
             operand.on_core(core)
 
         self.__on_whatever(call_operand)
 
     def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:
+        """Forwards the `on_statistics` call to all ongoing operands."""
         def call_operand(operand: Test) -> None:
             operand.on_statistics(step, accumulated)
 
         self.__on_whatever(call_operand)
 
     def on_finish(self, result: SolveResult) -> None:
+        """Forwards the `on_finish` call to all operands and finalizes the outcome."""
         def call_operand(operand: Test) -> None:
             operand.on_finish(result)
 
@@ -732,4 +798,5 @@ class Or(Test):
         assert self.__outcome.is_certain()
 
     def outcome(self) -> Outcome:
+        """Returns the current outcome of this test."""
         return self.__outcome
