@@ -1,3 +1,43 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=77.0.3"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "clintest"
+version = "0.5.0"
+dependencies = [
+    "clingo>=5.5.0",
+]
+requires-python = ">=3.11"
+authors = [
+    {name = "Tobias Stolzmann", email = "tobias.stolzmann@uni-potsdam.de"},
+]
+description = "A test framework for clingo programs"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+
+[project.optional-dependencies]
+dev = [
+    "mypy>=1",
+    "pytest>=8",
+    "ruff>=0.15",
+]
+
+[project.urls]
+Documentation = "https://potassco.org/clintest/"
+Repository = "https://github.com/potassco/clintest"
+Issues = "https://github.com/potassco/clintest/issues"
+Changelog = "https://github.com/potassco/clintest/releases"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+src = ["src"]
