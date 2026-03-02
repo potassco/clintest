@@ -190,7 +190,6 @@ class Recording:
         )
 
     def __eq__(self, other):
-        # pylint: disable=protected-access
         return self.__entries == other.__entries
 
     def __hash__(self):
@@ -224,7 +223,6 @@ class Recording:
         other
             The other recording.
         """
-        # pylint: disable=protected-access
         return len(self.__entries) == len(other.__entries) and all(
             all(item in other_entry.items() for item in self_entry.items())
             for self_entry, other_entry in zip(self.__entries, other.__entries, strict=True)

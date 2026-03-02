@@ -1,6 +1,3 @@
-# pylint: disable=duplicate-code
-
-
 def test_clingo():
     from clintest.solver import Clingo
     from clintest.test import Record, Recording

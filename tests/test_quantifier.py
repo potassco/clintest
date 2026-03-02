@@ -1,6 +1,3 @@
-# pylint: disable=redefined-builtin
-
-
 def test_all():
     from clintest.quantifier import All
 
