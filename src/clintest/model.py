@@ -99,12 +99,12 @@ class PersistedModel(Model):
 
     def __init__(  # noqa: PLR0913
         self,
-        cost: List[int] = None,
+        cost: List[int] | None = None,
         number: int = 0,
         optimality_proven: bool = False,
-        priority: List[int] = None,
+        priority: List[int] | None = None,
         type: clingo.ModelType = clingo.ModelType.StableModel,
-        symbols: dict[str, Sequence[clingo.Symbol]] = None,
+        symbols: dict[str, Sequence[clingo.Symbol]] | None = None,
     ) -> None:
         self.__cost = cost if cost is not None else []
         self.__number = number
