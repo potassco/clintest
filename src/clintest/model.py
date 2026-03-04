@@ -49,24 +49,24 @@ class Model(Protocol):
 class PersistedModel(Model):
     def __init__(
         self,
-        cost: List[int] = [],
+        cost: List[int] = None,
         number: int = 0,
         optimality_proven: bool = False,
-        priority: List[int] = [],
+        priority: List[int] = None,
         type: clingo.ModelType = clingo.ModelType.StableModel,
-        symbols: dict[str, Sequence[clingo.Symbol]] = {
-            "atoms": [],
-            "terms": [],
-            "shown": [],
-            "theory": [],
-        },
+        symbols: dict[str, Sequence[clingo.Symbol]] = None,
     ) -> None:
-        self.__cost = cost
+        self.__cost = cost if cost is not None else []
         self.__number = number
         self.__optimality_proven = optimality_proven
-        self.__priority = priority
+        self.__priority = priority if priority is not None else []
         self.__type = type
-        self.__symbols = {key: list(value) for key, value in symbols.items()}
+        self.__symbols = {
+            "atoms": list(symbols["atoms"]) if symbols is not None and "atoms" in symbols else [],
+            "terms": list(symbols["terms"]) if symbols is not None and "terms" in symbols else [],
+            "shown": list(symbols["shown"]) if symbols is not None and "shown" in symbols else [],
+            "theory": list(symbols["theory"]) if symbols is not None and "theory" in symbols else [],
+        }
 
     def __str__(self) -> str:
         return " ".join(map(str, self.symbols(shown=True)))
@@ -92,6 +92,18 @@ class PersistedModel(Model):
             and self.priority == other.priority
             and self.type == other.type
             and self.__symbols == other.__symbols
+        )
+
+    def __hash__(self) -> int:
+        return hash(
+            (
+                tuple(self.cost),
+                self.number,
+                self.optimality_proven,
+                tuple(self.priority),
+                self.type,
+                frozenset((key, tuple(value)) for key, value in self.__symbols.items()),
+            )
         )
 
     @classmethod

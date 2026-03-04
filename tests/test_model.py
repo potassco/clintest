@@ -1,5 +1,6 @@
-from clingo.symbol import parse_term
 from clingo.control import Control
+from clingo.symbol import parse_term
+
 from clintest.model import PersistedModel
 
 
