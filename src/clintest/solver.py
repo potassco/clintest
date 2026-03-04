@@ -1,10 +1,12 @@
 """The abstract class `clintest.solver.Solver` and off-the-shelf solver implementations."""
 
 from abc import ABC, abstractmethod
-from typing import Optional, Sequence, override
+from typing import Callable, Optional, Sequence, cast, override
 
 from clingo.control import Control
+from clingo.solving import Model as ClingoModel
 
+from .model import Model
 from .test import Test
 
 
@@ -20,6 +22,13 @@ class Solver(ABC):
         test
             The `clintest.test.Test` to be solved by this solver.
         """
+
+
+def _adapt_on_model(cb: Callable[[Model], bool]) -> Callable[[ClingoModel], bool | None]:
+    def inner(m: ClingoModel) -> bool | None:
+        return cb(cast(Model, m))
+
+    return inner
 
 
 class Clingo(Solver):
@@ -61,7 +70,7 @@ class Clingo(Solver):
 
         if not test.outcome().is_certain():
             ctl.solve(
-                on_model=test.on_model,
+                on_model=_adapt_on_model(test.on_model),
                 on_unsat=test.on_unsat,
                 on_core=test.on_core,
                 on_statistics=test.on_statistics,

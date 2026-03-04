@@ -3,8 +3,9 @@
 from abc import ABC, abstractmethod
 from typing import Set, Union, override
 
-from clingo.solving import Model
 from clingo.symbol import Symbol, parse_term
+
+from .model import Model
 
 
 def _into_symbol(symbol: Union[Symbol, str]) -> Symbol:
