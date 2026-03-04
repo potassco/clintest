@@ -47,7 +47,7 @@ class Model(Protocol):
 
 
 class PersistedModel(Model):
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         cost: List[int] = None,
         number: int = 0,
