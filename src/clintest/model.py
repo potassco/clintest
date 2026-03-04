@@ -1,3 +1,5 @@
+"""The abstract class `clintest.model.Model` and classes extending it."""
+
 from abc import abstractmethod
 from typing import List, Protocol, Self, Sequence, override
 
@@ -5,34 +7,47 @@ import clingo
 
 
 class Model(Protocol):
+    """A protocol for the `clingo.solving.Model` class.
+
+    This protocol allows tests to operate on models without being tied to the clingo
+    implementation of a model. As a side effect, it enables users to persist models
+    beyond the lifetime of the solve call that produced them using `PersistedModel`.
+    """
+
     @property
     @abstractmethod
     def cost(self) -> List[int]:
-        pass
+        """Return the list of integer values of the cost vector."""
 
     @property
     @abstractmethod
     def number(self) -> int:
-        pass
+        """Return the running number of the model."""
 
     @property
     @abstractmethod
     def optimality_proven(self) -> bool:
-        pass
+        """Return whether the optimality of the model has been proven."""
 
     @property
     @abstractmethod
     def priority(self) -> List[int]:
-        pass
+        """Return the priority vector of the model."""
 
     @property
     @abstractmethod
     def type(self) -> clingo.ModelType:
-        pass
+        """Return the type of the model."""
 
     @abstractmethod
     def contains(self, atom: clingo.Symbol) -> bool:
-        pass
+        """Return whether the given atom is contained in the model.
+
+        Parameters
+        ----------
+        atom
+            The `clingo.Symbol` to check.
+        """
 
     @abstractmethod
     def symbols(
@@ -43,10 +58,45 @@ class Model(Protocol):
         theory: bool = False,
         complement: bool = False,
     ) -> Sequence[clingo.Symbol]:
-        pass
+        """Return the symbols in the model filtered by the given flags.
+
+        Parameters
+        ----------
+        atoms
+            Whether to include atoms.
+        terms
+            Whether to include terms.
+        shown
+            Whether to include shown atoms.
+        theory
+            Whether to include theory atoms.
+        complement
+            Whether to return the complement of the selected symbols.
+        """
 
 
 class PersistedModel(Model):
+    """A model that persists beyond the lifetime of the solve call that produced it.
+
+    A `PersistedModel` can be created directly or from any `Model` using `PersistedModel.of`.
+
+    Parameters
+    ----------
+    cost
+        The list of integer values of the cost vector.
+    number
+        The running number of the model.
+    optimality_proven
+        Whether the optimality of the model has been proven.
+    priority
+        The priority vector of the model.
+    type
+        The type of the model.
+    symbols
+        A dictionary with keys ``"atoms"``, ``"terms"``, ``"shown"``, and ``"theory"``,
+        each mapping to a sequence of `clingo.Symbol`s.
+    """
+
     def __init__(  # noqa: PLR0913
         self,
         cost: List[int] = None,
@@ -108,6 +158,17 @@ class PersistedModel(Model):
 
     @classmethod
     def of(cls, model: Model) -> Self:
+        """Create a `PersistedModel` from any `Model`.
+
+        Parameters
+        ----------
+        model
+            The `Model` to persist.
+
+        Returns:
+        -------
+        A `PersistedModel` with the same data as `model`.
+        """
         return cls(
             cost=model.cost,
             number=model.number,
@@ -124,31 +185,31 @@ class PersistedModel(Model):
 
     @property
     @override
-    def cost(self) -> List[int]:
+    def cost(self) -> List[int]:  # noqa: D102
         return self.__cost
 
     @property
     @override
-    def number(self) -> int:
+    def number(self) -> int:  # noqa: D102
         return self.__number
 
     @property
     @override
-    def optimality_proven(self) -> bool:
+    def optimality_proven(self) -> bool:  # noqa: D102
         return self.__optimality_proven
 
     @property
     @override
-    def priority(self) -> List[int]:
+    def priority(self) -> List[int]:  # noqa: D102
         return self.__priority
 
     @property
     @override
-    def type(self) -> clingo.ModelType:
+    def type(self) -> clingo.ModelType:  # noqa: D102
         return self.__type
 
     @override
-    def contains(self, atom: clingo.Symbol) -> bool:
+    def contains(self, atom: clingo.Symbol) -> bool:  # noqa: D102
         return atom in self.__symbols["atoms"]
 
     @override
@@ -159,7 +220,7 @@ class PersistedModel(Model):
         shown: bool = False,
         theory: bool = False,
         complement: bool = False,
-    ) -> Sequence[clingo.Symbol]:
+    ) -> Sequence[clingo.Symbol]:  # noqa: D102
         if complement:
             raise NotImplementedError("Complement of symbols is not implemented for PersistedModel.")
 
