@@ -126,8 +126,7 @@ class PersistedModel(Model):
 
     @override
     def contains(self, atom: clingo.Symbol) -> bool:
-        # return atom in self.__symbols["atoms"]
-        raise NotImplementedError()
+        return atom in self.__symbols["atoms"]
 
     @override
     def symbols(
