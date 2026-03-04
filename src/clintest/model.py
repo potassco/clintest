@@ -41,7 +41,7 @@ class Model(Protocol):
         terms: bool = False,
         shown: bool = False,
         theory: bool = False,
-        # complement: bool = False
+        complement: bool = False
     ) -> Sequence[clingo.Symbol]:
         pass
 
@@ -136,8 +136,11 @@ class PersistedModel(Model):
         terms: bool = False,
         shown: bool = False,
         theory: bool = False,
-        # complement: bool = False
+        complement: bool = False
     ) -> Sequence[clingo.Symbol]:
+        if complement:
+            raise NotImplementedError("Complement of symbols is not implemented for PersistedModel.")
+
         result = []
         if atoms:
             result.extend(self.__symbols["atoms"])
