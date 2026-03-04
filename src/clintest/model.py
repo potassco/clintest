@@ -41,7 +41,7 @@ class Model(Protocol):
         terms: bool = False,
         shown: bool = False,
         theory: bool = False,
-        complement: bool = False
+        complement: bool = False,
     ) -> Sequence[clingo.Symbol]:
         pass
 
@@ -66,7 +66,7 @@ class PersistedModel(Model):
         self.__optimality_proven = optimality_proven
         self.__priority = priority
         self.__type = type
-        self.__symbols = symbols
+        self.__symbols = {key: list(value) for key, value in symbols.items()}
 
     def __str__(self) -> str:
         return " ".join(map(str, self.symbols(shown=True)))
@@ -81,6 +81,17 @@ class PersistedModel(Model):
             f"type={self.type!r}, "
             f"symbols={self.__symbols!r}"
             ")"
+        )
+
+    def __eq__(self, other: object) -> bool:
+        return (
+            isinstance(other, PersistedModel)
+            and self.cost == other.cost
+            and self.number == other.number
+            and self.optimality_proven == other.optimality_proven
+            and self.priority == other.priority
+            and self.type == other.type
+            and self.__symbols == other.__symbols
         )
 
     @classmethod
@@ -135,7 +146,7 @@ class PersistedModel(Model):
         terms: bool = False,
         shown: bool = False,
         theory: bool = False,
-        complement: bool = False
+        complement: bool = False,
     ) -> Sequence[clingo.Symbol]:
         if complement:
             raise NotImplementedError("Complement of symbols is not implemented for PersistedModel.")
