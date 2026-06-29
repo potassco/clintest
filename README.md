@@ -20,4 +20,4 @@ solver.solve(test)
 test.assert_()
 ```
 
-For details, please read [the documentation](https://potassco.org/clintest/).
+For details, please read [the documentation](https://docs.potassco.org/clintest/).
