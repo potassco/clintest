@@ -322,5 +322,6 @@ class SolveResult(Protocol):
         return self.satisfiable is None
 
     @property
+    @abstractmethod
     def unsatisfiable(self) -> bool:
         """`True` if the problem is unsatisfiable, `False` if the problem is satisfiable, `None` if the satisfiablity is not known."""  # noqa: E501
