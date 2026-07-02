@@ -1,7 +1,7 @@
 from clingo.control import Control
 from clingo.symbol import parse_term
 
-from clintest.model import PersistedModel
+from clintest.protocol import PersistedModel
 
 
 def test_persisted_model():

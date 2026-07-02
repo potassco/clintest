@@ -1,4 +1,4 @@
-from clintest.model import PersistedModel
+from clintest.protocol import PersistedModel
 
 
 def test_clingo():

@@ -9,8 +9,8 @@ from clingo.solving import SolveResult
 from clingo.statistics import StatisticsMap
 
 from .assertion import Assertion
-from .model import Model, PersistedModel
 from .outcome import Outcome
+from .protocol import Model, PersistedModel
 from .quantifier import Finished, Quantifier
 
 
