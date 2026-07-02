@@ -9,7 +9,7 @@ from clingo.statistics import StatisticsMap
 
 from .assertion import Assertion
 from .outcome import Outcome
-from .protocol import Model, PersistedModel, SolveResult
+from .protocol import Model, PersistedModel, PersistedSolveResult, SolveResult
 from .quantifier import Finished, Quantifier
 
 
@@ -323,7 +323,7 @@ class Record(Test):
         self.recording.append(
             {
                 "__f": "on_finish",
-                "result": result,
+                "result": PersistedSolveResult.of(result),
             }
         )
         self.test.on_finish(result)
