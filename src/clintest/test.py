@@ -5,12 +5,11 @@ from abc import ABC, abstractmethod
 from textwrap import indent
 from typing import Any, Callable, Dict, Optional, Sequence, override
 
-from clingo.solving import SolveResult
 from clingo.statistics import StatisticsMap
 
 from .assertion import Assertion
 from .outcome import Outcome
-from .protocol import Model, PersistedModel
+from .protocol import Model, PersistedModel, SolveResult
 from .quantifier import Finished, Quantifier
 
 

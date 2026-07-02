@@ -5,8 +5,9 @@ from typing import Callable, Optional, Sequence, cast, override
 
 from clingo.control import Control
 from clingo.solving import Model as ClingoModel
+from clingo.solving import SolveResult as ClingoSolveResult
 
-from .protocol import Model
+from .protocol import Model, SolveResult
 from .test import Test
 
 
@@ -27,6 +28,13 @@ class Solver(ABC):
 def _adapt_on_model(cb: Callable[[Model], bool]) -> Callable[[ClingoModel], bool | None]:
     def inner(m: ClingoModel) -> bool | None:
         return cb(cast(Model, m))
+
+    return inner
+
+
+def _adapt_on_finish(cb: Callable[[SolveResult], None]) -> Callable[[ClingoSolveResult], None]:
+    def inner(r: ClingoSolveResult) -> None:
+        cb(cast(SolveResult, r))
 
     return inner
 
@@ -74,7 +82,7 @@ class Clingo(Solver):
                 on_unsat=test.on_unsat,
                 on_core=test.on_core,
                 on_statistics=test.on_statistics,
-                on_finish=test.on_finish,
+                on_finish=_adapt_on_finish(test.on_finish),
             )
 
     def __repr__(self):
