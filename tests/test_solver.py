@@ -1,4 +1,4 @@
-from clintest.protocol import PersistedModel
+from clintest.protocol import PersistedModel, PersistedSolveResult
 
 
 def test_clingo():
@@ -14,6 +14,11 @@ def test_clingo():
             {"__f": "__init__"},
             {"__f": "on_model", "model": PersistedModel.from_str("a").modify(number=1)},
             {"__f": "on_statistics"},
-            {"__f": "on_finish"},
+            {
+                "__f": "on_finish",
+                "result": PersistedSolveResult(
+                    exhausted=True, interrupted=False, satisfiable=True, unsatisfiable=False
+                ),
+            },
         ]
     ).subsumes(test.recording)
