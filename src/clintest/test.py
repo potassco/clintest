@@ -9,7 +9,7 @@ from clingo.solving import SolveResult
 from clingo.statistics import StatisticsMap
 
 from .assertion import Assertion
-from .model import Model
+from .model import Model, PersistedModel
 from .outcome import Outcome
 from .quantifier import Finished, Quantifier
 
@@ -182,7 +182,7 @@ class Recording:
         def fmt(entry):
             result = f"[{entry['__outcome']}] {entry['__f']}"
             if entry["__f"] == "on_model":
-                result += os.linesep + 4 * " " + entry["str(model)"]
+                result += os.linesep + 4 * " " + str(entry["model"])
             return result
 
         width = len(str(len(self.__entries) - 1))
@@ -273,7 +273,8 @@ class Record(Test):
         self.recording.append(
             {
                 "__f": "on_model",
-                "str(model)": str(model),
+                "model": PersistedModel.of(model),
+                # "str(model)": str(model),
             }
         )
         result = self.test.on_model(model)

@@ -1,5 +1,7 @@
 import pytest
 
+from clintest.model import PersistedModel
+
 
 @pytest.fixture
 def solver():
@@ -26,7 +28,7 @@ def recording_one_model():
     return Recording(
         [
             {"__f": "__init__"},
-            {"__f": "on_model", "str(model)": "a"},
+            {"__f": "on_model", "model": PersistedModel.from_str("a").modify(number=1)},
             {"__f": "on_statistics"},
             {"__f": "on_finish"},
         ]
@@ -40,8 +42,8 @@ def recording_two_models():
     return Recording(
         [
             {"__f": "__init__"},
-            {"__f": "on_model", "str(model)": "a"},
-            {"__f": "on_model", "str(model)": "b a"},
+            {"__f": "on_model", "model": PersistedModel.from_str("a").modify(number=1)},
+            {"__f": "on_model", "model": PersistedModel.from_str("b a").modify(number=2)},
             {"__f": "on_statistics"},
             {"__f": "on_finish"},
         ]
@@ -253,14 +255,14 @@ def test_and_ignore_certain(solver, recording_two_models):
     assert Recording(
         [
             {"__f": "__init__"},
-            {"__f": "on_model", "str(model)": "a"},
+            {"__f": "on_model", "model": PersistedModel.from_str("a").modify(number=1)},
         ]
     ).subsumes(inner[0].recording)
     assert Recording(
         [
             {"__f": "__init__"},
-            {"__f": "on_model", "str(model)": "a"},
-            {"__f": "on_model", "str(model)": "b a"},
+            {"__f": "on_model", "model": PersistedModel.from_str("a").modify(number=1)},
+            {"__f": "on_model", "model": PersistedModel.from_str("b a").modify(number=2)},
         ]
     ).subsumes(inner[1].recording)
 
@@ -283,7 +285,9 @@ def test_and_short_circuit(solver, recording_one_model, recording_two_models):
     solver.solve(outer)
     assert outer.outcome().is_certainly_false()
     assert recording_one_model.subsumes(outer.recording)
-    assert Recording([{"__f": "__init__"}, {"__f": "on_model", "str(model)": "a"}]).subsumes(inner[0].recording)
+    assert Recording(
+        [{"__f": "__init__"}, {"__f": "on_model", "model": PersistedModel.from_str("a").modify(number=1)}]
+    ).subsumes(inner[0].recording)
     assert Recording(
         [
             {"__f": "__init__"},
@@ -295,7 +299,9 @@ def test_and_short_circuit(solver, recording_one_model, recording_two_models):
     solver.solve(outer)
     assert outer.outcome().is_certainly_false()
     assert recording_two_models.subsumes(outer.recording)
-    assert Recording([{"__f": "__init__"}, {"__f": "on_model", "str(model)": "a"}]).subsumes(inner[0].recording)
+    assert Recording(
+        [{"__f": "__init__"}, {"__f": "on_model", "model": PersistedModel.from_str("a").modify(number=1)}]
+    ).subsumes(inner[0].recording)
     assert recording_two_models.subsumes(inner[1].recording)
 
 
@@ -348,14 +354,14 @@ def test_or_ignore_certain(solver, recording_two_models):
     assert Recording(
         [
             {"__f": "__init__"},
-            {"__f": "on_model", "str(model)": "a"},
+            {"__f": "on_model", "model": PersistedModel.from_str("a").modify(number=1)},
         ]
     ).subsumes(inner[0].recording)
     assert Recording(
         [
             {"__f": "__init__"},
-            {"__f": "on_model", "str(model)": "a"},
-            {"__f": "on_model", "str(model)": "b a"},
+            {"__f": "on_model", "model": PersistedModel.from_str("a").modify(number=1)},
+            {"__f": "on_model", "model": PersistedModel.from_str("b a").modify(number=2)},
         ]
     ).subsumes(inner[1].recording)
 
@@ -378,7 +384,9 @@ def test_or_short_circuit(solver, recording_one_model, recording_two_models):
     solver.solve(outer)
     assert outer.outcome().is_certainly_true()
     assert recording_one_model.subsumes(outer.recording)
-    assert Recording([{"__f": "__init__"}, {"__f": "on_model", "str(model)": "a"}]).subsumes(inner[0].recording)
+    assert Recording(
+        [{"__f": "__init__"}, {"__f": "on_model", "model": PersistedModel.from_str("a").modify(number=1)}]
+    ).subsumes(inner[0].recording)
     assert Recording(
         [
             {"__f": "__init__"},
@@ -390,5 +398,7 @@ def test_or_short_circuit(solver, recording_one_model, recording_two_models):
     solver.solve(outer)
     assert outer.outcome().is_certainly_true()
     assert recording_two_models.subsumes(outer.recording)
-    assert Recording([{"__f": "__init__"}, {"__f": "on_model", "str(model)": "a"}]).subsumes(inner[0].recording)
+    assert Recording(
+        [{"__f": "__init__"}, {"__f": "on_model", "model": PersistedModel.from_str("a").modify(number=1)}]
+    ).subsumes(inner[0].recording)
     assert recording_two_models.subsumes(inner[1].recording)
