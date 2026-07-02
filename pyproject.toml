@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "clintest"
-version = "0.5.0"
+version = "0.4.1"
 authors = [
     {name = "Tobias Stolzmann", email = "tobias.stolzmann@uni-potsdam.de"},
 ]
