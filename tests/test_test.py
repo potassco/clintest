@@ -1,5 +1,6 @@
 import pytest
-from clintest.model import PersistedModel
+
+from clintest.protocol import PersistedModel
 
 
 @pytest.fixture
