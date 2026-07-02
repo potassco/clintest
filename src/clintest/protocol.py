@@ -362,3 +362,51 @@ class SolveResult(Protocol):
     @abstractmethod
     def unsatisfiable(self) -> Optional[bool]:
         """`True` if the problem is unsatisfiable, `False` if the problem is satisfiable, `None` if the satisfiablity is not known."""  # noqa: E501
+
+
+class PersistedSolveResult(SolveResult, Persisted):
+    """A solve result that persists beyond the lifetime of the solve call that produced it.
+
+    A `PersistedSolveResult` can be created directly or from any `SolveResult` using `PersistedSolveResult.of`.
+
+    Parameters
+    ----------
+    exhausted
+        Whether the search space was exhausted.
+    interrupted
+        Whether the search space was interrupted.
+    satisfiable
+        Whether the problem is satisfiable, unsatisfiable, or unknown.
+    """
+
+    def __init__(
+        self,
+        exhausted: bool = False,
+        interrupted: bool = False,
+        satisfiable: bool | None = None,
+        unsatisfiable: bool | None = None,
+    ) -> None:
+        self.__exhausted = exhausted
+        self.__interrupted = interrupted
+        self.__satisfiable = satisfiable
+        self.__unsatisfiable = unsatisfiable
+
+    @property
+    @override
+    def exhausted(self) -> bool:  # noqa: D102
+        return self.__exhausted
+
+    @property
+    @override
+    def interrupted(self) -> bool:  # noqa: D102
+        return self.__interrupted
+
+    @property
+    @override
+    def satisfiable(self) -> bool | None:  # noqa: D102
+        return self.__satisfiable
+
+    @property
+    @override
+    def unsatisfiable(self) -> bool | None:  # noqa: D102
+        return self.__unsatisfiable
