@@ -289,3 +289,38 @@ class PersistedModel(Model):
         if theory:
             result.extend(self.__symbols["theory"])
         return result
+
+
+class SolveResult(Protocol):
+    """A protocol for the `clingo.solving.SolveResult` class.
+
+    This protocol allows tests to operate on the result of a solve call without being tied
+    to its clingo implementation.
+    """
+
+    @property
+    @abstractmethod
+    def exhausted(self) -> bool:
+        """Determine if the search space was exhausted."""
+
+    @property
+    @abstractmethod
+    def interrupted(self) -> bool:
+        """Determine if the search space was interrupted."""
+
+    @property
+    @abstractmethod
+    def satisfiable(self) -> bool:
+        """`True` if the problem is satisfiable, `False` if the problem is unsatisfiable, `None` if the satisfiablity is not known."""  # noqa: E501
+
+    @property
+    def unknown(self) -> bool:
+        """Determine if the satisfiablity is not known.
+
+        This is equivalent to satisfiable is `None`.
+        """
+        return self.satisfiable is None
+
+    @property
+    def unsatisfiable(self) -> bool:
+        """`True` if the problem is unsatisfiable, `False` if the problem is satisfiable, `None` if the satisfiablity is not known."""  # noqa: E501
