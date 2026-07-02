@@ -210,6 +210,28 @@ class PersistedModel(Model):
             }
         )
 
+    def modify(self, **kwargs) -> Self:
+        """Create a new `PersistedModel` with modified attributes.
+
+        Parameters
+        ----------
+        kwargs
+            The attributes to modify. Valid keys are ``"cost"``, ``"number"``, ``"optimality_proven"``,
+            ``"priority"``, ``"type"``, and ``"symbols"``.
+
+        Returns:
+        -------
+        A new `PersistedModel` with the modified attributes.
+        """
+        return type(self)(
+            cost=kwargs.get("cost", self.cost),
+            number=kwargs.get("number", self.number),
+            optimality_proven=kwargs.get("optimality_proven", self.optimality_proven),
+            priority=kwargs.get("priority", self.priority),
+            type=kwargs.get("type", self.type),
+            symbols=kwargs.get("symbols", self.__symbols),
+        )
+
     @property
     @override
     def cost(self) -> List[int]:  # noqa: D102
