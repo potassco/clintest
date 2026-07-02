@@ -7,7 +7,7 @@ Since a more hands-on approach is often desired for testing, this module provide
 """
 
 from abc import ABC, abstractmethod
-from typing import List, Protocol, Self, Sequence, override
+from typing import List, Optional, Protocol, Self, Sequence, override
 
 import clingo
 
@@ -347,7 +347,7 @@ class SolveResult(Protocol):
 
     @property
     @abstractmethod
-    def satisfiable(self) -> bool:
+    def satisfiable(self) -> Optional[bool]:
         """`True` if the problem is satisfiable, `False` if the problem is unsatisfiable, `None` if the satisfiablity is not known."""  # noqa: E501
 
     @property
@@ -360,5 +360,5 @@ class SolveResult(Protocol):
 
     @property
     @abstractmethod
-    def unsatisfiable(self) -> bool:
+    def unsatisfiable(self) -> Optional[bool]:
         """`True` if the problem is unsatisfiable, `False` if the problem is satisfiable, `None` if the satisfiablity is not known."""  # noqa: E501
