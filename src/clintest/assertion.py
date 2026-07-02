@@ -5,7 +5,7 @@ from typing import Set, Union, override
 
 from clingo.symbol import Symbol, parse_term
 
-from .model import Model
+from .protocol import Model
 
 
 def _into_symbol(symbol: Union[Symbol, str]) -> Symbol:

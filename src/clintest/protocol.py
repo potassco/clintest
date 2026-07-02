@@ -1,4 +1,10 @@
-"""The abstract class `clintest.model.Model` and classes extending it."""
+"""Protocols for classes in `clingo`.
+
+Many classes in clingo are neither designed to be created manually nor to be persisted.
+The most notable example is `clingo.solving.Model`, which is only valid during the solve call that produced it.
+Since a more hands-on approach is often desired for testing, this module provides placeholder
+(aka [protocols](https://typing.python.org/en/latest/spec/protocol.html)) for these classes.
+"""
 
 from abc import abstractmethod
 from typing import List, Protocol, Self, Sequence, override

@@ -1,5 +1,4 @@
 import pytest
-
 from clintest.model import PersistedModel
 
 

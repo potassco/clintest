@@ -6,7 +6,7 @@ from typing import Callable, Optional, Sequence, cast, override
 from clingo.control import Control
 from clingo.solving import Model as ClingoModel
 
-from .model import Model
+from .protocol import Model
 from .test import Test
 
 
