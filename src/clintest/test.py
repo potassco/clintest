@@ -274,7 +274,6 @@ class Record(Test):
             {
                 "__f": "on_model",
                 "model": PersistedModel.of(model),
-                # "str(model)": str(model),
             }
         )
         result = self.test.on_model(model)
