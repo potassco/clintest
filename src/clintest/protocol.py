@@ -6,10 +6,45 @@ Since a more hands-on approach is often desired for testing, this module provide
 (aka [protocols](https://typing.python.org/en/latest/spec/protocol.html)) for these classes.
 """
 
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from typing import List, Protocol, Self, Sequence, override
 
 import clingo
+
+
+class Persisted(ABC):
+    """An object that can be persisted beyond the lifetime the original was produced for."""
+
+    @classmethod
+    @abstractmethod
+    def of(cls, original: Self) -> Self:
+        """Create a persisted version of the given original.
+
+        Parameters
+        ----------
+        original
+            The original to persist.
+
+        Returns:
+        -------
+        A persisted version of the given original.
+        """
+        pass
+
+    @abstractmethod
+    def modify(self, **kwargs) -> Self:
+        """Create a new object with modified attributes.
+
+        Parameters
+        ----------
+        kwargs
+            The attributes to modify.
+
+        Returns:
+        -------
+        A new object with the modified attributes.
+        """
+        pass
 
 
 class Model(Protocol):
@@ -81,7 +116,7 @@ class Model(Protocol):
         """
 
 
-class PersistedModel(Model):
+class PersistedModel(Model, Persisted):
     """A model that persists beyond the lifetime of the solve call that produced it.
 
     A `PersistedModel` can be created directly or from any `Model` using `PersistedModel.of`.
@@ -163,6 +198,7 @@ class PersistedModel(Model):
         )
 
     @classmethod
+    @override
     def of(cls, model: Model) -> Self:
         """Create a `PersistedModel` from any `Model`.
 
@@ -216,6 +252,7 @@ class PersistedModel(Model):
             }
         )
 
+    @override
     def modify(self, **kwargs) -> Self:
         """Create a new `PersistedModel` with modified attributes.
 
