@@ -183,6 +183,33 @@ class PersistedModel(Model):
             },
         )
 
+    @classmethod
+    def from_str(cls, repr: str) -> Self:
+        """Create a `PersistedModel` from its string representation.
+
+        Note that a conversion from a `PersistedModel` to its string representation is a lossy operation.
+        Hence, this method does not guarantee that the resulting `PersistedModel` is equal to the original one.
+        Instead, it will use sensible default to fill the gaps.
+
+        Parameters
+        ----------
+        repr
+            The string representation of the model.
+
+        Returns:
+        -------
+        A `PersistedModel` with the same data as the string representation.
+        """
+        symbols = [clingo.parse_term(s) for s in repr.split()]
+        return cls(
+            symbols={
+                "atoms": symbols,
+                "terms": [],
+                "shown": symbols,
+                "theory": [],
+            }
+        )
+
     @property
     @override
     def cost(self) -> List[int]:  # noqa: D102
