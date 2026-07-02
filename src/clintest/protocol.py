@@ -391,6 +391,35 @@ class PersistedSolveResult(SolveResult, Persisted):
         self.__satisfiable = satisfiable
         self.__unsatisfiable = unsatisfiable
 
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.__name__}("
+            f"exhausted={self.__exhausted!r}, "
+            f"interrupted={self.__interrupted!r}, "
+            f"satisfiable={self.__satisfiable!r}, "
+            f"unsatisfiable={self.__unsatisfiable!r}"
+            ")"
+        )
+
+    def __eq__(self, other: object) -> bool:
+        return (
+            isinstance(other, PersistedSolveResult)
+            and self.__exhausted == other.__exhausted
+            and self.__interrupted == other.__interrupted
+            and self.__satisfiable == other.__satisfiable
+            and self.__unsatisfiable == other.__unsatisfiable
+        )
+
+    def __hash__(self) -> int:
+        return hash(
+            (
+                self.__exhausted,
+                self.__interrupted,
+                self.__satisfiable,
+                self.__unsatisfiable,
+            )
+        )
+
     @property
     @override
     def exhausted(self) -> bool:  # noqa: D102
@@ -410,3 +439,45 @@ class PersistedSolveResult(SolveResult, Persisted):
     @override
     def unsatisfiable(self) -> bool | None:  # noqa: D102
         return self.__unsatisfiable
+
+    @classmethod
+    @override
+    def of(cls, result: SolveResult) -> Self:
+        """Create a `PersistedSolveResult` from any `SolveResult`.
+
+        Parameters
+        ----------
+        result
+            The `SolveResult` to persist.
+
+        Returns:
+        -------
+        A `PersistedSolveResult` with the same data as `result`.
+        """
+        return cls(
+            exhausted=result.exhausted,
+            interrupted=result.interrupted,
+            satisfiable=result.satisfiable,
+            unsatisfiable=result.unsatisfiable,
+        )
+
+    @override
+    def modify(self, **kwargs) -> Self:
+        """Create a new `PersistedSolveResult` with modified attributes.
+
+        Parameters
+        ----------
+        kwargs
+            The attributes to modify. Valid keys are ``"exhausted"``, ``"interrupted"``, ``"satisfiable"``,
+            and ``"unsatisfiable"``.
+
+        Returns:
+        -------
+        A new `PersistedSolveResult` with the modified attributes.
+        """
+        return type(self)(
+            exhausted=kwargs.get("exhausted", self.exhausted),
+            interrupted=kwargs.get("interrupted", self.interrupted),
+            satisfiable=kwargs.get("satisfiable", self.satisfiable),
+            unsatisfiable=kwargs.get("unsatisfiable", self.unsatisfiable),
+        )
