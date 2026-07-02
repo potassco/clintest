@@ -28,10 +28,11 @@ doc = [
 ]
 
 [project.urls]
-Documentation = "https://potassco.org/clintest/"
-Repository = "https://github.com/potassco/clintest"
-Issues = "https://github.com/potassco/clintest/issues"
+Homepage = "https://potassco.org/clintest/"
+Source = "https://github.com/potassco/clintest"
 Changelog = "https://github.com/potassco/clintest/releases"
+Documentation = "https://docs.potassco.org/clintest/"
+Issues = "https://github.com/potassco/clintest/issues"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
