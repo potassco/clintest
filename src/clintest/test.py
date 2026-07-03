@@ -17,12 +17,12 @@ class Test(ABC):
     """An abstract test consuming the `clintest.solver.Solver` artifacts to compute an `clintest.outcome.Outcome`."""
 
     def on_model(self, _model: Model) -> bool:
-        """Consume a `clingo.model.Model` and possibly alter the current outcome of this test.
+        """Consume a `clintest.protocol.Model` and possibly alter the current outcome of this test.
 
         Parameters
         ----------
         model
-            The `clingo.model.Model` to consume.
+            The `clintest.protocol.Model` to consume.
 
         Returns:
         -------
@@ -70,7 +70,7 @@ class Test(ABC):
         Parameters
         ----------
         result
-            The `clingo.solving.SolveResult`.
+            The `clintest.protocol.SolveResult`.
         """
 
     @abstractmethod
@@ -387,7 +387,7 @@ class Context(Test):
 
 
 class Assert(Test):
-    """A test that asserts certain properties about the `clingo.model.Model`s of a program.
+    """A test that asserts certain properties about the `clintest.protocol.Model`s of a program.
 
     This test can be highly customized using a `clintest.quantifier.Quantifier` and a
     `clintest.assertion.Assertion`.
