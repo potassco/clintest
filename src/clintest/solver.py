@@ -1,13 +1,13 @@
 """The abstract class `clintest.solver.Solver` and off-the-shelf solver implementations."""
 
 from abc import ABC, abstractmethod
-from typing import Callable, Optional, Sequence, cast, override
+from typing import Callable, Iterable, Optional, Sequence, cast, override
 
 from clingo.control import Control
 from clingo.solving import Model as ClingoModel
 from clingo.solving import SolveResult as ClingoSolveResult
 
-from .protocol import Model, SolveResult
+from .protocol import Model, PersistedSolveResult, SolveResult
 from .test import Test
 
 
@@ -91,3 +91,27 @@ class Clingo(Solver):
         program = repr(self.__program)
         files = repr(self.__files)
         return f"{name}({arguments}, {program}, {files})"
+
+
+class Iterate(Solver):
+    """A solver that iterates over an `typing.Iterable` of `clintest.protocol.Model`s."""
+
+    def __init__(self, models: Iterable[Model]) -> None:
+        self.__models = models
+
+    @override
+    def solve(self, test: Test) -> None:  # noqa: D102
+        exhausted = True
+        satisfiable = False
+
+        for model in self.__models:
+            satisfiable = True
+            if not test.on_model(model):
+                exhausted = False
+                break
+
+        test.on_finish(
+            PersistedSolveResult(
+                exhausted=exhausted, interrupted=False, satisfiable=satisfiable, unsatisfiable=not satisfiable
+            )
+        )
