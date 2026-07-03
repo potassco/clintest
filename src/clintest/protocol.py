@@ -6,45 +6,10 @@ Since a more hands-on approach is often desired for testing, this module provide
 (aka [protocols](https://typing.python.org/en/latest/spec/protocol.html)) for these classes.
 """
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import List, Optional, Protocol, Self, Sequence, override
 
 import clingo
-
-
-class Persisted(ABC):
-    """An object that can be persisted beyond the lifetime the original was produced for."""
-
-    @classmethod
-    @abstractmethod
-    def of(cls, original: Self) -> Self:
-        """Create a persisted version of the given original.
-
-        Parameters
-        ----------
-        original
-            The original to persist.
-
-        Returns:
-        -------
-        A persisted version of the given original.
-        """
-        pass
-
-    @abstractmethod
-    def modify(self, **kwargs) -> Self:
-        """Create a new object with modified attributes.
-
-        Parameters
-        ----------
-        kwargs
-            The attributes to modify.
-
-        Returns:
-        -------
-        A new object with the modified attributes.
-        """
-        pass
 
 
 class Model(Protocol):
@@ -116,7 +81,7 @@ class Model(Protocol):
         """
 
 
-class PersistedModel(Model, Persisted):
+class PersistedModel(Model):
     """A model that persists beyond the lifetime of the solve call that produced it.
 
     A `PersistedModel` can be created directly or from any `Model` using `PersistedModel.of`.
@@ -198,7 +163,6 @@ class PersistedModel(Model, Persisted):
         )
 
     @classmethod
-    @override
     def of(cls, model: Model) -> Self:
         """Create a `PersistedModel` from any `Model`.
 
@@ -252,7 +216,6 @@ class PersistedModel(Model, Persisted):
             }
         )
 
-    @override
     def modify(self, **kwargs) -> Self:
         """Create a new `PersistedModel` with modified attributes.
 
@@ -364,7 +327,7 @@ class SolveResult(Protocol):
         """`True` if the problem is unsatisfiable, `False` if the problem is satisfiable, `None` if the satisfiablity is not known."""  # noqa: E501
 
 
-class PersistedSolveResult(SolveResult, Persisted):
+class PersistedSolveResult(SolveResult):
     """A solve result that persists beyond the lifetime of the solve call that produced it.
 
     A `PersistedSolveResult` can be created directly or from any `SolveResult` using `PersistedSolveResult.of`.
@@ -441,7 +404,6 @@ class PersistedSolveResult(SolveResult, Persisted):
         return self.__unsatisfiable
 
     @classmethod
-    @override
     def of(cls, result: SolveResult) -> Self:
         """Create a `PersistedSolveResult` from any `SolveResult`.
 
@@ -461,7 +423,6 @@ class PersistedSolveResult(SolveResult, Persisted):
             unsatisfiable=result.unsatisfiable,
         )
 
-    @override
     def modify(self, **kwargs) -> Self:
         """Create a new `PersistedSolveResult` with modified attributes.
 
