@@ -1,4 +1,4 @@
-"""The `clintest.outcome.Outcome` of a test, accessible via `clintest.test.Test.outcome()`.
+"""The [`Outcome`][clintest.outcome.Outcome] of a test, accessible via [`Test.outcome()`][clintest.test.Test.outcome].
 
 The outcome of a test may be either
 
@@ -7,27 +7,25 @@ The outcome of a test may be either
 - `F!` (certainly false), or
 - `T!` (certainly true).
 
-These four options are represented using two booleans within `Outcome`:
+These four options are represented using two booleans within [`Outcome`][clintest.outcome.Outcome]:
 
-- `current_value` stores the actual result of the test.
-- `is_certain` indicates whether the result is certain.
+- [`current_value`][clintest.outcome.Outcome.current_value] stores the actual result of the test.
+- [`is_certain`][clintest.outcome.Outcome.is_certain] indicates whether the result is certain.
 """
 
 from typing import Tuple
 
 
 class Outcome:
-    """The outcome of a test.
-
-    Parameters
-    ----------
-    current_value
-        The actual result of the test.
-    is_certain
-        Whether the `current_value` is certain.
-    """
+    """The outcome of a test."""
 
     def __init__(self, current_value: bool, is_certain: bool) -> None:
+        """Initialize the outcome with current value and certainty.
+
+        Args:
+            current_value: The actual result of the test.
+            is_certain: Whether `current_value` is certain.
+        """
         self.__current_value = current_value
         self.__is_certain = is_certain
 
@@ -46,21 +44,21 @@ class Outcome:
         return hash((self.__current_value, self.__is_certain))
 
     def current_value(self) -> bool:
-        """Returns the `current_value` of this outcome."""
+        """Return the current value of this outcome."""
         return self.__current_value
 
     def is_certain(self) -> bool:
-        """Returns whether this outcome `is_certain`."""
+        """Return whether this outcome is certain."""
         return self.__is_certain
 
     def as_tuple(self) -> Tuple[bool, bool]:
-        """Returns this outcome as a tuple `(current_value, is_certain)`."""
+        """Return this outcome as a tuple `(self.current_value(), self.is_certain())`."""
         return (self.__current_value, self.__is_certain)
 
     def is_certainly_true(self) -> bool:
-        """Returns whether this outcome is certainly true, i.e., if `is_certain and current_value` holds."""
+        """Return whether this outcome is certainly true, i.e., both certain and currently true."""
         return self.__is_certain and self.__current_value
 
     def is_certainly_false(self) -> bool:
-        """Returns whether this outcome is certainly false, i.e., if `is_certain and not current_value` holds."""
+        """Return whether this outcome is certainly false, i.e., both certain and currently false."""
         return self.__is_certain and not self.__current_value
