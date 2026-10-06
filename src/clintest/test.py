@@ -1,4 +1,4 @@
-"""The abstract class `clintest.test.Test` and off-the-shelf test implementations."""
+"""The abstract class [`Test`][clintest.test.Test] and off-the-shelf test implementations."""
 
 import os
 from abc import ABC, abstractmethod
@@ -14,78 +14,74 @@ from .quantifier import Finished, Quantifier
 
 
 class Test(ABC):
-    """An abstract test consuming the `clintest.solver.Solver` artifacts to compute an `clintest.outcome.Outcome`."""
+    """An abstract test consuming solver artifacts to compute an outcome.
+
+    Artifacts are provided by a [`Solver`][clintest.solver.Solver] to compute an [`Outcome`][clintest.outcome.Outcome].
+
+    Tests accumulate state as solver callbacks are consumed; solving does not reset that state.
+    Use a fresh test instance for each independent solve.
+    Inspect the result with [`Test.outcome`][clintest.test.Test.outcome], or check that it is certainly true with [`Test.assert_`][clintest.test.Test.assert_].
+    """
 
     def on_model(self, _model: Model) -> bool:
-        """Consume a `clintest.protocol.Model` and possibly alter the current outcome of this test.
+        """Consume `_model` and possibly alter the current outcome of this test.
 
-        Parameters
-        ----------
-        model
-            The `clintest.protocol.Model` to consume.
+        Args:
+            _model: The model to consume when updating this test's outcome.
 
         Returns:
-        -------
-        Whether further models a needed to decide this test.
+            Whether further models are needed to decide this test.
         """
         return True
 
     def on_unsat(self, lower_bound: Sequence[int]) -> None:  # noqa: B027
-        """Consume a `lower_bound` during optimization and possibly alter the current outcome of this test.
+        """Consume `lower_bound` during optimization and possibly alter the current outcome of this test.
 
-        Parameters
-        ----------
-        lower_bound
-            The lower bound.
+        Args:
+            lower_bound: The lower bound.
         """
 
     def on_core(self, core: Sequence[int]) -> None:  # noqa: B027
-        """Consume an unsat `core` and possibly alter the current outcome of this test.
+        """Consume the unsat core `core` and possibly alter the current outcome of this test.
 
-        Parameters
-        ----------
-        core
-            The unsat core.
+        Args:
+            core: The unsat core.
         """
 
     def on_statistics(self, step: StatisticsMap, accumulated: StatisticsMap) -> None:  # noqa: B027
-        """Consume the solving statistics and possibly alter the current outcome of this test.
+        """Consume `step` and `accumulated` statistics and possibly alter the current outcome of this test.
 
-        Parameters
-        ----------
-        step
-            The step statistics.
-
-        accumulated
-            The accumulated statistics.
+        Args:
+            step: The step statistics.
+            accumulated: The accumulated statistics.
         """
 
     @abstractmethod
     def on_finish(self, result: SolveResult) -> None:
-        """Consume the final solve result and possibly alter the current outcome of this test.
+        """Consume the final solve result `result` and possibly alter the current outcome of this test.
 
         This should be the last `on_*`-method ever called on a test.
         Afterwards the outcome must be certain.
 
-        Parameters
-        ----------
-        result
-            The `clintest.protocol.SolveResult`.
+        Args:
+            result: The final solve status used to complete this test.
         """
 
     @abstractmethod
     def outcome(self) -> Outcome:
-        """Returns the current `Outcome` of this test.
+        """Return the current [`Outcome`][clintest.outcome.Outcome] of this test.
 
         Returns:
-        -------
-        The current outcome of this test.
+            The current outcome of this test.
         """
 
     def assert_(self) -> None:
         """Assert the outcome of this test to be certainly true.
 
-        Raise an `AssertionError` if the test is either incomplete or has failed.
+        This checks the current outcome; it does not run a solver or finish an incomplete test.
+
+        Raises:
+            AssertionError: If the test is either incomplete or has failed.
         """
         if not self.outcome().is_certainly_true():
             msg = "The following test "
@@ -97,15 +93,14 @@ class Test(ABC):
 
 
 class True_(Test):
-    """The test which always succeeds.
-
-    Parameters
-    ----------
-    lazy
-        Whether this test should be lazy, i.e., not consume any models.
-    """
+    """The test which always succeeds."""
 
     def __init__(self, lazy: bool = True) -> None:
+        """Initialize the test with the laziness setting `lazy`.
+
+        Args:
+            lazy: Whether this test should be lazy, i.e., not consume any models.
+        """
         self.__outcome = Outcome(True, lazy)
 
     def __repr__(self):
@@ -130,15 +125,14 @@ class True_(Test):
 
 
 class False_(Test):
-    """The test which always failes.
-
-    Parameters
-    ----------
-    lazy
-        Whether this test should be lazy, i.e., not consume any models.
-    """
+    """The test which always fails."""
 
     def __init__(self, lazy: bool = True) -> None:
+        """Initialize the test with the laziness setting `lazy`.
+
+        Args:
+            lazy: Whether this test should be lazy, i.e., not consume any models.
+        """
         self.__outcome = Outcome(False, lazy)
 
     def __repr__(self):
@@ -163,12 +157,13 @@ class False_(Test):
 
 
 class Recording:
-    """A recording of the calls to the `on_*`-methods of a `Test`.
+    """A recording of the calls to the `on_*`-methods of a [`Test`][clintest.test.Test].
 
-    This class is mainly used inside of `Record`.
+    This class is mainly used inside of [`Record`][clintest.test.Record].
     """
 
     def __init__(self, entries: Optional[Sequence[Dict[str, Any]]] = None):
+        """Initialize the recording with `entries` or an empty sequence."""
         if entries is None:
             entries = []
         self.__entries = list(entries)
@@ -196,32 +191,29 @@ class Recording:
         return hash(self.__entries)
 
     def amend(self, changes: Dict[str, Any]):
-        """Update the last entry of this encoding.
+        """Update the last entry of this recording with `changes`.
 
-        Parameters
-        ----------
-        changes
-            The changes.
+        Args:
+            changes: The changes.
         """
         self.__entries[-1].update(changes)
 
     def append(self, entry: Dict[str, Any]):
-        """Append a new entry at the end of this recording.
+        """Append `entry` at the end of this recording.
 
-        Parameters
-        ----------
-        entry
-            The entry.
+        Args:
+            entry: The entry.
         """
         self.__entries.append(entry)
 
-    def subsumes(self, other) -> bool:
-        """Determine whether this recording subsumes another recording.
+    def subsumes(self, other: "Recording") -> bool:
+        """Determine whether this recording subsumes `other`.
 
-        Parameters
-        ----------
-        other
-            The other recording.
+        Args:
+            other: The other recording.
+
+        Returns:
+            Whether each entry contains all items in the corresponding entry of `other`.
         """
         return len(self.__entries) == len(other.__entries) and all(
             all(item in other_entry.items() for item in self_entry.items())
@@ -230,17 +222,17 @@ class Recording:
 
 
 class Record(Test):
-    """A test that behaves identical to a given other `test` but records any call to one of its `on_*`-methods.
+    """A test that behaves identically to a given `test` but records every call to one of its `on_*`-methods.
 
     This can be very helpful for debugging.
-
-    Parameters
-    ----------
-    test
-        A `Test` that determines how this test should behave.
     """
 
     def __init__(self, test: Test | None = None):
+        """Initialize the recording test with the wrapped `test`.
+
+        Args:
+            test: The wrapped test whose behavior should be recorded.
+        """
         self.test: Test = test if test is not None else True_(lazy=False)
         self.recording: Recording = Recording(
             [
@@ -335,14 +327,9 @@ class Record(Test):
 
 
 class Context(Test):
-    """A test that behaves identical to a given other `test` but permits changes to its string representation.
+    """A test that behaves identically to a given `test` but permits changes to its string representation.
 
     This can be helpful to create human-readable error messages.
-
-    Parameters
-    ----------
-    test
-        A `Test` that determines how this test should behave.
     """
 
     def __init__(
@@ -351,6 +338,13 @@ class Context(Test):
         str_: Callable[[Test], str] = str,
         repr_: Callable[[Test], str] = repr,
     ):
+        """Initialize the wrapper with `test` and the representation functions `str_` and `repr_`.
+
+        Args:
+            test: The wrapped test whose representations should be customized.
+            str_: The function used to produce `test`'s string representation.
+            repr_: The function used to produce `test`'s debugging representation.
+        """
         self.test: Test = test
         self.__str = str_
         self.__repr = repr_
@@ -387,21 +381,18 @@ class Context(Test):
 
 
 class Assert(Test):
-    """A test that asserts certain properties about the `clintest.protocol.Model`s of a program.
+    """A test that asserts certain properties about the models of a program.
 
-    This test can be highly customized using a `clintest.quantifier.Quantifier` and a
-    `clintest.assertion.Assertion`.
-
-    Parameters
-    ----------
-    quantifier
-        The `clintest.quantifier.Quantifier` used with this test.
-
-    assertion
-        The `clintest.assertion.Assertion` used with this test.
+    This test can be highly customized using a [`Quantifier`][clintest.quantifier.Quantifier] and an [`Assertion`][clintest.assertion.Assertion].
     """
 
     def __init__(self, quantifier: Quantifier, assertion: Assertion) -> None:
+        """Initialize the test with `quantifier` and `assertion`.
+
+        Args:
+            quantifier: The rule used to aggregate assertion results across models.
+            assertion: The property to check for each model.
+        """
         self.__quantifier = quantifier
         self.__assertion = assertion
 
@@ -439,15 +430,15 @@ class Assert(Test):
 class Not(Test):
     """The negation of a given test.
 
-    This test failes if `operand` succeeds and vice versa.
-
-    Parameters
-    ----------
-    operand
-        The `Test` to be negated.
+    This test fails if `operand` succeeds and vice versa.
     """
 
     def __init__(self, operand: Test) -> None:
+        """Initialize the negation with `operand`.
+
+        Args:
+            operand: The test whose outcome should be negated.
+        """
         self.__operand = operand
 
     def __repr__(self):
@@ -490,26 +481,19 @@ class Not(Test):
 
 
 class And(Test):
-    """The conjunction of a list given tests.
+    """The conjunction of a list of given tests.
 
     This test succeeds if all `args` succeed.
-
-    Parameters
-    ----------
-
-    Args:
-        The `Test`s to be combined.
-
-    short_circuit
-        Whether this test should employ short circuit optimization, i.e., abort all remaining tests
-        once the outcome of a test is certainly false.
-
-    ignore_certain
-        Whether this test should employ the ignore certain optimization, i.e., not send artifacts
-        to test that are already certain.
     """
 
     def __init__(self, *args: Test, short_circuit: bool = True, ignore_certain: bool = True) -> None:
+        """Initialize the conjunction with `args`, `short_circuit`, and `ignore_certain`.
+
+        Args:
+            *args: The tests to combine.
+            short_circuit: Whether this test should employ short circuit optimization, i.e., abort all remaining tests once the outcome of a test is certainly false.
+            ignore_certain: Whether this test should employ the ignore certain optimization, i.e., not send artifacts to test that are already certain.
+        """
         self.__operands = list(args)
         self.__short_circuit = short_circuit
         self.__ignore_certain = ignore_certain
@@ -633,26 +617,19 @@ class And(Test):
 
 
 class Or(Test):
-    """The disjunction of a list given tests.
+    """The disjunction of a list of given tests.
 
     This test succeeds if any `args` succeed.
-
-    Parameters
-    ----------
-
-    Args:
-        The `Test`s to be combined.
-
-    short_circuit
-        Whether this test should employ short circuit optimization, i.e., abort all remaining tests
-        once the outcome of a test is certainly true.
-
-    ignore_certain
-        Whether this test should employ the ignore certain optimization, i.e., not send artifacts
-        to test that are already certain.
     """
 
     def __init__(self, *args: Test, short_circuit: bool = True, ignore_certain: bool = True) -> None:
+        """Initialize the disjunction with `args`, `short_circuit`, and `ignore_certain`.
+
+        Args:
+            *args: The tests to combine.
+            short_circuit: Whether this test should employ short circuit optimization, i.e., abort all remaining tests once the outcome of a test is certainly true.
+            ignore_certain: Whether this test should employ the ignore certain optimization, i.e., not send artifacts to test that are already certain.
+        """
         self.__operands = list(args)
         self.__short_circuit = short_circuit
         self.__ignore_certain = ignore_certain
