@@ -4,5 +4,6 @@ __pycache__
 .pytest_cache
 dist/
 html/
+site/
 .vscode/
 .ruff_cache/
