@@ -79,6 +79,7 @@ In order to run the test, we need to create a `solver.Solver` first.
 
 ```
 from clintest.solver import Clingo
+
 solver = Clingo("0", "a. {b}.")
 ```
 
@@ -160,6 +161,7 @@ This is where `clintest.test.Record` comes in handy.
 
 ```
 from clintest.test import Record
+
 record = Record(test)
 ```
 
@@ -203,6 +205,7 @@ This problem can be solved by adding a `clintest.test.Context`.
 
 ```
 from clintest.test import Context
+
 context = Context(
     test,
     str_=lambda test: f"[{test.outcome()}] Models need to know their ABC.",
