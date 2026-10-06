@@ -10,6 +10,9 @@ repo_url = "https://github.com/potassco/clintest"
 repo_name = "potassco/clintest"
 
 nav = [
+  { "Guide" = [
+    { "Getting Started" = "guide/getting_started.md" },
+  ] },
   { "Reference" = [
     { "clintest" = "reference/clintest/__init__.md" },
     { "clintest.assertion" = "reference/clintest/assertion.md" },
@@ -79,6 +82,8 @@ pymdownx.keys = {}
 pymdownx.magiclink = {}
 pymdownx.mark = {}
 pymdownx.smartsymbols = {}
+pymdownx.snippets.base_path = "."
+pymdownx.snippets.check_paths = true
 pymdownx.superfences = {}
 pymdownx.tabbed.alternate_style = true
 pymdownx.tabbed.combine_header_slug = true
@@ -98,5 +103,6 @@ show_signature_annotations = true
 separate_signature = true
 
 [project.plugins.redirects.redirect_maps]
-"index.md" = "reference/clintest/__init__.md"
+"index.md" = "guide/getting_started.md"
+"guide/index.md" = "guide/getting_started.md"
 "reference/index.md" = "reference/clintest/__init__.md"
