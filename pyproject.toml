@@ -65,6 +65,7 @@ select = [
 ignore = [
     "D105", # pydocstyle: missing docstring in magic method
     "D107", # pydocstyle: missing docstring in __init__
+    "E501", # pycodestyle: line too long
 ]
 
 [tool.ruff.lint.pydocstyle]

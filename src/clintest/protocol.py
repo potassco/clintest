@@ -311,7 +311,7 @@ class SolveResult(Protocol):
     @property
     @abstractmethod
     def satisfiable(self) -> Optional[bool]:
-        """`True` if the problem is satisfiable, `False` if the problem is unsatisfiable, `None` if the satisfiablity is not known."""  # noqa: E501
+        """`True` if the problem is satisfiable, `False` if the problem is unsatisfiable, `None` if the satisfiablity is not known."""
 
     @property
     def unknown(self) -> bool:
@@ -324,7 +324,7 @@ class SolveResult(Protocol):
     @property
     @abstractmethod
     def unsatisfiable(self) -> Optional[bool]:
-        """`True` if the problem is unsatisfiable, `False` if the problem is satisfiable, `None` if the satisfiablity is not known."""  # noqa: E501
+        """`True` if the problem is unsatisfiable, `False` if the problem is satisfiable, `None` if the satisfiablity is not known."""
 
 
 class PersistedSolveResult(SolveResult):
