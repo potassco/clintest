@@ -1,23 +1,23 @@
-"""Protocols for classes in `clingo`.
+"""Protocols for classes in clingo.
 
 Many classes in clingo are neither designed to be created manually nor to be persisted.
 The most notable example is `clingo.solving.Model`, which is only valid during the solve call that produced it.
-Since a more hands-on approach is often desired for testing, this module provides placeholder
-(aka [protocols](https://typing.python.org/en/latest/spec/protocol.html)) for these classes.
+Since a more hands-on approach is often desired for testing, this module provides placeholders (aka [protocols](https://typing.python.org/en/latest/spec/protocol.html)) for these classes.
 """
 
 from abc import abstractmethod
-from typing import List, Optional, Protocol, Self, Sequence, override
+from typing import Any, List, Optional, Protocol, Self, Sequence, override
 
 import clingo
 
 
 class Model(Protocol):
-    """A protocol for the `clingo.solving.Model` class.
+    """A protocol for clingo's model class.
 
-    This protocol allows tests to operate on models without being tied to the clingo
-    implementation of a model. As a side effect, it enables users to persist models
-    beyond the lifetime of the solve call that produced them using `PersistedModel`.
+    See `clingo.solving.Model`.
+
+    This protocol allows tests to operate on models without being tied to the clingo implementation of a model.
+    As a side effect, it enables users to persist models beyond the lifetime of the solve call that produced them using [`PersistedModel`][clintest.protocol.PersistedModel].
     """
 
     @property
@@ -47,12 +47,13 @@ class Model(Protocol):
 
     @abstractmethod
     def contains(self, atom: clingo.Symbol) -> bool:
-        """Return whether the given atom is contained in the model.
+        """Return whether `atom` is contained in the model.
 
-        Parameters
-        ----------
-        atom
-            The `clingo.Symbol` to check.
+        Args:
+            atom: The atom to check for membership in the model.
+
+        Returns:
+            Whether `atom` is contained in the model.
         """
 
     @abstractmethod
@@ -66,41 +67,24 @@ class Model(Protocol):
     ) -> Sequence[clingo.Symbol]:
         """Return the symbols in the model filtered by the given flags.
 
-        Parameters
-        ----------
-        atoms
-            Whether to include atoms.
-        terms
-            Whether to include terms.
-        shown
-            Whether to include shown atoms.
-        theory
-            Whether to include theory atoms.
-        complement
-            Whether to return the complement of the selected symbols.
+        Args:
+            atoms: Whether to include atoms.
+            terms: Whether to include terms.
+            shown: Whether to include shown atoms.
+            theory: Whether to include theory atoms.
+            complement: Whether to return the complement of the selected symbols.
+
+        Returns:
+            The symbols selected by the given flags.
         """
 
 
 class PersistedModel(Model):
     """A model that persists beyond the lifetime of the solve call that produced it.
 
-    A `PersistedModel` can be created directly or from any `Model` using `PersistedModel.of`.
+    Instances can be created directly or from any [`Model`][clintest.protocol.Model] using [`PersistedModel.of`][clintest.protocol.PersistedModel.of].
 
-    Parameters
-    ----------
-    cost
-        The list of integer values of the cost vector.
-    number
-        The running number of the model.
-    optimality_proven
-        Whether the optimality of the model has been proven.
-    priority
-        The priority vector of the model.
-    type
-        The type of the model.
-    symbols
-        A dictionary with keys ``"atoms"``, ``"terms"``, ``"shown"``, and ``"theory"``,
-        each mapping to a sequence of `clingo.Symbol`s.
+    Unlike clingo models, [`PersistedModel.symbols`][clintest.protocol.PersistedModel.symbols] does not support `complement=True`.
     """
 
     def __init__(  # noqa: PLR0913, PLR0917
@@ -112,6 +96,16 @@ class PersistedModel(Model):
         type: clingo.ModelType = clingo.ModelType.StableModel,
         symbols: dict[str, Sequence[clingo.Symbol]] | None = None,
     ) -> None:
+        """Initialize the persisted model with its properties and symbols.
+
+        Args:
+            cost: The optimization cost vector.
+            number: The running number of the model.
+            optimality_proven: Whether the optimality of the model has been proven.
+            priority: The priority vector of the model.
+            type: The type of the model.
+            symbols: The symbols grouped under the keys `"atoms"`, `"terms"`, `"shown"`, and `"theory"`.
+        """
         self.__cost = cost if cost is not None else []
         self.__number = number
         self.__optimality_proven = optimality_proven
@@ -164,16 +158,13 @@ class PersistedModel(Model):
 
     @classmethod
     def of(cls, model: Model) -> Self:
-        """Create a `PersistedModel` from any `Model`.
+        """Create a `PersistedModel` from `model`.
 
-        Parameters
-        ----------
-        model
-            The `Model` to persist.
+        Args:
+            model: The model whose data should be persisted.
 
         Returns:
-        -------
-        A `PersistedModel` with the same data as `model`.
+            A persisted copy of `model`'s data.
         """
         return cls(
             cost=model.cost,
@@ -191,20 +182,17 @@ class PersistedModel(Model):
 
     @classmethod
     def from_str(cls, repr: str) -> Self:
-        """Create a `PersistedModel` from its string representation.
+        """Create a `PersistedModel` from the string representation `repr`.
 
-        Note that a conversion from a `PersistedModel` to its string representation is a lossy operation.
-        Hence, this method does not guarantee that the resulting `PersistedModel` is equal to the original one.
-        Instead, it will use sensible default to fill the gaps.
+        Note that a conversion from a persisted model to its string representation is a lossy operation.
+        Hence, this method does not guarantee that the resulting model is equal to the original one.
+        Instead, it uses sensible defaults to fill the gaps.
 
-        Parameters
-        ----------
-        repr
-            The string representation of the model.
+        Args:
+            repr: The string representation of the model.
 
         Returns:
-        -------
-        A `PersistedModel` with the same data as the string representation.
+            A model containing the represented symbols, with defaults for the remaining properties.
         """
         symbols = [clingo.parse_term(s) for s in repr.split()]
         return cls(
@@ -216,18 +204,15 @@ class PersistedModel(Model):
             }
         )
 
-    def modify(self, **kwargs) -> Self:
+    def modify(self, **kwargs: Any) -> Self:
         """Create a new `PersistedModel` with modified attributes.
 
-        Parameters
-        ----------
-        kwargs
-            The attributes to modify. Valid keys are ``"cost"``, ``"number"``, ``"optimality_proven"``,
-            ``"priority"``, ``"type"``, and ``"symbols"``.
+        Args:
+            **kwargs: The attributes to modify.
+                Valid keys are `"cost"`, `"number"`, `"optimality_proven"`, `"priority"`, `"type"`, and `"symbols"`.
 
         Returns:
-        -------
-        A new `PersistedModel` with the modified attributes.
+            A new model with the requested changes and all other attributes preserved.
         """
         return type(self)(
             cost=kwargs.get("cost", self.cost),
@@ -275,7 +260,22 @@ class PersistedModel(Model):
         shown: bool = False,
         theory: bool = False,
         complement: bool = False,
-    ) -> Sequence[clingo.Symbol]:  # noqa: D102
+    ) -> Sequence[clingo.Symbol]:
+        """Return the persisted symbols selected by the given flags.
+
+        Args:
+            atoms: Whether to include atoms.
+            terms: Whether to include terms.
+            shown: Whether to include shown atoms.
+            theory: Whether to include theory atoms.
+            complement: Must be `False`; complements are not supported for persisted models.
+
+        Returns:
+            The symbols selected by the given flags.
+
+        Raises:
+            NotImplementedError: If `complement` is `True`.
+        """
         if complement:
             raise NotImplementedError("Complement of symbols is not implemented for PersistedModel.")
 
@@ -292,54 +292,52 @@ class PersistedModel(Model):
 
 
 class SolveResult(Protocol):
-    """A protocol for the `clingo.solving.SolveResult` class.
+    """A protocol for clingo's solve result class.
 
-    This protocol allows tests to operate on the result of a solve call without being tied
-    to its clingo implementation.
+    See `clingo.solving.SolveResult`.
+
+    This protocol allows tests to operate on the result of a solve call without being tied to its clingo implementation.
     """
 
     @property
     @abstractmethod
     def exhausted(self) -> bool:
-        """Determine if the search space was exhausted."""
+        """Return whether the search space was exhausted."""
 
     @property
     @abstractmethod
     def interrupted(self) -> bool:
-        """Determine if the search space was interrupted."""
+        """Return whether solving was interrupted."""
 
     @property
     @abstractmethod
     def satisfiable(self) -> Optional[bool]:
-        """`True` if the problem is satisfiable, `False` if the problem is unsatisfiable, `None` if the satisfiablity is not known."""
+        """Return the satisfiability status of the problem.
+
+        The value is `True` if satisfiable, `False` if unsatisfiable, and `None` if satisfiability is unknown.
+        """
 
     @property
     def unknown(self) -> bool:
-        """Determine if the satisfiablity is not known.
+        """Return whether satisfiability is unknown.
 
-        This is equivalent to satisfiable is `None`.
+        This is equivalent to `self.satisfiable is None`.
         """
         return self.satisfiable is None
 
     @property
     @abstractmethod
     def unsatisfiable(self) -> Optional[bool]:
-        """`True` if the problem is unsatisfiable, `False` if the problem is satisfiable, `None` if the satisfiablity is not known."""
+        """Return the unsatisfiability status of the problem.
+
+        The value is `True` if unsatisfiable, `False` if satisfiable, and `None` if satisfiability is unknown.
+        """
 
 
 class PersistedSolveResult(SolveResult):
     """A solve result that persists beyond the lifetime of the solve call that produced it.
 
-    A `PersistedSolveResult` can be created directly or from any `SolveResult` using `PersistedSolveResult.of`.
-
-    Parameters
-    ----------
-    exhausted
-        Whether the search space was exhausted.
-    interrupted
-        Whether the search space was interrupted.
-    satisfiable
-        Whether the problem is satisfiable, unsatisfiable, or unknown.
+    Instances can be created directly or from any [`SolveResult`][clintest.protocol.SolveResult] using [`PersistedSolveResult.of`][clintest.protocol.PersistedSolveResult.of].
     """
 
     def __init__(
@@ -349,6 +347,14 @@ class PersistedSolveResult(SolveResult):
         satisfiable: bool | None = None,
         unsatisfiable: bool | None = None,
     ) -> None:
+        """Initialize the `PersistedSolveResult` with its search status.
+
+        Args:
+            exhausted: Whether the search space was exhausted.
+            interrupted: Whether the search space was interrupted.
+            satisfiable: Whether the problem is satisfiable, unsatisfiable, or unknown.
+            unsatisfiable: Whether the problem is unsatisfiable, satisfiable, or unknown.
+        """
         self.__exhausted = exhausted
         self.__interrupted = interrupted
         self.__satisfiable = satisfiable
@@ -405,16 +411,15 @@ class PersistedSolveResult(SolveResult):
 
     @classmethod
     def of(cls, result: SolveResult) -> Self:
-        """Create a `PersistedSolveResult` from any `SolveResult`.
+        """Persist the data of `result`.
 
-        Parameters
-        ----------
-        result
-            The `SolveResult` to persist.
+        The result is a `PersistedSolveResult`.
+
+        Args:
+            result: The solve result whose data should be persisted.
 
         Returns:
-        -------
-        A `PersistedSolveResult` with the same data as `result`.
+            A persisted copy of `result`'s data.
         """
         return cls(
             exhausted=result.exhausted,
@@ -423,18 +428,15 @@ class PersistedSolveResult(SolveResult):
             unsatisfiable=result.unsatisfiable,
         )
 
-    def modify(self, **kwargs) -> Self:
+    def modify(self, **kwargs: Any) -> Self:
         """Create a new `PersistedSolveResult` with modified attributes.
 
-        Parameters
-        ----------
-        kwargs
-            The attributes to modify. Valid keys are ``"exhausted"``, ``"interrupted"``, ``"satisfiable"``,
-            and ``"unsatisfiable"``.
+        Args:
+            **kwargs: The attributes to modify.
+                Valid keys are `"exhausted"`, `"interrupted"`, `"satisfiable"`, and `"unsatisfiable"`.
 
         Returns:
-        -------
-        A new `PersistedSolveResult` with the modified attributes.
+            A new solve result with the requested changes and all other attributes preserved.
         """
         return type(self)(
             exhausted=kwargs.get("exhausted", self.exhausted),
