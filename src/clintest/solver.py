@@ -1,4 +1,4 @@
-"""The abstract class `clintest.solver.Solver` and off-the-shelf solver implementations."""
+"""The abstract class [`Solver`][clintest.solver.Solver] and off-the-shelf solver implementations."""
 
 from abc import ABC, abstractmethod
 from typing import Callable, Iterable, Optional, Sequence, cast, override
@@ -18,10 +18,11 @@ class Solver(ABC):
     def solve(self, test: Test) -> None:
         """Use this solver to solve a given `test`.
 
-        Parameters
-        ----------
-        test
-            The `clintest.test.Test` to be solved by this solver.
+        `test` is updated in place, not reset.
+        Use a fresh test for each independent solve, then inspect [`Test.outcome`][clintest.test.Test.outcome] or call [`Test.assert_`][clintest.test.Test.assert_].
+
+        Args:
+            test: The test to evaluate using this solver.
         """
 
 
@@ -40,19 +41,13 @@ def _adapt_on_finish(cb: Callable[[SolveResult], None]) -> Callable[[ClingoSolve
 
 
 class Clingo(Solver):
-    """A solver using `clingo.control.Control`.
+    """A solver using clingo's control object.
 
-    Parameters
-    ----------
+    See `clingo.control.Control`.
 
-    Arguments:
-        A list of arguments.
-
-    program
-        The program as a `str`.
-
-    files
-        A list of files to read the program from.
+    Each solve creates a new control object, adds `program`, loads `files`, and grounds the `base` part.
+    If the test's outcome is already certain, the solve call and its callbacks are skipped.
+    Otherwise, clingo's defaults apply unless overridden by `arguments`; pass `["0"]` to request all models.
     """
 
     def __init__(
@@ -61,6 +56,16 @@ class Clingo(Solver):
         program: Optional[str] = None,
         files: Optional[Sequence[str]] = None,
     ) -> None:
+        """Initialize the solver with `arguments`, `program`, and `files`.
+
+        Args:
+            arguments: The command-line options passed to clingo.
+                `None` supplies no options, leaving clingo's defaults.
+            program: The program source to solve.
+                `None` supplies an empty program.
+            files: The paths from which to load additional program source.
+                `None` loads no files.
+        """
         self.__arguments = [] if arguments is None else arguments
         self.__program = "" if program is None else program
         self.__files = [] if files is None else files
@@ -94,9 +99,18 @@ class Clingo(Solver):
 
 
 class Iterate(Solver):
-    """A solver that iterates over an `typing.Iterable` of `clintest.protocol.Model`s."""
+    """A solver iterating over an [`Iterable`](https://docs.python.org/3/library/typing.html#typing.Iterable) of models.
+
+    Models implement the [`Model`][clintest.protocol.Model] protocol.
+
+    The iterable is stored without copying it.
+    A one-shot iterator remains consumed across solve calls; use a re-iterable collection, such as a list, to replay the models for fresh tests.
+    Iteration stops when [`Test.on_model`][clintest.test.Test.on_model] returns `False` or the iterable is exhausted.
+    In either case, [`Test.on_finish`][clintest.test.Test.on_finish] receives the final solve result.
+    """
 
     def __init__(self, models: Iterable[Model]) -> None:
+        """Initialize the solver with `models` to iterate over."""
         self.__models = models
 
     @override
