@@ -1,4 +1,4 @@
-"""The abstract class `clintest.assertion.Assertion` and classes extending it."""
+"""The abstract class [`Assertion`][clintest.assertion.Assertion] and classes extending it."""
 
 from abc import ABC, abstractmethod
 from typing import Set, Union, override
@@ -15,38 +15,37 @@ def _into_symbol(symbol: Union[Symbol, str]) -> Symbol:
 
 
 class Assertion(ABC):
-    """An assertion is a statement that may or may not hold for a certain `clingo.model.Model`.
+    """An assertion is a statement that may or may not hold for a certain model.
 
-    As such, one is necessary to assemble the `clintest.test.Assert` test.
+    Assertions operate on any object implementing the [`Model`][clintest.protocol.Model] protocol, including `clingo.solving.Model` and [`PersistedModel`][clintest.protocol.PersistedModel] instances.
+    An assertion is necessary to assemble the [`Assert`][clintest.test.Assert] test.
     """
 
     @abstractmethod
     def holds_for(self, model: Model) -> bool:
-        """Returns whether this assertions holds for `model`.
+        """Return whether this assertion holds for `model`.
 
-        Parameters
-        ----------
-        model
-            A `clingo.model.Model`.
-
+        Args:
+            model: The model to evaluate the assertion against.
 
         Returns:
-        -------
-        Whether this assertions holds for `model`.
+            Whether this assertion holds for `model`.
         """
 
 
 class Contains(Assertion):
     """An assertion that holds if a model contains a given `symbol`.
 
-    Parameters
-    ----------
-    symbol
-        The `clingo.symbol.Symbol` or a `str` that can be parsed into a `clingo.symbol.Symbol` with
-        `clingo.symbol.parse_term`.
+    This checks atom membership, independently of which symbols are shown.
     """
 
     def __init__(self, symbol: Union[Symbol, str]) -> None:
+        """Initialize the assertion with `symbol`.
+
+        Args:
+            symbol: The symbol to check for.
+                Strings are parsed using `clingo.symbol.parse_term`.
+        """
         self.__symbol = _into_symbol(symbol)
 
     def __repr__(self):
@@ -59,16 +58,15 @@ class Contains(Assertion):
 
 
 class Equals(Assertion):
-    """An assertion that holds if the symbols of a model are equals to a given set of `symbols`.
-
-    Parameters
-    ----------
-    symbols
-        A set of `clingo.symbol.Symbol`s or `str`s that can be parsed into a `clingo.symbol.Symbol`s with
-        `clingo.symbol.parse_term`.
-    """
+    """An assertion that holds if a model's shown symbols equal the given set of `symbols`."""
 
     def __init__(self, symbols: Set[Union[Symbol, str]]) -> None:
+        """Initialize the assertion with `symbols`.
+
+        Args:
+            symbols: The symbols that must exactly match the model's shown symbols.
+                Strings are parsed using `clingo.symbol.parse_term`.
+        """
         self.__symbols = {_into_symbol(s) for s in symbols}
 
     def __repr__(self):
@@ -82,16 +80,15 @@ class Equals(Assertion):
 
 
 class SubsetOf(Assertion):
-    """An assertion that holds if the symbols of a model are a subset of a given set of `symbols`.
-
-    Parameters
-    ----------
-    symbols
-        A set of `clingo.symbol.Symbol`s or `str`s that can be parsed into a `clingo.symbol.Symbol`s with
-        `clingo.symbol.parse_term`.
-    """
+    """An assertion that holds if a model's shown symbols are a subset of the given set of `symbols`."""
 
     def __init__(self, symbols: Set[Union[Symbol, str]]) -> None:
+        """Initialize the assertion with `symbols`.
+
+        Args:
+            symbols: The symbols allowed among the model's shown symbols.
+                Strings are parsed using `clingo.symbol.parse_term`.
+        """
         self.__symbols = {_into_symbol(s) for s in symbols}
 
     def __repr__(self):
@@ -105,16 +102,15 @@ class SubsetOf(Assertion):
 
 
 class SupersetOf(Assertion):
-    """An assertion that holds if the symbols of a model are a superset of a given set of `symbols`.
-
-    Parameters
-    ----------
-    symbols
-        A set of `clingo.symbol.Symbol`s or `str`s that can be parsed into a `clingo.symbol.Symbol`s with
-        `clingo.symbol.parse_term`.
-    """
+    """An assertion that holds if a model's shown symbols are a superset of the given set of `symbols`."""
 
     def __init__(self, symbols: Set[Union[Symbol, str]]) -> None:
+        """Initialize the assertion with `symbols`.
+
+        Args:
+            symbols: The symbols required among the model's shown symbols.
+                Strings are parsed using `clingo.symbol.parse_term`.
+        """
         self.__symbols = {_into_symbol(s) for s in symbols}
 
     def __repr__(self):
@@ -164,14 +160,14 @@ class Not(Assertion):
     """The negation of a given assertion.
 
     This assertion holds if `operand` does not hold and vice versa.
-
-    Parameters
-    ----------
-    operand
-        The `Assertion` to be negated.
     """
 
     def __init__(self, operand: Assertion) -> None:
+        """Initialize the negation with `operand`.
+
+        Args:
+            operand: The assertion to negate.
+        """
         self.__operand = operand
 
     def __repr__(self):
@@ -188,15 +184,14 @@ class And(Assertion):
     """The conjunction of a list of given assertions.
 
     This assertion holds if all `args` hold.
-
-    Parameters
-    ----------
-
-    Args:
-        The `Assertion`s to be combined.
     """
 
     def __init__(self, *args: Assertion) -> None:
+        """Initialize the conjunction with `args`.
+
+        Args:
+            *args: The assertions to combine.
+        """
         self.__operands = args
 
     def __repr__(self):
@@ -213,15 +208,14 @@ class Or(Assertion):
     """The disjunction of a list of given assertions.
 
     This assertion holds if any `args` hold.
-
-    Parameters
-    ----------
-
-    Args:
-        The `Assertion`s to be combined.
     """
 
     def __init__(self, *args: Assertion) -> None:
+        """Initialize the disjunction with `args`.
+
+        Args:
+            *args: The assertions to combine.
+        """
         self.__operands = args
 
     def __repr__(self):
@@ -239,16 +233,15 @@ class Implies(Assertion):
 
     This assertion holds if `antecedent` holds implies that `consequent` holds.
     In other words, this assertion holds if `antecedent` does not hold or `consequent` holds.
-
-    Parameters
-    ----------
-    antecedent
-        The `Assertion` to be the antecedent of the implication
-    consequent
-        The `Assertion` to be the consequent of the implication
     """
 
     def __init__(self, antecedent: Assertion, consequent: Assertion) -> None:
+        """Initialize the implication with `antecedent` and `consequent`.
+
+        Args:
+            antecedent: The condition of the implication.
+            consequent: The assertion required when the condition holds.
+        """
         self.__antecedent = antecedent
         self.__consequent = consequent
 
@@ -267,15 +260,14 @@ class Equivalent(Assertion):
     """The equivalence of a list of given assertions.
 
     This assertion holds if all `args` simultaneously hold or not hold.
-
-    Parameters
-    ----------
-
-    Args:
-        The `Assertion`s to be combined.
     """
 
     def __init__(self, *args: Assertion) -> None:
+        """Initialize the equivalence with `args`.
+
+        Args:
+            *args: The assertions to combine.
+        """
         self.__operands = args
 
     def __repr__(self):
