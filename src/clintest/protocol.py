@@ -103,7 +103,7 @@ class PersistedModel(Model):
         each mapping to a sequence of `clingo.Symbol`s.
     """
 
-    def __init__(  # noqa: PLR0913
+    def __init__(  # noqa: PLR0913, PLR0917
         self,
         cost: List[int] | None = None,
         number: int = 0,
