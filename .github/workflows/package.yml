@@ -1,4 +1,4 @@
-name: Lint and test
+name: Check the package
 
 on:
   push:
@@ -6,8 +6,11 @@ on:
   pull_request:
     branches: [ master ]
 
+permissions:
+  contents: read
+
 jobs:
-  build:
+  check:
     runs-on: ubuntu-latest
 
     strategy:
@@ -29,17 +32,17 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install -e .[dev]
 
-    - name: Type check with mypy
+    - name: Check the package for type errors
       run: mypy .
 
-    - name: Lint with ruff
+    - name: Check the package for lints
       run: ruff check .
 
-    - name: Check formatting with ruff
+    - name: Check the package for poor code style
       run: ruff format --check .
 
-    - name: Check docstrings with pydoclint
+    - name: Check the package's docstrings
       run: pydoclint .
 
-    - name: Test with pytest
+    - name: Test the package
       run: pytest
