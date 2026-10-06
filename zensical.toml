@@ -14,6 +14,7 @@ nav = [
     { "Getting Started" = "guide/getting_started.md" },
     { "Building Tests" = "guide/building_tests.md" },
     { "Debugging Tests" = "guide/debugging_tests.md" },
+    { "Custom Tests" = "guide/custom_tests.md" },
   ] },
   { "Reference" = [
     { "clintest" = "reference/clintest/__init__.md" },
