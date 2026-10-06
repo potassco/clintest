@@ -13,6 +13,7 @@ nav = [
   { "Guide" = [
     { "Getting Started" = "guide/getting_started.md" },
     { "Building Tests" = "guide/building_tests.md" },
+    { "Debugging Tests" = "guide/debugging_tests.md" },
   ] },
   { "Reference" = [
     { "clintest" = "reference/clintest/__init__.md" },
