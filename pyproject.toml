@@ -20,6 +20,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "mypy~=2.4",
+    "pydoclint~=0.11.0",
     "pytest~=9.1",
     "ruff~=0.16.10",
 ]
@@ -40,6 +41,14 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pydoclint]
+style = "google"
+allow-init-docstring = true
+check-style-mismatch = true
+arg-type-hints-in-docstring = false
+check-return-types = false
+check-yield-types = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -64,7 +73,6 @@ select = [
 ]
 ignore = [
     "D105", # pydocstyle: missing docstring in magic method
-    "D107", # pydocstyle: missing docstring in __init__
     "E501", # pycodestyle: line too long
 ]
 

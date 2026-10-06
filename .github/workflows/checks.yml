@@ -38,5 +38,8 @@ jobs:
     - name: Check formatting with ruff
       run: ruff format --check .
 
+    - name: Check docstrings with pydoclint
+      run: pydoclint .
+
     - name: Test with pytest
       run: pytest
