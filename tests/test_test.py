@@ -7,7 +7,7 @@ from clintest.assertion import Contains
 from clintest.protocol import PersistedModel
 from clintest.quantifier import All, Any, Exact, First, Last
 from clintest.solver import Clingo
-from clintest.test import And, Assert, False_, Not, Or, Record, Recording, True_
+from clintest.test import And, Assert, Context, False_, Not, Or, Record, Recording, True_
 
 SOLVER = Clingo("0", "a. {b}.")
 
@@ -57,6 +57,14 @@ def test_solve(test, outcome, recording):
 @pytest.mark.parametrize(
     ("composite", "operands", "outcome", "recording", "operand_recordings"),
     [
+        pytest.param(
+            Context,
+            [Assert(Any(), Contains("b"))],
+            "T!",
+            "i m(a) m(b,a) s f",
+            ["i m(a) m(b,a) s f"],
+            id="context(any contains b) = T!",
+        ),
         pytest.param(Not, [False_()], "T!", "i", ["i"], id="not F = T!"),
         pytest.param(Not, [True_()], "F!", "i", ["i"], id="not T = F!"),
         pytest.param(And, [False_(), False_()], "F!", "i", ["i", "i"], id="F and F = F!"),
@@ -170,3 +178,20 @@ def test_recording_equality():
 
 def test_recording_unhashable():
     assert not isinstance(Recording(), Hashable)
+
+
+@pytest.mark.parametrize(
+    ("context", "str_", "repr_"),
+    [
+        pytest.param(Context(True_()), "[T!] True_", "True_(__outcome=Outcome(True, True))", id="default"),
+        pytest.param(
+            Context(True_(), str_=lambda test: f"<{test}>", repr_=lambda test: f"<{test!r}>"),
+            "<[T!] True_>",
+            "<True_(__outcome=Outcome(True, True))>",
+            id="custom",
+        ),
+    ],
+)
+def test_context(context, str_, repr_):
+    assert str(context) == str_
+    assert repr(context) == repr_
