@@ -1,9 +1,25 @@
 import pytest
+from clingo.symbol import Function
 
-from clintest.assertion import And, Contains, Equals, Equivalent, False_, Implies, Not, Or, SubsetOf, SupersetOf, True_
+from clintest.assertion import (
+    And,
+    Contains,
+    Equals,
+    Equivalent,
+    False_,
+    Implies,
+    Not,
+    Optimal,
+    Or,
+    SubsetOf,
+    SupersetOf,
+    True_,
+)
 from clintest.protocol import PersistedModel
 
 MODEL = PersistedModel.from_str("a b")
+HIDDEN = PersistedModel(symbols={"atoms": [Function("a"), Function("b")], "shown": [Function("a")]})
+OPTIMAL = MODEL.modify(optimality_proven=True)
 
 
 @pytest.mark.parametrize(
@@ -12,15 +28,21 @@ MODEL = PersistedModel.from_str("a b")
         pytest.param(Contains("a"), MODEL, True, id="a b contains a = T"),
         pytest.param(Contains("b"), MODEL, True, id="a b contains b = T"),
         pytest.param(Contains("c"), MODEL, False, id="a b contains c = F"),
+        pytest.param(Contains("b"), HIDDEN, True, id="a (b hidden) contains b = T"),
         pytest.param(Equals({"a", "b"}), MODEL, True, id="a b equals a b = T"),
         pytest.param(Equals({"a"}), MODEL, False, id="a b equals a = F"),
         pytest.param(Equals({"a", "b", "c"}), MODEL, False, id="a b equals a b c = F"),
+        pytest.param(Equals({"a"}), HIDDEN, True, id="a (b hidden) equals a = T"),
         pytest.param(SubsetOf({"a", "b"}), MODEL, True, id="a b subsetof a b = T"),
         pytest.param(SubsetOf({"a"}), MODEL, False, id="a b subsetof a = F"),
         pytest.param(SubsetOf({"a", "b", "c"}), MODEL, True, id="a b subsetof a b c = T"),
+        pytest.param(SubsetOf({"a"}), HIDDEN, True, id="a (b hidden) subsetof a = T"),
         pytest.param(SupersetOf({"a", "b"}), MODEL, True, id="a b supersetof a b = T"),
         pytest.param(SupersetOf({"a"}), MODEL, True, id="a b supersetof a = T"),
         pytest.param(SupersetOf({"a", "b", "c"}), MODEL, False, id="a b supersetof a b c = F"),
+        pytest.param(SupersetOf({"a", "b"}), HIDDEN, False, id="a (b hidden) supersetof a b = F"),
+        pytest.param(Optimal(), MODEL, False, id="a b optimal = F"),
+        pytest.param(Optimal(), OPTIMAL, True, id="a b (proven) optimal = T"),
         pytest.param(True_(), MODEL, True, id="true = T"),
         pytest.param(False_(), MODEL, False, id="false = F"),
         pytest.param(Not(False_()), MODEL, True, id="not F = T"),
