@@ -43,6 +43,8 @@ ENTRIES = {
         pytest.param(True_(lazy=False), "T!", "i m(a) m(b,a) s f", id="true(lazy=False) = T!"),
         pytest.param(False_(), "F!", "i", id="false = F!"),
         pytest.param(False_(lazy=False), "F!", "i m(a) m(b,a) s f", id="false(lazy=False) = F!"),
+        pytest.param(And(), "T!", "i", id="and() = T!"),
+        pytest.param(Or(), "F!", "i", id="or() = F!"),
     ],
 )
 def test_solve(test, outcome, recording):
