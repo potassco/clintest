@@ -1,3 +1,4 @@
+from collections.abc import Hashable
 from functools import partial
 
 import pytest
@@ -145,3 +146,7 @@ def test_recording_equality():
     assert Recording(entries) == Recording(entries)
     assert Recording(entries) != Recording(entries[:1])
     assert Recording(entries) != entries
+
+
+def test_recording_unhashable():
+    assert not isinstance(Recording(), Hashable)

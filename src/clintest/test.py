@@ -187,8 +187,7 @@ class Recording:
     def __eq__(self, other: object) -> bool:
         return isinstance(other, Recording) and self.__entries == other.__entries
 
-    def __hash__(self):
-        return hash(self.__entries)
+    __hash__ = None  # type: ignore[assignment]
 
     def amend(self, changes: Dict[str, Any]):
         """Update the last entry of this recording with `changes`.
