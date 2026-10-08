@@ -141,6 +141,24 @@ def test_solve_composite(composite, operands, outcome, recording, operand_record
         assert Recording([ENTRIES[entry] for entry in operand_recording.split()]).subsumes(operand_record.recording)
 
 
+@pytest.mark.parametrize(
+    ("test", "message"),
+    [
+        pytest.param(False_(), ["The following test has failed.", "    [F!] False_"], id="F!"),
+        pytest.param(True_(lazy=False), ["The following test is incomplete.", "    [T?] True_"], id="T?"),
+        pytest.param(False_(lazy=False), ["The following test is incomplete.", "    [F?] False_"], id="F?"),
+    ],
+)
+def test_assert_raises(test, message):
+    with pytest.raises(AssertionError) as error:
+        test.assert_()
+    assert str(error.value).splitlines() == message
+
+
+def test_assert_passes():
+    True_().assert_()
+
+
 def test_recording_equality():
     entries = [ENTRIES["i"], ENTRIES["m(a)"]]
     assert Recording(entries) == Recording(entries)
