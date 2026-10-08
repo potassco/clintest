@@ -1,133 +1,20 @@
+import pytest
+
 from clintest.quantifier import All, Any, Exact, Greater, GreaterEqual, Less, LessEqual
 
 
-def test_all():
-    quantifier = All()
-
-    assert quantifier.outcome().as_tuple() == (True, False)
-
-    input = 2 * [True, False]
-    output = [quantifier.consume(value).as_tuple() for value in input]
-
-    assert output == [
-        (True, False),
-        (False, True),
-        (False, True),
-        (False, True),
-    ]
-
-
-def test_any():
-    quantifier = Any()
-
-    assert quantifier.outcome().as_tuple() == (False, False)
-
-    input = 2 * [False, True]
-    output = [quantifier.consume(value).as_tuple() for value in input]
-
-    assert output == [
-        (False, False),
-        (True, True),
-        (True, True),
-        (True, True),
-    ]
-
-
-def test_exact():
-    quantifier = Exact(2)
-
-    assert quantifier.outcome().as_tuple() == (False, False)
-
-    input = 4 * [False, True]
-    output = [quantifier.consume(value).as_tuple() for value in input]
-
-    assert output == [
-        (False, False),
-        (False, False),
-        (False, False),
-        (True, False),
-        (True, False),
-        (False, True),
-        (False, True),
-        (False, True),
-    ]
-
-
-def test_less():
-    quantifier = Less(2)
-
-    assert quantifier.outcome().as_tuple() == (True, False)
-
-    input = 4 * [False, True]
-    output = [quantifier.consume(value).as_tuple() for value in input]
-
-    assert output == [
-        (True, False),
-        (True, False),
-        (True, False),
-        (False, True),
-        (False, True),
-        (False, True),
-        (False, True),
-        (False, True),
-    ]
-
-
-def test_less_equal():
-    quantifier = LessEqual(2)
-
-    assert quantifier.outcome().as_tuple() == (True, False)
-
-    input = 4 * [False, True]
-    output = [quantifier.consume(value).as_tuple() for value in input]
-
-    assert output == [
-        (True, False),
-        (True, False),
-        (True, False),
-        (True, False),
-        (True, False),
-        (False, True),
-        (False, True),
-        (False, True),
-    ]
-
-
-def test_greater():
-    quantifier = Greater(2)
-
-    assert quantifier.outcome().as_tuple() == (False, False)
-
-    input = 4 * [False, True]
-    output = [quantifier.consume(value).as_tuple() for value in input]
-
-    assert output == [
-        (False, False),
-        (False, False),
-        (False, False),
-        (False, False),
-        (False, False),
-        (True, True),
-        (True, True),
-        (True, True),
-    ]
-
-
-def test_greater_equal():
-    quantifier = GreaterEqual(2)
-
-    assert quantifier.outcome().as_tuple() == (False, False)
-
-    input = 4 * [False, True]
-    output = [quantifier.consume(value).as_tuple() for value in input]
-
-    assert output == [
-        (False, False),
-        (False, False),
-        (False, False),
-        (True, True),
-        (True, True),
-        (True, True),
-        (True, True),
-        (True, True),
-    ]
+@pytest.mark.parametrize(
+    ("quantifier", "values", "outcomes"),
+    [
+        pytest.param(All(), "TFTF", "T? T? F! F! F!", id="all TFTF"),
+        pytest.param(Any(), "FTFT", "F? F? T! T! T!", id="any FTFT"),
+        pytest.param(Exact(2), "FTFTFTFT", "F? F? F? F? T? T? F! F! F!", id="exact(2) FTFTFTFT"),
+        pytest.param(Less(2), "FTFTFTFT", "T? T? T? T? F! F! F! F! F!", id="less(2) FTFTFTFT"),
+        pytest.param(LessEqual(2), "FTFTFTFT", "T? T? T? T? T? T? F! F! F!", id="lessequal(2) FTFTFTFT"),
+        pytest.param(Greater(2), "FTFTFTFT", "F? F? F? F? F? F? T! T! T!", id="greater(2) FTFTFTFT"),
+        pytest.param(GreaterEqual(2), "FTFTFTFT", "F? F? F? F? T! T! T! T! T!", id="greaterequal(2) FTFTFTFT"),
+    ],
+)
+def test_consume(quantifier, values, outcomes):
+    actual = [quantifier.outcome()] + [quantifier.consume(value == "T") for value in values]
+    assert " ".join(map(str, actual)) == outcomes
