@@ -113,27 +113,27 @@ def test_assert_exact(solver, recording_one_model, recording_two_models):
     test = Record(Assert(Exact(1), Contains("a")))
     solver.solve(test)
     assert test.outcome().is_certainly_false()
-    recording_two_models.subsumes(test.recording)
+    assert recording_two_models.subsumes(test.recording)
 
     test = Record(Assert(Exact(2), Contains("a")))
     solver.solve(test)
     assert test.outcome().is_certainly_true()
-    recording_two_models.subsumes(test.recording)
+    assert recording_two_models.subsumes(test.recording)
 
     test = Record(Assert(Exact(0), Contains("b")))
     solver.solve(test)
     assert test.outcome().is_certainly_false()
-    recording_two_models.subsumes(test.recording)
+    assert recording_two_models.subsumes(test.recording)
 
     test = Record(Assert(Exact(1), Contains("b")))
     solver.solve(test)
     assert test.outcome().is_certainly_true()
-    recording_two_models.subsumes(test.recording)
+    assert recording_two_models.subsumes(test.recording)
 
     test = Record(Assert(Exact(2), Contains("b")))
     solver.solve(test)
     assert test.outcome().is_certainly_false()
-    recording_two_models.subsumes(test.recording)
+    assert recording_two_models.subsumes(test.recording)
 
 
 def test_true(solver, recording_no_model, recording_two_models):
