@@ -184,8 +184,8 @@ class Recording:
             (f"{(width - len(str(i))) * ' '}{i}: {fmt(entry)}" for i, entry in enumerate(self.__entries))
         )
 
-    def __eq__(self, other):
-        return self.__entries == other.__entries
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, Recording) and self.__entries == other.__entries
 
     def __hash__(self):
         return hash(self.__entries)
