@@ -1,3 +1,5 @@
+from functools import partial
+
 import pytest
 
 from clintest.assertion import Contains
@@ -6,349 +8,133 @@ from clintest.quantifier import All, Any, Exact, First, Last
 from clintest.solver import Clingo
 from clintest.test import And, Assert, False_, Not, Or, Record, Recording, True_
 
+SOLVER = Clingo("0", "a. {b}.")
 
-@pytest.fixture
-def solver():
-    return Clingo("0", "a. {b}.")
-
-
-@pytest.fixture
-def recording_no_model():
-    return Recording(
-        [
-            {"__f": "__init__"},
-        ]
-    )
+ENTRIES = {
+    "i": {"__f": "__init__"},
+    "m(a)": {"__f": "on_model", "model": PersistedModel.from_str("a").modify(number=1)},
+    "m(b,a)": {"__f": "on_model", "model": PersistedModel.from_str("b a").modify(number=2)},
+    "s": {"__f": "on_statistics"},
+    "f": {"__f": "on_finish"},
+}
 
 
-@pytest.fixture
-def recording_one_model():
-    return Recording(
-        [
-            {"__f": "__init__"},
-            {"__f": "on_model", "model": PersistedModel.from_str("a").modify(number=1)},
-            {"__f": "on_statistics"},
-            {"__f": "on_finish"},
-        ]
-    )
+@pytest.mark.parametrize(
+    ("test", "outcome", "recording"),
+    [
+        pytest.param(Assert(All(), Contains("a")), "T!", "i m(a) m(b,a) s f", id="all contains a = T!"),
+        pytest.param(Assert(All(), Contains("b")), "F!", "i m(a) s f", id="all contains b = F!"),
+        pytest.param(Assert(Any(), Contains("a")), "T!", "i m(a) s f", id="any contains a = T!"),
+        pytest.param(Assert(Any(), Contains("b")), "T!", "i m(a) m(b,a) s f", id="any contains b = T!"),
+        pytest.param(Assert(Any(), Contains("c")), "F!", "i m(a) m(b,a) s f", id="any contains c = F!"),
+        pytest.param(Assert(First(), Contains("a")), "T!", "i m(a) s f", id="first contains a = T!"),
+        pytest.param(Assert(First(), Contains("b")), "F!", "i m(a) s f", id="first contains b = F!"),
+        pytest.param(Assert(Last(), Contains("a")), "T!", "i m(a) m(b,a) s f", id="last contains a = T!"),
+        pytest.param(Assert(Last(), Contains("b")), "T!", "i m(a) m(b,a) s f", id="last contains b = T!"),
+        pytest.param(Assert(Last(), Contains("c")), "F!", "i m(a) m(b,a) s f", id="last contains c = F!"),
+        pytest.param(Assert(Exact(0), Contains("a")), "F!", "i m(a) s f", id="exact(0) contains a = F!"),
+        pytest.param(Assert(Exact(1), Contains("a")), "F!", "i m(a) m(b,a) s f", id="exact(1) contains a = F!"),
+        pytest.param(Assert(Exact(2), Contains("a")), "T!", "i m(a) m(b,a) s f", id="exact(2) contains a = T!"),
+        pytest.param(Assert(Exact(0), Contains("b")), "F!", "i m(a) m(b,a) s f", id="exact(0) contains b = F!"),
+        pytest.param(Assert(Exact(1), Contains("b")), "T!", "i m(a) m(b,a) s f", id="exact(1) contains b = T!"),
+        pytest.param(Assert(Exact(2), Contains("b")), "F!", "i m(a) m(b,a) s f", id="exact(2) contains b = F!"),
+        pytest.param(True_(), "T!", "i", id="true = T!"),
+        pytest.param(True_(lazy=False), "T!", "i m(a) m(b,a) s f", id="true(lazy=False) = T!"),
+        pytest.param(False_(), "F!", "i", id="false = F!"),
+        pytest.param(False_(lazy=False), "F!", "i m(a) m(b,a) s f", id="false(lazy=False) = F!"),
+    ],
+)
+def test_solve(test, outcome, recording):
+    record = Record(test)
+    SOLVER.solve(record)
+    assert str(record.outcome()) == outcome
+    assert Recording([ENTRIES[entry] for entry in recording.split()]).subsumes(record.recording)
 
 
-@pytest.fixture
-def recording_two_models():
-    return Recording(
-        [
-            {"__f": "__init__"},
-            {"__f": "on_model", "model": PersistedModel.from_str("a").modify(number=1)},
-            {"__f": "on_model", "model": PersistedModel.from_str("b a").modify(number=2)},
-            {"__f": "on_statistics"},
-            {"__f": "on_finish"},
-        ]
-    )
-
-
-def test_assert_all(solver, recording_one_model, recording_two_models):
-    test = Record(Assert(All(), Contains("a")))
-    solver.solve(test)
-    assert test.outcome().is_certainly_true()
-    assert recording_two_models.subsumes(test.recording)
-
-    test = Record(Assert(All(), Contains("b")))
-    solver.solve(test)
-    assert test.outcome().is_certainly_false()
-    assert recording_one_model.subsumes(test.recording)
-
-
-def test_assert_any(solver, recording_one_model, recording_two_models):
-    test = Record(Assert(Any(), Contains("a")))
-    solver.solve(test)
-    assert test.outcome().is_certainly_true()
-    assert recording_one_model.subsumes(test.recording)
-
-    test = Record(Assert(Any(), Contains("b")))
-    solver.solve(test)
-    assert test.outcome().is_certainly_true()
-    assert recording_two_models.subsumes(test.recording)
-
-    test = Record(Assert(Any(), Contains("c")))
-    solver.solve(test)
-    assert test.outcome().is_certainly_false()
-    assert recording_two_models.subsumes(test.recording)
-
-
-def test_assert_first(solver, recording_one_model):
-    test = Record(Assert(First(), Contains("a")))
-    solver.solve(test)
-    assert test.outcome().is_certainly_true()
-    assert recording_one_model.subsumes(test.recording)
-
-    test = Record(Assert(First(), Contains("b")))
-    solver.solve(test)
-    assert test.outcome().is_certainly_false()
-    assert recording_one_model.subsumes(test.recording)
-
-
-def test_assert_last(solver, recording_two_models):
-    test = Record(Assert(Last(), Contains("a")))
-    solver.solve(test)
-    assert test.outcome().is_certainly_true()
-    assert recording_two_models.subsumes(test.recording)
-
-    test = Record(Assert(Last(), Contains("b")))
-    solver.solve(test)
-    assert test.outcome().is_certainly_true()
-    assert recording_two_models.subsumes(test.recording)
-
-    test = Record(Assert(Last(), Contains("c")))
-    solver.solve(test)
-    assert test.outcome().is_certainly_false()
-    assert recording_two_models.subsumes(test.recording)
-
-
-def test_assert_exact(solver, recording_one_model, recording_two_models):
-    test = Record(Assert(Exact(0), Contains("a")))
-    solver.solve(test)
-    assert test.outcome().is_certainly_false()
-    assert recording_one_model.subsumes(test.recording)
-
-    test = Record(Assert(Exact(1), Contains("a")))
-    solver.solve(test)
-    assert test.outcome().is_certainly_false()
-    assert recording_two_models.subsumes(test.recording)
-
-    test = Record(Assert(Exact(2), Contains("a")))
-    solver.solve(test)
-    assert test.outcome().is_certainly_true()
-    assert recording_two_models.subsumes(test.recording)
-
-    test = Record(Assert(Exact(0), Contains("b")))
-    solver.solve(test)
-    assert test.outcome().is_certainly_false()
-    assert recording_two_models.subsumes(test.recording)
-
-    test = Record(Assert(Exact(1), Contains("b")))
-    solver.solve(test)
-    assert test.outcome().is_certainly_true()
-    assert recording_two_models.subsumes(test.recording)
-
-    test = Record(Assert(Exact(2), Contains("b")))
-    solver.solve(test)
-    assert test.outcome().is_certainly_false()
-    assert recording_two_models.subsumes(test.recording)
-
-
-def test_true(solver, recording_no_model, recording_two_models):
-    test = Record(True_())
-    solver.solve(test)
-    assert test.outcome().is_certainly_true()
-    assert recording_no_model.subsumes(test.recording)
-
-    test = Record(True_(lazy=False))
-    solver.solve(test)
-    assert test.outcome().is_certainly_true()
-    assert recording_two_models.subsumes(test.recording)
-
-
-def test_false(solver, recording_no_model, recording_two_models):
-    test = Record(False_())
-    solver.solve(test)
-    assert test.outcome().is_certainly_false()
-    assert recording_no_model.subsumes(test.recording)
-
-    test = Record(False_(lazy=False))
-    solver.solve(test)
-    assert test.outcome().is_certainly_false()
-    assert recording_two_models.subsumes(test.recording)
-
-
-def test_not(solver, recording_no_model):
-    inner = Record(False_())
-    outer = Record(Not(inner))
-    solver.solve(outer)
-    assert outer.outcome().is_certainly_true()
-    assert recording_no_model.subsumes(inner.recording)
-    assert recording_no_model.subsumes(outer.recording)
-
-    inner = Record(True_())
-    outer = Record(Not(inner))
-    solver.solve(outer)
-    assert outer.outcome().is_certainly_false()
-    assert recording_no_model.subsumes(inner.recording)
-    assert recording_no_model.subsumes(outer.recording)
-
-
-def test_and(solver, recording_no_model):
-    inner = [Record(test) for test in [False_(), False_()]]
-    outer = Record(And(*inner))
-    solver.solve(outer)
-    assert outer.outcome().is_certainly_false()
-    assert recording_no_model.subsumes(outer.recording)
-    assert recording_no_model.subsumes(inner[0].recording)
-    assert recording_no_model.subsumes(inner[1].recording)
-
-    inner = [Record(test) for test in [False_(), True_()]]
-    outer = Record(And(*inner))
-    solver.solve(outer)
-    assert outer.outcome().is_certainly_false()
-    assert recording_no_model.subsumes(outer.recording)
-    assert recording_no_model.subsumes(inner[0].recording)
-    assert recording_no_model.subsumes(inner[1].recording)
-
-    inner = [Record(test) for test in [True_(), False_()]]
-    outer = Record(And(*inner))
-    solver.solve(outer)
-    assert outer.outcome().is_certainly_false()
-    assert recording_no_model.subsumes(outer.recording)
-    assert recording_no_model.subsumes(inner[0].recording)
-    assert recording_no_model.subsumes(inner[1].recording)
-
-    inner = [Record(test) for test in [True_(), True_()]]
-    outer = Record(And(*inner))
-    solver.solve(outer)
-    assert outer.outcome().is_certainly_true()
-    assert recording_no_model.subsumes(outer.recording)
-    assert recording_no_model.subsumes(inner[0].recording)
-    assert recording_no_model.subsumes(inner[1].recording)
-
-
-def test_and_ignore_certain(solver, recording_two_models):
-    inner = [Record(test) for test in [Assert(Any(), Contains("a")), Assert(Any(), Contains("b"))]]
-    outer = Record(And(*inner))
-    solver.solve(outer)
-    assert outer.outcome().is_certainly_true()
-    assert recording_two_models.subsumes(outer.recording)
-    assert Recording(
-        [
-            {"__f": "__init__"},
-            {"__f": "on_model", "model": PersistedModel.from_str("a").modify(number=1)},
-        ]
-    ).subsumes(inner[0].recording)
-    assert Recording(
-        [
-            {"__f": "__init__"},
-            {"__f": "on_model", "model": PersistedModel.from_str("a").modify(number=1)},
-            {"__f": "on_model", "model": PersistedModel.from_str("b a").modify(number=2)},
-        ]
-    ).subsumes(inner[1].recording)
-
-    inner = [Record(test) for test in [Assert(Any(), Contains("a")), Assert(Any(), Contains("b"))]]
-    outer = Record(And(*inner, ignore_certain=False))
-    solver.solve(outer)
-    assert outer.outcome().is_certainly_true()
-    assert recording_two_models.subsumes(outer.recording)
-    assert recording_two_models.subsumes(inner[0].recording)
-    assert recording_two_models.subsumes(inner[1].recording)
-
-
-def test_and_short_circuit(solver, recording_one_model, recording_two_models):
-    inner = [Record(test) for test in [Assert(All(), Contains("b")), Assert(All(), Contains("a"))]]
-    outer = Record(And(*inner))
-    solver.solve(outer)
-    assert outer.outcome().is_certainly_false()
-    assert recording_one_model.subsumes(outer.recording)
-    assert Recording(
-        [{"__f": "__init__"}, {"__f": "on_model", "model": PersistedModel.from_str("a").modify(number=1)}]
-    ).subsumes(inner[0].recording)
-    assert Recording(
-        [
-            {"__f": "__init__"},
-        ]
-    ).subsumes(inner[1].recording)
-
-    inner = [Record(test) for test in [Assert(All(), Contains("b")), Assert(All(), Contains("a"))]]
-    outer = Record(And(*inner, short_circuit=False))
-    solver.solve(outer)
-    assert outer.outcome().is_certainly_false()
-    assert recording_two_models.subsumes(outer.recording)
-    assert Recording(
-        [{"__f": "__init__"}, {"__f": "on_model", "model": PersistedModel.from_str("a").modify(number=1)}]
-    ).subsumes(inner[0].recording)
-    assert recording_two_models.subsumes(inner[1].recording)
-
-
-def test_or(solver, recording_no_model):
-    inner = [Record(test) for test in [False_(), False_()]]
-    outer = Record(Or(*inner))
-    solver.solve(outer)
-    assert outer.outcome().is_certainly_false()
-    assert recording_no_model.subsumes(outer.recording)
-    assert recording_no_model.subsumes(inner[0].recording)
-    assert recording_no_model.subsumes(inner[1].recording)
-
-    inner = [Record(test) for test in [False_(), True_()]]
-    outer = Record(Or(*inner))
-    solver.solve(outer)
-    assert outer.outcome().is_certainly_true()
-    assert recording_no_model.subsumes(outer.recording)
-    assert recording_no_model.subsumes(inner[0].recording)
-    assert recording_no_model.subsumes(inner[1].recording)
-
-    inner = [Record(test) for test in [True_(), False_()]]
-    outer = Record(Or(*inner))
-    solver.solve(outer)
-    assert outer.outcome().is_certainly_true()
-    assert recording_no_model.subsumes(outer.recording)
-    assert recording_no_model.subsumes(inner[0].recording)
-    assert recording_no_model.subsumes(inner[1].recording)
-
-    inner = [Record(test) for test in [True_(), True_()]]
-    outer = Record(Or(*inner))
-    solver.solve(outer)
-    assert outer.outcome().is_certainly_true()
-    assert recording_no_model.subsumes(outer.recording)
-    assert recording_no_model.subsumes(inner[0].recording)
-    assert recording_no_model.subsumes(inner[1].recording)
-
-
-def test_or_ignore_certain(solver, recording_two_models):
-    inner = [Record(test) for test in [Not(Assert(Any(), Contains("a"))), Not(Assert(Any(), Contains("b")))]]
-    outer = Record(Or(*inner))
-    solver.solve(outer)
-    assert outer.outcome().is_certainly_false()
-    assert recording_two_models.subsumes(outer.recording)
-    assert Recording(
-        [
-            {"__f": "__init__"},
-            {"__f": "on_model", "model": PersistedModel.from_str("a").modify(number=1)},
-        ]
-    ).subsumes(inner[0].recording)
-    assert Recording(
-        [
-            {"__f": "__init__"},
-            {"__f": "on_model", "model": PersistedModel.from_str("a").modify(number=1)},
-            {"__f": "on_model", "model": PersistedModel.from_str("b a").modify(number=2)},
-        ]
-    ).subsumes(inner[1].recording)
-
-    inner = [Record(test) for test in [Not(Assert(Any(), Contains("a"))), Not(Assert(Any(), Contains("b")))]]
-    outer = Record(Or(*inner, ignore_certain=False))
-    solver.solve(outer)
-    assert outer.outcome().is_certainly_false()
-    assert recording_two_models.subsumes(outer.recording)
-    assert recording_two_models.subsumes(inner[0].recording)
-    assert recording_two_models.subsumes(inner[1].recording)
-
-
-def test_or_short_circuit(solver, recording_one_model, recording_two_models):
-    inner = [Record(test) for test in [Not(Assert(All(), Contains("b"))), Not(Assert(All(), Contains("a")))]]
-    outer = Record(Or(*inner))
-    solver.solve(outer)
-    assert outer.outcome().is_certainly_true()
-    assert recording_one_model.subsumes(outer.recording)
-    assert Recording(
-        [{"__f": "__init__"}, {"__f": "on_model", "model": PersistedModel.from_str("a").modify(number=1)}]
-    ).subsumes(inner[0].recording)
-    assert Recording(
-        [
-            {"__f": "__init__"},
-        ]
-    ).subsumes(inner[1].recording)
-
-    inner = [Record(test) for test in [Not(Assert(All(), Contains("b"))), Not(Assert(All(), Contains("a")))]]
-    outer = Record(Or(*inner, short_circuit=False))
-    solver.solve(outer)
-    assert outer.outcome().is_certainly_true()
-    assert recording_two_models.subsumes(outer.recording)
-    assert Recording(
-        [{"__f": "__init__"}, {"__f": "on_model", "model": PersistedModel.from_str("a").modify(number=1)}]
-    ).subsumes(inner[0].recording)
-    assert recording_two_models.subsumes(inner[1].recording)
+@pytest.mark.parametrize(
+    ("composite", "operands", "outcome", "recording", "operand_recordings"),
+    [
+        pytest.param(Not, [False_()], "T!", "i", ["i"], id="not F = T!"),
+        pytest.param(Not, [True_()], "F!", "i", ["i"], id="not T = F!"),
+        pytest.param(And, [False_(), False_()], "F!", "i", ["i", "i"], id="F and F = F!"),
+        pytest.param(And, [False_(), True_()], "F!", "i", ["i", "i"], id="F and T = F!"),
+        pytest.param(And, [True_(), False_()], "F!", "i", ["i", "i"], id="T and F = F!"),
+        pytest.param(And, [True_(), True_()], "T!", "i", ["i", "i"], id="T and T = T!"),
+        pytest.param(
+            And,
+            [Assert(Any(), Contains("a")), Assert(Any(), Contains("b"))],
+            "T!",
+            "i m(a) m(b,a) s f",
+            ["i m(a)", "i m(a) m(b,a)"],
+            id="any contains a and any contains b = T!",
+        ),
+        pytest.param(
+            partial(And, ignore_certain=False),
+            [Assert(Any(), Contains("a")), Assert(Any(), Contains("b"))],
+            "T!",
+            "i m(a) m(b,a) s f",
+            ["i m(a) m(b,a) s f", "i m(a) m(b,a) s f"],
+            id="any contains a and(ignore_certain=False) any contains b = T!",
+        ),
+        pytest.param(
+            And,
+            [Assert(All(), Contains("b")), Assert(All(), Contains("a"))],
+            "F!",
+            "i m(a) s f",
+            ["i m(a)", "i"],
+            id="all contains b and all contains a = F!",
+        ),
+        pytest.param(
+            partial(And, short_circuit=False),
+            [Assert(All(), Contains("b")), Assert(All(), Contains("a"))],
+            "F!",
+            "i m(a) m(b,a) s f",
+            ["i m(a)", "i m(a) m(b,a) s f"],
+            id="all contains b and(short_circuit=False) all contains a = F!",
+        ),
+        pytest.param(Or, [False_(), False_()], "F!", "i", ["i", "i"], id="F or F = F!"),
+        pytest.param(Or, [False_(), True_()], "T!", "i", ["i", "i"], id="F or T = T!"),
+        pytest.param(Or, [True_(), False_()], "T!", "i", ["i", "i"], id="T or F = T!"),
+        pytest.param(Or, [True_(), True_()], "T!", "i", ["i", "i"], id="T or T = T!"),
+        pytest.param(
+            Or,
+            [Not(Assert(Any(), Contains("a"))), Not(Assert(Any(), Contains("b")))],
+            "F!",
+            "i m(a) m(b,a) s f",
+            ["i m(a)", "i m(a) m(b,a)"],
+            id="not any contains a or not any contains b = F!",
+        ),
+        pytest.param(
+            partial(Or, ignore_certain=False),
+            [Not(Assert(Any(), Contains("a"))), Not(Assert(Any(), Contains("b")))],
+            "F!",
+            "i m(a) m(b,a) s f",
+            ["i m(a) m(b,a) s f", "i m(a) m(b,a) s f"],
+            id="not any contains a or(ignore_certain=False) not any contains b = F!",
+        ),
+        pytest.param(
+            Or,
+            [Not(Assert(All(), Contains("b"))), Not(Assert(All(), Contains("a")))],
+            "T!",
+            "i m(a) s f",
+            ["i m(a)", "i"],
+            id="not all contains b or not all contains a = T!",
+        ),
+        pytest.param(
+            partial(Or, short_circuit=False),
+            [Not(Assert(All(), Contains("b"))), Not(Assert(All(), Contains("a")))],
+            "T!",
+            "i m(a) m(b,a) s f",
+            ["i m(a)", "i m(a) m(b,a) s f"],
+            id="not all contains b or(short_circuit=False) not all contains a = T!",
+        ),
+    ],
+)
+def test_solve_composite(composite, operands, outcome, recording, operand_recordings):
+    operand_records = [Record(operand) for operand in operands]
+    record = Record(composite(*operand_records))
+    SOLVER.solve(record)
+    assert str(record.outcome()) == outcome
+    assert Recording([ENTRIES[entry] for entry in recording.split()]).subsumes(record.recording)
+    for operand_recording, operand_record in zip(operand_recordings, operand_records, strict=True):
+        assert Recording([ENTRIES[entry] for entry in operand_recording.split()]).subsumes(operand_record.recording)
