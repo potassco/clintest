@@ -1,6 +1,8 @@
 import pytest
 from clingo import Control
 
+from clintest.assertion import And, Contains, Equals, Equivalent, False_, Implies, Not, Or, SubsetOf, SupersetOf, True_
+
 
 @pytest.fixture
 def frame():
@@ -19,8 +21,6 @@ def frame():
 
 
 def test_contains(frame):
-    from clintest.assertion import Contains
-
     frame(
         [
             Contains("a"),
@@ -33,8 +33,6 @@ def test_contains(frame):
 
 
 def test_equals(frame):
-    from clintest.assertion import Equals
-
     frame(
         [
             Equals({"a", "b"}),
@@ -47,8 +45,6 @@ def test_equals(frame):
 
 
 def test_subsetof(frame):
-    from clintest.assertion import SubsetOf
-
     frame(
         [
             SubsetOf({"a", "b"}),
@@ -61,8 +57,6 @@ def test_subsetof(frame):
 
 
 def test_supersetof(frame):
-    from clintest.assertion import SupersetOf
-
     frame(
         [
             SupersetOf({"a"}),
@@ -75,26 +69,18 @@ def test_supersetof(frame):
 
 
 def test_true(frame):
-    from clintest.assertion import True_
-
     frame([True_()], [])
 
 
 def test_false(frame):
-    from clintest.assertion import False_
-
     frame([], [False_()])
 
 
 def test_not(frame):
-    from clintest.assertion import False_, Not, True_
-
     frame([Not(False_())], [Not(True_())])
 
 
 def test_and(frame):
-    from clintest.assertion import And, False_, True_
-
     frame(
         [
             And(),
@@ -109,8 +95,6 @@ def test_and(frame):
 
 
 def test_or(frame):
-    from clintest.assertion import False_, Or, True_
-
     frame(
         [
             Or(True_(), True_()),
@@ -125,8 +109,6 @@ def test_or(frame):
 
 
 def test_implies(frame):
-    from clintest.assertion import False_, Implies, True_
-
     frame(
         [
             Implies(False_(), False_()),
@@ -140,8 +122,6 @@ def test_implies(frame):
 
 
 def test_equivalent(frame):
-    from clintest.assertion import Equivalent, False_, True_
-
     frame(
         [
             Equivalent(),
