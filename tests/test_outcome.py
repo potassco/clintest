@@ -24,10 +24,13 @@ def test_methods(value, certain, certainly_false, certainly_true, str_, repr_):
     assert hash(outcome) == hash(Outcome(value, certain))
 
     assert outcome.as_tuple() == (value, certain)
+    assert outcome != (value, certain)
 
     assert str(outcome) == str_
+    assert outcome != str_
 
     assert repr(outcome) == repr_
+    assert outcome != repr_
 
 
 def test_distinct():
