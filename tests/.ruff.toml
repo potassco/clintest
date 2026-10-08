@@ -3,7 +3,6 @@ extend = "../pyproject.toml"
 [lint]
 extend-ignore = [
     "D1",       # pydocstyle: missing docstring
-    "PLC0415",  # pylint: import should be at top-level of file
     "PLR0913",  # pylint: too many arguments
     "PLR0917",  # pylint: too many positional arguments
     "S101",     # bandit: use of assert detected
