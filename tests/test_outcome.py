@@ -1,46 +1,23 @@
-def test_false_uncertain():
-    from clintest.outcome import Outcome
+import pytest
 
-    outcome = Outcome(False, False)
-
-    assert not outcome.current_value()
-    assert not outcome.is_certain()
-    assert outcome.as_tuple() == (False, False)
-    assert not outcome.is_certainly_false()
-    assert not outcome.is_certainly_true()
+from clintest.outcome import Outcome
 
 
-def test_false_certain():
-    from clintest.outcome import Outcome
+@pytest.mark.parametrize(
+    ("value", "certain", "certainly_false", "certainly_true"),
+    [
+        pytest.param(False, False, False, False, id="F?"),
+        pytest.param(False, True, True, False, id="F!"),
+        pytest.param(True, False, False, False, id="T?"),
+        pytest.param(True, True, False, True, id="T!"),
+    ],
+)
+def test_outcome(value, certain, certainly_false, certainly_true):
+    outcome = Outcome(value, certain)
 
-    outcome = Outcome(False, True)
+    assert outcome.current_value() == value
+    assert outcome.is_certain() == certain
+    assert outcome.is_certainly_false() == certainly_false
+    assert outcome.is_certainly_true() == certainly_true
 
-    assert not outcome.current_value()
-    assert outcome.is_certain()
-    assert outcome.as_tuple() == (False, True)
-    assert outcome.is_certainly_false()
-    assert not outcome.is_certainly_true()
-
-
-def test_true_uncertain():
-    from clintest.outcome import Outcome
-
-    outcome = Outcome(True, False)
-
-    assert outcome.current_value()
-    assert not outcome.is_certain()
-    assert outcome.as_tuple() == (True, False)
-    assert not outcome.is_certainly_false()
-    assert not outcome.is_certainly_true()
-
-
-def test_true_certain():
-    from clintest.outcome import Outcome
-
-    outcome = Outcome(True, True)
-
-    assert outcome.current_value()
-    assert outcome.is_certain()
-    assert outcome.as_tuple() == (True, True)
-    assert not outcome.is_certainly_false()
-    assert outcome.is_certainly_true()
+    assert outcome.as_tuple() == (value, certain)
