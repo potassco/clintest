@@ -12,7 +12,7 @@ from clintest.outcome import Outcome
         pytest.param(True, True, False, True, "T!", "Outcome(True, True)", id="T!"),
     ],
 )
-def test_outcome(value, certain, certainly_false, certainly_true, str_, repr_):
+def test_methods(value, certain, certainly_false, certainly_true, str_, repr_):
     outcome = Outcome(value, certain)
 
     assert outcome.current_value() == value
@@ -20,8 +20,16 @@ def test_outcome(value, certain, certainly_false, certainly_true, str_, repr_):
     assert outcome.is_certainly_false() == certainly_false
     assert outcome.is_certainly_true() == certainly_true
 
+    assert outcome == Outcome(value, certain)
+    assert hash(outcome) == hash(Outcome(value, certain))
+
     assert outcome.as_tuple() == (value, certain)
 
     assert str(outcome) == str_
 
     assert repr(outcome) == repr_
+
+
+def test_distinct():
+    outcomes = [Outcome(value, certain) for value in (False, True) for certain in (False, True)]
+    assert len(set(outcomes)) == len(outcomes)
