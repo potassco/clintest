@@ -4,15 +4,15 @@ from clintest.outcome import Outcome
 
 
 @pytest.mark.parametrize(
-    ("value", "certain", "certainly_false", "certainly_true"),
+    ("value", "certain", "certainly_false", "certainly_true", "str_", "repr_"),
     [
-        pytest.param(False, False, False, False, id="F?"),
-        pytest.param(False, True, True, False, id="F!"),
-        pytest.param(True, False, False, False, id="T?"),
-        pytest.param(True, True, False, True, id="T!"),
+        pytest.param(False, False, False, False, "F?", "Outcome(False, False)", id="F?"),
+        pytest.param(False, True, True, False, "F!", "Outcome(False, True)", id="F!"),
+        pytest.param(True, False, False, False, "T?", "Outcome(True, False)", id="T?"),
+        pytest.param(True, True, False, True, "T!", "Outcome(True, True)", id="T!"),
     ],
 )
-def test_outcome(value, certain, certainly_false, certainly_true):
+def test_outcome(value, certain, certainly_false, certainly_true, str_, repr_):
     outcome = Outcome(value, certain)
 
     assert outcome.current_value() == value
@@ -21,3 +21,7 @@ def test_outcome(value, certain, certainly_false, certainly_true):
     assert outcome.is_certainly_true() == certainly_true
 
     assert outcome.as_tuple() == (value, certain)
+
+    assert str(outcome) == str_
+
+    assert repr(outcome) == repr_
