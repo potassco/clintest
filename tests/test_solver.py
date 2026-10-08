@@ -4,7 +4,7 @@ from clintest.assertion import Contains
 from clintest.protocol import PersistedModel, PersistedSolveResult
 from clintest.quantifier import Any
 from clintest.solver import Clingo, Iterate
-from clintest.test import Assert, Record, Recording
+from clintest.test import Assert, Record, Recording, True_
 
 
 @pytest.mark.parametrize(
@@ -12,7 +12,7 @@ from clintest.test import Assert, Record, Recording
     [
         pytest.param(
             Clingo("0", "a :- not a."),
-            None,
+            True_(lazy=False),
             Recording(
                 [
                     {"__f": "__init__"},
@@ -26,11 +26,11 @@ from clintest.test import Assert, Record, Recording
                     {"__f": "on_core"},
                 ]
             ),
-            id="clingo(a :- not a.)",
+            id="clingo(a :- not a.) true(lazy=False)",
         ),
         pytest.param(
             Clingo("0", "a. {b}."),
-            None,
+            True_(lazy=False),
             Recording(
                 [
                     {"__f": "__init__"},
@@ -45,7 +45,7 @@ from clintest.test import Assert, Record, Recording
                     },
                 ]
             ),
-            id="clingo(a. {b}.)",
+            id="clingo(a. {b}.) true(lazy=False)",
         ),
         pytest.param(
             Clingo("0", "a. {b}."),
@@ -67,7 +67,7 @@ from clintest.test import Assert, Record, Recording
         ),
         pytest.param(
             Iterate([]),
-            None,
+            True_(lazy=False),
             Recording(
                 [
                     {"__f": "__init__"},
@@ -79,7 +79,7 @@ from clintest.test import Assert, Record, Recording
                     },
                 ]
             ),
-            id="iterate()",
+            id="iterate() true(lazy=False)",
         ),
         pytest.param(
             Iterate(
@@ -88,7 +88,7 @@ from clintest.test import Assert, Record, Recording
                     PersistedModel.from_str("b a").modify(number=2),
                 ]
             ),
-            None,
+            True_(lazy=False),
             Recording(
                 [
                     {"__f": "__init__"},
@@ -102,7 +102,7 @@ from clintest.test import Assert, Record, Recording
                     },
                 ]
             ),
-            id="iterate(a, b a)",
+            id="iterate(a, b a) true(lazy=False)",
         ),
         pytest.param(
             Iterate(
