@@ -138,3 +138,10 @@ def test_solve_composite(composite, operands, outcome, recording, operand_record
     assert Recording([ENTRIES[entry] for entry in recording.split()]).subsumes(record.recording)
     for operand_recording, operand_record in zip(operand_recordings, operand_records, strict=True):
         assert Recording([ENTRIES[entry] for entry in operand_recording.split()]).subsumes(operand_record.recording)
+
+
+def test_recording_equality():
+    entries = [ENTRIES["i"], ENTRIES["m(a)"]]
+    assert Recording(entries) == Recording(entries)
+    assert Recording(entries) != Recording(entries[:1])
+    assert Recording(entries) != entries
