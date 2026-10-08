@@ -8,9 +8,9 @@ from clintest.test import Assert, Record, Recording
 
 
 @pytest.mark.parametrize(
-    "solver, test, recording",
+    ("solver", "test", "recording"),
     [
-        (
+        pytest.param(
             Clingo("0", "a :- not a."),
             None,
             Recording(
@@ -26,8 +26,9 @@ from clintest.test import Assert, Record, Recording
                     {"__f": "on_core"},
                 ]
             ),
+            id="clingo(a :- not a.)",
         ),
-        (
+        pytest.param(
             Clingo("0", "a. {b}."),
             None,
             Recording(
@@ -44,8 +45,9 @@ from clintest.test import Assert, Record, Recording
                     },
                 ]
             ),
+            id="clingo(a. {b}.)",
         ),
-        (
+        pytest.param(
             Clingo("0", "a. {b}."),
             Assert(Any(), Contains("a")),
             Recording(
@@ -61,8 +63,9 @@ from clintest.test import Assert, Record, Recording
                     },
                 ]
             ),
+            id="clingo(a. {b}.) any contains a",
         ),
-        (
+        pytest.param(
             Iterate([]),
             None,
             Recording(
@@ -76,8 +79,9 @@ from clintest.test import Assert, Record, Recording
                     },
                 ]
             ),
+            id="iterate()",
         ),
-        (
+        pytest.param(
             Iterate(
                 [
                     PersistedModel.from_str("a").modify(number=1),
@@ -98,8 +102,9 @@ from clintest.test import Assert, Record, Recording
                     },
                 ]
             ),
+            id="iterate(a, b a)",
         ),
-        (
+        pytest.param(
             Iterate(
                 [
                     PersistedModel.from_str("a").modify(number=1),
@@ -119,6 +124,7 @@ from clintest.test import Assert, Record, Recording
                     },
                 ]
             ),
+            id="iterate(a, b a) any contains a",
         ),
     ],
 )
