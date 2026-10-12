@@ -1,4 +1,12 @@
-"""The abstract class [`Assertion`][clintest.assertion.Assertion] and classes extending it."""
+"""Statements about individual models.
+
+- Symbols: [`Contains`][clintest.assertion.Contains], [`Equals`][clintest.assertion.Equals], [`SubsetOf`][clintest.assertion.SubsetOf], [`SupersetOf`][clintest.assertion.SupersetOf]
+- Optimality: [`Optimal`][clintest.assertion.Optimal]
+- Logic: [`True_`][clintest.assertion.True_], [`False_`][clintest.assertion.False_], [`Not`][clintest.assertion.Not], [`And`][clintest.assertion.And], [`Or`][clintest.assertion.Or], [`Implies`][clintest.assertion.Implies], [`Equivalent`][clintest.assertion.Equivalent]
+
+To write your own assertion, extend [`Assertion`][clintest.assertion.Assertion].
+For an introduction, see [Assertions][assertions] in the guide.
+"""
 
 from abc import ABC, abstractmethod
 from typing import Set, Union, override

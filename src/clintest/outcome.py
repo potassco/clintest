@@ -1,6 +1,7 @@
-"""The [`Outcome`][clintest.outcome.Outcome] of a test, accessible via [`Test.outcome()`][clintest.test.Test.outcome].
+"""The outcome of a test.
 
-The outcome of a test may be either
+Every test has an [`Outcome`][clintest.outcome.Outcome], accessible via [`Test.outcome()`][clintest.test.Test.outcome].
+It is one of the following:
 
 - `F?` (possibly false),
 - `T?` (possibly true),
@@ -11,6 +12,8 @@ These four options are represented using two booleans within [`Outcome`][clintes
 
 - [`current_value`][clintest.outcome.Outcome.current_value] stores the actual result of the test.
 - [`is_certain`][clintest.outcome.Outcome.is_certain] indicates whether the result is certain.
+
+For an introduction, see [Tests and outcomes][tests-and-outcomes] in the guide.
 """
 
 from typing import Tuple

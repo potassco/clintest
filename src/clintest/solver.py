@@ -1,4 +1,11 @@
-"""The abstract class [`Solver`][clintest.solver.Solver] and off-the-shelf solver implementations."""
+"""Solvers that run tests.
+
+- [`Clingo`][clintest.solver.Clingo]: runs clingo on a program
+- [`Iterate`][clintest.solver.Iterate]: iterates over given models instead of running clingo
+
+To write your own solver, extend [`Solver`][clintest.solver.Solver].
+For an introduction, see [Solvers][solvers] in the guide.
+"""
 
 from abc import ABC, abstractmethod
 from typing import Callable, Iterable, Optional, Sequence, cast, override

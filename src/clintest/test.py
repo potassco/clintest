@@ -1,4 +1,12 @@
-"""The abstract class [`Test`][clintest.test.Test] and off-the-shelf test implementations."""
+"""Tests and the means to combine them.
+
+- Checking models: [`Assert`][clintest.test.Assert]
+- Logic: [`True_`][clintest.test.True_], [`False_`][clintest.test.False_], [`Not`][clintest.test.Not], [`And`][clintest.test.And], [`Or`][clintest.test.Or]
+- Debugging: [`Record`][clintest.test.Record] with its [`Recording`][clintest.test.Recording], [`Context`][clintest.test.Context]
+
+To write your own test, extend [`Test`][clintest.test.Test].
+For an introduction, see [Building Tests][building-tests] and [Debugging Tests][debugging-tests] in the guide.
+"""
 
 import os
 from abc import ABC, abstractmethod
