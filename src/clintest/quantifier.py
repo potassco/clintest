@@ -3,6 +3,7 @@
 - All or some models: [`All`][clintest.quantifier.All], [`Any`][clintest.quantifier.Any]
 - Position: [`First`][clintest.quantifier.First], [`Last`][clintest.quantifier.Last]
 - Count: [`Exact`][clintest.quantifier.Exact], [`Less`][clintest.quantifier.Less], [`LessEqual`][clintest.quantifier.LessEqual], [`Greater`][clintest.quantifier.Greater], [`GreaterEqual`][clintest.quantifier.GreaterEqual]
+- Logic: [`Not`][clintest.quantifier.Not], [`And`][clintest.quantifier.And], [`Or`][clintest.quantifier.Or]
 
 [`Finished`][clintest.quantifier.Finished] is used by [`Assert`][clintest.test.Assert] once solving ends; you rarely need it directly.
 
@@ -334,6 +335,134 @@ class GreaterEqual(Quantifier):
     @override
     def consume(self, value: bool) -> Outcome:  # noqa: D102
         self.__state += value
+        return self.outcome()
+
+
+class Not(Quantifier):
+    """The negation of a given quantifier.
+
+    The current value is the negation of the current value of `operand`.
+    The outcome is certain as soon as the outcome of `operand` is certain.
+
+    This negates the quantifier, not the assertion:
+    `Not(All())` demands that the assertion fails for some model, whereas [`All`][clintest.quantifier.All] with [`assertion.Not`][clintest.assertion.Not] demands that it fails for every model.
+    """
+
+    def __init__(self, operand: Quantifier) -> None:
+        """Initialize the negation with `operand`.
+
+        Args:
+            operand: The quantifier to negate.
+        """
+        self.__operand = operand
+
+    def __repr__(self):
+        name = self.__class__.__name__
+        operand = repr(self.__operand)
+        return f"{name}({operand})"
+
+    def __str__(self):
+        return f"{self.__class__.__name__}({self.__operand})"
+
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
+        outcome = self.__operand.outcome()
+        return Outcome(not outcome.current_value(), outcome.is_certain())
+
+    @override
+    def consume(self, value: bool) -> Outcome:  # noqa: D102
+        if not self.__operand.outcome().is_certain():
+            self.__operand.consume(value)
+        return self.outcome()
+
+
+class And(Quantifier):
+    """The conjunction of a list of given quantifiers.
+
+    The current value is true if the current values of all `args` are true.
+    The outcome becomes certainly false as soon as one of `args` is certainly false, and certainly true once all `args` are certainly true.
+    With no `args`, the outcome is certainly true.
+
+    Quantifiers are stateful, so each of `args` must be a separate instance.
+    """
+
+    def __init__(self, *args: Quantifier) -> None:
+        """Initialize the conjunction with `args`.
+
+        Args:
+            *args: The quantifiers to combine.
+        """
+        self.__operands = args
+
+    def __repr__(self):
+        name = self.__class__.__name__
+        operands = ", ".join(repr(operand) for operand in self.__operands)
+        return f"{name}({operands})"
+
+    def __str__(self):
+        operands = ", ".join(str(operand) for operand in self.__operands)
+        return f"{self.__class__.__name__}({operands})"
+
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
+        outcomes = [operand.outcome() for operand in self.__operands]
+        if any(outcome.is_certainly_false() for outcome in outcomes):
+            return Outcome(False, True)
+        return Outcome(
+            all(outcome.current_value() for outcome in outcomes),
+            all(outcome.is_certain() for outcome in outcomes),
+        )
+
+    @override
+    def consume(self, value: bool) -> Outcome:  # noqa: D102
+        for operand in self.__operands:
+            if not operand.outcome().is_certain():
+                operand.consume(value)
+        return self.outcome()
+
+
+class Or(Quantifier):
+    """The disjunction of a list of given quantifiers.
+
+    The current value is true if the current value of any of `args` is true.
+    The outcome becomes certainly true as soon as one of `args` is certainly true, and certainly false once all `args` are certainly false.
+    With no `args`, the outcome is certainly false.
+
+    Quantifiers are stateful, so each of `args` must be a separate instance.
+    """
+
+    def __init__(self, *args: Quantifier) -> None:
+        """Initialize the disjunction with `args`.
+
+        Args:
+            *args: The quantifiers to combine.
+        """
+        self.__operands = args
+
+    def __repr__(self):
+        name = self.__class__.__name__
+        operands = ", ".join(repr(operand) for operand in self.__operands)
+        return f"{name}({operands})"
+
+    def __str__(self):
+        operands = ", ".join(str(operand) for operand in self.__operands)
+        return f"{self.__class__.__name__}({operands})"
+
+    @override
+    def outcome(self) -> Outcome:  # noqa: D102
+        outcomes = [operand.outcome() for operand in self.__operands]
+        if any(outcome.is_certainly_true() for outcome in outcomes):
+            return Outcome(True, True)
+        return Outcome(
+            any(outcome.current_value() for outcome in outcomes),
+            all(outcome.is_certain() for outcome in outcomes),
+        )
+
+    @override
+    def consume(self, value: bool) -> Outcome:  # noqa: D102
+        for operand in self.__operands:
+            if not operand.outcome().is_certain():
+                operand.consume(value)
         return self.outcome()
 
 

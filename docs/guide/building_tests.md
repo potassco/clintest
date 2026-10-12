@@ -92,7 +92,21 @@ The quantifier also determines when the outcome becomes certain.
 For example, `All` is certainly false as soon as one model violates the assertion, and `Any` is certainly true as soon as one model satisfies it.
 Otherwise, the outcome only becomes certain once the solver has finished.
 
+Quantifiers can be combined with [`Not`][clintest.quantifier.Not], [`And`][clintest.quantifier.And], and [`Or`][clintest.quantifier.Or].
+For example, the following quantifier demands that the assertion holds for two to five models, so it is certainly false as soon as the assertion holds for a sixth one:
+
+```python
+from clintest.quantifier import And, GreaterEqual, LessEqual
+
+quantifier = And(GreaterEqual(2), LessEqual(5))
+```
+
+Combinations also let you decide what happens if a program has no models.
+Without models, `All` is true and `Any` is false.
+If you need it the other way around, `And(All(), Any())` behaves like `All` but is false without models, and `Or(Any(), All())` behaves like `Any` but is true without models.
+
 Quantifiers are stateful, so each test needs its own instance.
+The same goes for the operands of `And` and `Or`: in `And(q, Not(q))`, the quantifier `q` would count every model twice.
 
 ## Solvers
 
