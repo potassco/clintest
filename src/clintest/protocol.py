@@ -11,7 +11,8 @@ The persisted classes can be created by hand, for example to run tests on given 
 """
 
 from abc import abstractmethod
-from typing import Any, List, Optional, Protocol, Self, Sequence, override
+from collections.abc import Sequence
+from typing import Any, Protocol, Self, override
 
 import clingo
 
@@ -27,7 +28,7 @@ class Model(Protocol):
 
     @property
     @abstractmethod
-    def cost(self) -> List[int]:
+    def cost(self) -> list[int]:
         """Return the list of integer values of the cost vector."""
 
     @property
@@ -42,7 +43,7 @@ class Model(Protocol):
 
     @property
     @abstractmethod
-    def priority(self) -> List[int]:
+    def priority(self) -> list[int]:
         """Return the priority vector of the model."""
 
     @property
@@ -94,10 +95,10 @@ class PersistedModel(Model):
 
     def __init__(  # noqa: PLR0913, PLR0917
         self,
-        cost: List[int] | None = None,
+        cost: list[int] | None = None,
         number: int = 0,
         optimality_proven: bool = False,
-        priority: List[int] | None = None,
+        priority: list[int] | None = None,
         type: clingo.ModelType = clingo.ModelType.StableModel,
         symbols: dict[str, Sequence[clingo.Symbol]] | None = None,
     ) -> None:
@@ -230,7 +231,7 @@ class PersistedModel(Model):
 
     @property
     @override
-    def cost(self) -> List[int]:  # noqa: D102
+    def cost(self) -> list[int]:  # noqa: D102
         return self.__cost
 
     @property
@@ -245,7 +246,7 @@ class PersistedModel(Model):
 
     @property
     @override
-    def priority(self) -> List[int]:  # noqa: D102
+    def priority(self) -> list[int]:  # noqa: D102
         return self.__priority
 
     @property
@@ -316,7 +317,7 @@ class SolveResult(Protocol):
 
     @property
     @abstractmethod
-    def satisfiable(self) -> Optional[bool]:
+    def satisfiable(self) -> bool | None:
         """Return the satisfiability status of the problem.
 
         The value is `True` if satisfiable, `False` if unsatisfiable, and `None` if satisfiability is unknown.
@@ -332,7 +333,7 @@ class SolveResult(Protocol):
 
     @property
     @abstractmethod
-    def unsatisfiable(self) -> Optional[bool]:
+    def unsatisfiable(self) -> bool | None:
         """Return the unsatisfiability status of the problem.
 
         The value is `True` if unsatisfiable, `False` if satisfiable, and `None` if satisfiability is unknown.

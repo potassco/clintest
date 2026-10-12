@@ -16,8 +16,6 @@ These four options are represented using two booleans within [`Outcome`][clintes
 For an introduction, see [Tests and outcomes][tests-and-outcomes] in the guide.
 """
 
-from typing import Tuple
-
 
 class Outcome:
     """The outcome of a test."""
@@ -57,7 +55,7 @@ class Outcome:
         """Return whether this outcome is certain."""
         return self.__is_certain
 
-    def as_tuple(self) -> Tuple[bool, bool]:
+    def as_tuple(self) -> tuple[bool, bool]:
         """Return this outcome as a tuple `(self.current_value(), self.is_certain())`."""
         return (self.__current_value, self.__is_certain)
 
