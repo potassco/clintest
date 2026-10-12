@@ -51,7 +51,8 @@ check-return-types = false
 check-yield-types = false
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+addopts = "--doctest-modules"
+testpaths = ["src", "tests"]
 
 [tool.ruff]
 src = ["src"]
