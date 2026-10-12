@@ -63,7 +63,7 @@ Finally, `test.assert_()` raises an `AssertionError` if the test has failed or i
 
 In this case, the test fails:
 
-```
+```pytb
 AssertionError: The following test has failed.
     [F!] And
         operands:
