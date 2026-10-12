@@ -9,14 +9,14 @@ For an introduction, see [Assertions][assertions] in the guide.
 """
 
 from abc import ABC, abstractmethod
-from typing import Set, Union, override
+from typing import override
 
 from clingo.symbol import Symbol, parse_term
 
 from .protocol import Model
 
 
-def _into_symbol(symbol: Union[Symbol, str]) -> Symbol:
+def _into_symbol(symbol: Symbol | str) -> Symbol:
     if isinstance(symbol, Symbol):
         return symbol
     return parse_term(symbol)
@@ -47,7 +47,7 @@ class Contains(Assertion):
     This checks atom membership, independently of which symbols are shown.
     """
 
-    def __init__(self, symbol: Union[Symbol, str]) -> None:
+    def __init__(self, symbol: Symbol | str) -> None:
         """Initialize the assertion with `symbol`.
 
         Args:
@@ -68,7 +68,7 @@ class Contains(Assertion):
 class Equals(Assertion):
     """An assertion that holds if a model's shown symbols equal the given set of `symbols`."""
 
-    def __init__(self, symbols: Set[Union[Symbol, str]]) -> None:
+    def __init__(self, symbols: set[Symbol | str]) -> None:
         """Initialize the assertion with `symbols`.
 
         Args:
@@ -90,7 +90,7 @@ class Equals(Assertion):
 class SubsetOf(Assertion):
     """An assertion that holds if a model's shown symbols are a subset of the given set of `symbols`."""
 
-    def __init__(self, symbols: Set[Union[Symbol, str]]) -> None:
+    def __init__(self, symbols: set[Symbol | str]) -> None:
         """Initialize the assertion with `symbols`.
 
         Args:
@@ -112,7 +112,7 @@ class SubsetOf(Assertion):
 class SupersetOf(Assertion):
     """An assertion that holds if a model's shown symbols are a superset of the given set of `symbols`."""
 
-    def __init__(self, symbols: Set[Union[Symbol, str]]) -> None:
+    def __init__(self, symbols: set[Symbol | str]) -> None:
         """Initialize the assertion with `symbols`.
 
         Args:
@@ -209,7 +209,7 @@ class And(Assertion):
 
     @override
     def holds_for(self, model: Model) -> bool:  # noqa: D102
-        return all((operand.holds_for(model) for operand in self.__operands))
+        return all(operand.holds_for(model) for operand in self.__operands)
 
 
 class Or(Assertion):
@@ -233,7 +233,7 @@ class Or(Assertion):
 
     @override
     def holds_for(self, model: Model) -> bool:  # noqa: D102
-        return any((operand.holds_for(model) for operand in self.__operands))
+        return any(operand.holds_for(model) for operand in self.__operands)
 
 
 class Implies(Assertion):
@@ -292,4 +292,4 @@ class Equivalent(Assertion):
         except StopIteration:
             return True
 
-        return all((first == operand.holds_for(model) for operand in operands))
+        return all(first == operand.holds_for(model) for operand in operands)

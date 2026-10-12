@@ -10,8 +10,9 @@ For an introduction, see [Building Tests][building-tests] and [Debugging Tests][
 
 import os
 from abc import ABC, abstractmethod
+from collections.abc import Callable, Sequence
 from textwrap import indent
-from typing import Any, Callable, Dict, Optional, Sequence, override
+from typing import Any, override
 
 from clingo.statistics import StatisticsMap
 
@@ -170,7 +171,7 @@ class Recording:
     This class is mainly used inside of [`Record`][clintest.test.Record].
     """
 
-    def __init__(self, entries: Optional[Sequence[Dict[str, Any]]] = None):
+    def __init__(self, entries: Sequence[dict[str, Any]] | None = None):
         """Initialize the recording with `entries` or an empty sequence."""
         if entries is None:
             entries = []
@@ -197,7 +198,7 @@ class Recording:
 
     __hash__ = None  # type: ignore[assignment]
 
-    def amend(self, changes: Dict[str, Any]):
+    def amend(self, changes: dict[str, Any]):
         """Update the last entry of this recording with `changes`.
 
         Args:
@@ -205,7 +206,7 @@ class Recording:
         """
         self.__entries[-1].update(changes)
 
-    def append(self, entry: Dict[str, Any]):
+    def append(self, entry: dict[str, Any]):
         """Append `entry` at the end of this recording.
 
         Args:

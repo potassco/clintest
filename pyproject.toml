@@ -71,6 +71,7 @@ select = [
     "W",    # pycodestyle: warnings
     "D",    # pydocstyle
     "I",    # isort
+    "UP",   # pyupgrade
 ]
 ignore = [
     "D105", # pydocstyle: missing docstring in magic method

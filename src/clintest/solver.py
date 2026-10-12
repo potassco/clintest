@@ -8,7 +8,8 @@ For an introduction, see [Solvers][solvers] in the guide.
 """
 
 from abc import ABC, abstractmethod
-from typing import Callable, Iterable, Optional, Sequence, cast, override
+from collections.abc import Callable, Iterable, Sequence
+from typing import cast, override
 
 from clingo.control import Control
 from clingo.solving import Model as ClingoModel
@@ -59,9 +60,9 @@ class Clingo(Solver):
 
     def __init__(
         self,
-        arguments: Optional[Sequence[str]] = None,
-        program: Optional[str] = None,
-        files: Optional[Sequence[str]] = None,
+        arguments: Sequence[str] | None = None,
+        program: str | None = None,
+        files: Sequence[str] | None = None,
     ) -> None:
         """Initialize the solver with `arguments`, `program`, and `files`.
 
