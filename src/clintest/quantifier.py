@@ -1,4 +1,14 @@
-"""The abstract class [`Quantifier`][clintest.quantifier.Quantifier] and classes extending it."""
+"""Requirements on which models an assertion must hold for.
+
+- All or some models: [`All`][clintest.quantifier.All], [`Any`][clintest.quantifier.Any]
+- Position: [`First`][clintest.quantifier.First], [`Last`][clintest.quantifier.Last]
+- Count: [`Exact`][clintest.quantifier.Exact], [`Less`][clintest.quantifier.Less], [`LessEqual`][clintest.quantifier.LessEqual], [`Greater`][clintest.quantifier.Greater], [`GreaterEqual`][clintest.quantifier.GreaterEqual]
+
+[`Finished`][clintest.quantifier.Finished] is used by [`Assert`][clintest.test.Assert] once solving ends; you rarely need it directly.
+
+To write your own quantifier, extend [`Quantifier`][clintest.quantifier.Quantifier].
+For an introduction, see [Quantifiers][quantifiers] in the guide.
+"""
 
 from abc import ABC, abstractmethod
 from typing import override

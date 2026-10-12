@@ -1,8 +1,13 @@
-"""Protocols for classes in clingo.
+"""Protocols for clingo's classes.
 
 Many classes in clingo are neither designed to be created manually nor to be persisted.
 The most notable example is `clingo.solving.Model`, which is only valid during the solve call that produced it.
 Since a more hands-on approach is often desired for testing, this module provides placeholders (aka [protocols](https://typing.python.org/en/latest/spec/protocol.html)) for these classes.
+
+- Models: [`Model`][clintest.protocol.Model], implemented by [`PersistedModel`][clintest.protocol.PersistedModel]
+- Solve results: [`SolveResult`][clintest.protocol.SolveResult], implemented by [`PersistedSolveResult`][clintest.protocol.PersistedSolveResult]
+
+The persisted classes can be created by hand, for example to run tests on given models with [`Iterate`][clintest.solver.Iterate].
 """
 
 from abc import abstractmethod
