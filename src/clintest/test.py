@@ -540,7 +540,7 @@ class And(Test):
 
         return os.linesep.join(
             [
-                f"[{self.outcome()}] {self.__class__.__name__} ",
+                f"[{self.outcome()}] {self.__class__.__name__}",
                 f"    operands:{operands}",
                 f"    short_circuit:  {self.__short_circuit}",
                 f"    ignore_certain: {self.__ignore_certain}",
@@ -676,7 +676,7 @@ class Or(Test):
 
         return os.linesep.join(
             [
-                f"[{self.outcome()}] {self.__class__.__name__} ",
+                f"[{self.outcome()}] {self.__class__.__name__}",
                 f"    operands:{operands}",
                 f"    short_circuit:  {self.__short_circuit}",
                 f"    ignore_certain: {self.__ignore_certain}",
