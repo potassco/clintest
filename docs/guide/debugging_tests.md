@@ -37,7 +37,7 @@ Printing `record` shows the wrapped test, followed by the recording:
 
 ```pycon
 >>> print(record.recording)
-0: [T?] __init__
+0: [F?] __init__
 1: [F!] on_model
     a
 2: [F!] on_statistics
