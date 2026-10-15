@@ -562,19 +562,18 @@ class And(Test):
         for operand in self.__ongoing:
             call_operand(operand)
 
-            if operand.outcome().is_certainly_false():
-                if self.__short_circuit:
-                    self.__ongoing = []
-                    self.__outcome = Outcome(False, True)
-                    return False
-                else:
-                    self.__outcome = Outcome(False, False)
+            if self.__short_circuit and operand.outcome().is_certainly_false():
+                self.__ongoing = []
+                self.__outcome = Outcome(False, True)
+                return False
 
             if not (self.__ignore_certain and operand.outcome().is_certain()):
                 still_ongoing.append(operand)
 
         self.__ongoing = still_ongoing
-        self.__outcome = Outcome(self.__outcome.current_value(), not bool(still_ongoing))
+        self.__outcome = Outcome(
+            all(operand.outcome().current_value() for operand in self.__operands), not still_ongoing
+        )
 
         return not self.__outcome.is_certain()
 
@@ -698,19 +697,18 @@ class Or(Test):
         for operand in self.__ongoing:
             call_operand(operand)
 
-            if operand.outcome().is_certainly_true():
-                if self.__short_circuit:
-                    self.__ongoing = []
-                    self.__outcome = Outcome(True, True)
-                    return False
-                else:
-                    self.__outcome = Outcome(True, False)
+            if self.__short_circuit and operand.outcome().is_certainly_true():
+                self.__ongoing = []
+                self.__outcome = Outcome(True, True)
+                return False
 
             if not (self.__ignore_certain and operand.outcome().is_certain()):
                 still_ongoing.append(operand)
 
         self.__ongoing = still_ongoing
-        self.__outcome = Outcome(self.__outcome.current_value(), not bool(still_ongoing))
+        self.__outcome = Outcome(
+            any(operand.outcome().current_value() for operand in self.__operands), not still_ongoing
+        )
 
         return not self.__outcome.is_certain()
 
